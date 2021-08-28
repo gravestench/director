@@ -31,7 +31,11 @@ func (c *clockScene) Key() string {
 }
 
 func (c *clockScene) IsInitialized() bool {
-	return c.Director.World != nil
+	if c.Director.World == nil {
+		return false
+	}
+
+	return true
 }
 
 func (c *clockScene) Init(w *akara.World) {
@@ -39,10 +43,10 @@ func (c *clockScene) Init(w *akara.World) {
 
 	rand.Seed(time.Now().UnixNano())
 
-	ww, wh := rl.GetScreenWidth(), rl.GetScreenHeight()
+	ww, wh := c.Window.Width, c.Window.Height
 
 	for idx := range c.textObjects {
-		c.textObjects[idx] = c.Add.Text("", ww/2, wh/2, randColor())
+		c.textObjects[idx] = c.Add.Text("", rand.Intn(ww), rand.Intn(wh), randColor())
 	}
 
 	c.Director.World = w
