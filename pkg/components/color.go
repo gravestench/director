@@ -5,7 +5,6 @@ import (
 	"image/color"
 )
 
-// static check that Color implements Component
 var _ akara.Component = &Color{}
 
 // Color is a component that contains normalized alpha transparency (0.0 ... 1.0)

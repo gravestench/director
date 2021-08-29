@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"image/color"
+	"time"
 
 	"github.com/gravestench/akara"
 )
@@ -9,42 +10,25 @@ import (
 type SceneObjectFactory struct {
 	scene *Scene
 	basicComponents
-	shape shapeFactory
-	image imageFactory
-	text textFactory
+	generic genericFactory
+	shape   shapeFactory
+	image   imageFactory
+	label   labelFactory
+	camera  cameraFactory
 }
 
-func (of *SceneObjectFactory) Text(str string, x, y int, c color.Color) akara.EID {
-	return of.text.New(of.scene, str, x, y, c)
+func (factory *SceneObjectFactory) update(dt time.Duration) {
+	factory.generic.update(factory.scene, dt)
+	factory.camera.update(factory.scene, dt)
+	factory.shape.update(factory.scene, dt)
+	factory.label.update(factory.scene, dt)
+	factory.image.update(factory.scene, dt)
 }
 
-type shapeFactory struct {
-	*Director
-	components struct {
-		*basicComponents
-	}
+func (factory *SceneObjectFactory) Label(str string, x, y, size int, fontName string, c color.Color) akara.EID {
+	return factory.label.New(factory.scene, str, x, y, size, fontName, c)
 }
 
-type imageFactory struct {
-	*basicComponents
-}
-
-type textFactory struct {
-	*basicComponents
-}
-
-func (tf *textFactory) New(s *Scene, str string, x, y int, c color.Color) akara.EID {
-	e := s.Director.NewEntity()
-
-	text := s.Text.Add(e)
-	text.String = str
-
-	vec2 := s.Vector2.Add(e)
-	vec2.X, vec2.Y = float32(x), float32(y)
-
-	col := s.Color.Add(e)
-	r, g, b, a := c.RGBA()
-	col.R, col.G, col.B, col.A = uint8(r), uint8(g), uint8(b), uint8(a)
-
-	return e
+func (factory *SceneObjectFactory) Camera(x, y, w, h int) akara.EID {
+	return factory.camera.New(factory.scene, x, y, w, h)
 }

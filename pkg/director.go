@@ -53,8 +53,44 @@ func (d *Director) RemoveScene(key string) *Director {
 	return d
 }
 
-func (d *Director) Update(dt time.Duration) error {
+func (d *Director) Update(dt time.Duration) (err error) {
+	err = d.updateSceneGraphs(dt)
+	if err != nil {
+		return err
+	}
+
+	err = d.updateSceneObjects(dt)
+	if err != nil {
+		return err
+	}
+
+	return d.renderScenes()
+}
+
+func (d *Director) updateSceneGraphs(dt time.Duration) error {
+	for idx := range d.scenes {
+		d.scenes[idx].updateSceneGraph()
+	}
+
 	return d.World.Update(dt)
+}
+
+func (d *Director) updateSceneObjects(dt time.Duration) error {
+	for idx := range d.scenes {
+		d.scenes[idx].updateSceneObjects(dt)
+	}
+
+	return d.World.Update(dt)
+}
+
+func (d *Director) renderScenes() error {
+	for idx := range d.scenes {
+		if err := d.scenes[idx].render(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (d *Director) initSceneSystems() {

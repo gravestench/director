@@ -11,65 +11,73 @@ type renderSystem struct {
 	components struct {
 		basicComponents
 	}
-	text *akara.Subscription
+	cameras *akara.Subscription
 }
 
-func (r *renderSystem) Init(world *akara.World) {
-	r.World = world
+func (sys *renderSystem) Init(world *akara.World) {
+	sys.World = world
 
-	r.components.init(world)
-	r.initTextSubscription()
+	sys.components.init(world)
+	sys.initCameraSubscription()
 }
 
-func (r *renderSystem) IsInitialized() bool {
-	if r.World == nil {
+func (sys *renderSystem) IsInitialized() bool {
+	if sys.World == nil {
 		return false
 	}
 
-	if !r.components.isInit() {
+	if !sys.components.isInit() {
 		return false
 	}
 
 	return true
 }
 
-func (r *renderSystem) initTextSubscription() {
-	filter := r.World.NewComponentFilter()
+func (sys *renderSystem) initCameraSubscription() {
+	filter := sys.World.NewComponentFilter()
 
 	filter.Require(
-		&components.Text{},
-		&components.Vector2{},
-		&components.Color{},
+		&components.Camera2D{},
+		&components.Transform{},
+		&components.RenderTexture2D{},
 		)
 
-	r.text = r.World.AddSubscription(filter.Build())
+	sys.cameras = sys.World.AddSubscription(filter.Build())
 }
 
-func (r *renderSystem) Update() {
+func (sys *renderSystem) Update() {
 	rl.BeginDrawing()
 	defer rl.EndDrawing()
 
 	rl.ClearBackground(rl.Black)
 
-	r.drawText()
+	for _, e := range sys.cameras.GetEntities() {
+		sys.renderCamera(e)
+	}
 }
 
-func (r *renderSystem) drawText() {
-	for _, e := range r.text.GetEntities() {
-		text, _ := r.components.Text.Get(e)
-		vec2, _ := r.components.Vector2.Get(e)
-		c, _ := r.components.Color.Get(e)
-
-		rlc := rl.Color{
-			R: c.R,
-			G: c.G,
-			B: c.B,
-			A: c.A,
-		}
-
-		str := text.String
-		x, y := int32(vec2.X), int32(vec2.Y)
-		rl.DrawText(str, x, y, 60, rlc)
+func (sys *renderSystem) renderCamera(e akara.EID) {
+	// we use the camera in the filter merely to tag the transform + rendertexture
+	// for rendering here
+	trs, found := sys.components.Transform.Get(e)
+	if !found {
+		return
 	}
+
+	rt, found := sys.components.RenderTexture2D.Get(e)
+	if !found {
+		return
+	}
+
+	position := rl.Vector2{
+		X: float32(trs.Translation.X),
+		Y: float32(trs.Translation.Y),
+	}
+
+	rotation := float32(trs.Rotation.Y)
+
+	scale := float32(trs.Scale.X)
+
+	rl.DrawTextureEx(rt.Texture, position, rotation, scale, rl.White)
 }
 

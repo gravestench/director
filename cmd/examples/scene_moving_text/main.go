@@ -7,10 +7,9 @@ func main() {
 
 	d.Window.Width = 1024
 	d.Window.Height = 768
-	d.Window.Title = "lua test"
 	d.TargetFPS = 60
 
-	d.AddSystem(&LuaSystem{})
+	d.AddScene(&MovingTextScene{})
 
 	if err := d.Run(); err != nil {
 		panic(err)
