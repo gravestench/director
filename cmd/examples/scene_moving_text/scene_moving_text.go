@@ -16,7 +16,7 @@ import (
 
 const key = "Director Example - Moving Text"
 
-const numTextObjects = 100
+const numTextObjects = 300
 
 type MovingTextScene struct {
 	director.Scene
@@ -181,7 +181,7 @@ func randColor() color.Color {
 		R: uint8(rand.Intn(math.MaxUint8)),
 		G: uint8(rand.Intn(math.MaxUint8)),
 		B: uint8(rand.Intn(math.MaxUint8)),
-		A: uint8(rand.Intn(math.MaxUint8)),
+		A: math.MaxUint8 - uint8(rand.Intn(math.MaxUint8>>2)),
 	}
 }
 
