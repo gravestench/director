@@ -84,13 +84,16 @@ func (factory *labelFactory) generateNewTextures(s *Scene) {
 		str := text.String
 
 		rl.BeginTextureMode(*rt.RenderTexture2D)
+		rl.ClearBackground(rl.Blank)
 		rl.DrawText(str, 0, 0, int32(font.Size), rlc)
 		rl.EndTextureMode()
 	}
 }
 
-func (factory *labelFactory) getTextureSize(text, font string, size int) (w, h int) {
-	v := rl.MeasureTextEx(rl.LoadFont(font), text, float32(size), 0)
+func (factory *labelFactory) getTextureSize(text, fontName string, size int) (w, h int) {
+	//font := rl.LoadFont(fontName)
+	font := rl.GetFontDefault()
+	v := rl.MeasureTextEx(font, text, float32(size), 1)
 
 	return int(v.X), int(v.Y)
 }

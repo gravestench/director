@@ -11,7 +11,7 @@ type renderSystem struct {
 	components struct {
 		basicComponents
 	}
-	cameras *akara.Subscription
+	sceneCameras *akara.Subscription
 }
 
 func (sys *renderSystem) Init(world *akara.World) {
@@ -42,18 +42,19 @@ func (sys *renderSystem) initCameraSubscription() {
 		&components.RenderTexture2D{},
 		)
 
-	sys.cameras = sys.World.AddSubscription(filter.Build())
+	sys.sceneCameras = sys.World.AddSubscription(filter.Build())
 }
 
 func (sys *renderSystem) Update() {
 	rl.BeginDrawing()
-	defer rl.EndDrawing()
 
 	rl.ClearBackground(rl.Black)
 
-	for _, e := range sys.cameras.GetEntities() {
+	for _, e := range sys.sceneCameras.GetEntities() {
 		sys.renderCamera(e)
 	}
+
+	rl.EndDrawing()
 }
 
 func (sys *renderSystem) renderCamera(e akara.EID) {

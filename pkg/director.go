@@ -54,43 +54,33 @@ func (d *Director) RemoveScene(key string) *Director {
 }
 
 func (d *Director) Update(dt time.Duration) (err error) {
-	err = d.updateSceneGraphs(dt)
-	if err != nil {
-		return err
-	}
+	d.updateState()
 
-	err = d.updateSceneObjects(dt)
-	if err != nil {
-		return err
-	}
+	d.updateScenes(dt)
 
-	return d.renderScenes()
-}
-
-func (d *Director) updateSceneGraphs(dt time.Duration) error {
-	for idx := range d.scenes {
-		d.scenes[idx].updateSceneGraph()
-	}
+	// this renders the scene objects to the scene's render texture
+	// however, this will not actually display anything, that is done by the render system
+	d.renderScenes()
 
 	return d.World.Update(dt)
 }
 
-func (d *Director) updateSceneObjects(dt time.Duration) error {
-	for idx := range d.scenes {
-		d.scenes[idx].updateSceneObjects(dt)
-	}
-
-	return d.World.Update(dt)
+func (d *Director) updateState() {
+	w := rl.GetScreenWidth()
+	h := rl.GetScreenHeight()
+	d.Window.Width, d.Window.Height = w, h
 }
 
-func (d *Director) renderScenes() error {
+func (d *Director) updateScenes(dt time.Duration) {
 	for idx := range d.scenes {
-		if err := d.scenes[idx].render(); err != nil {
-			return err
-		}
+		d.scenes[idx].update(dt)
 	}
+}
 
-	return nil
+func (d *Director) renderScenes() {
+	for idx := range d.scenes {
+		d.scenes[idx].render()
+	}
 }
 
 func (d *Director) initSceneSystems() {
@@ -133,9 +123,6 @@ func (d *Director) Run() error {
 		if err := d.Update(delta); err != nil {
 			return err
 		}
-
-		dpi:= rl.GetWindowScaleDPI()
-		_ = dpi
 	}
 
 	return nil

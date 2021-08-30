@@ -12,9 +12,8 @@ type SceneFace interface {
 	akara.System
 	bindsToDirector
 	hasKey
-	updateSceneGraph()
-	updateSceneObjects(duration time.Duration)
-	render() error
+	update(duration time.Duration)
+	render()
 }
 
 type bindsToDirector interface {
@@ -34,48 +33,7 @@ type Scene struct {
 	key         string
 	Add         SceneObjectFactory
 	renderables *akara.Subscription
-	cameras     []akara.EID
-}
-
-func (s *Scene) render() error {
-	if len(s.cameras) < 1 {
-		s.initCamera()
-	}
-
-	for _, e := range s.cameras {
-		c, found := s.Camera2D.Get(e)
-		if !found {
-			continue
-		}
-
-		rl.BeginMode2D(c.Camera2D)
-		s.renderToCamera(e)
-		rl.EndMode2D()
-	}
-
-	return nil
-}
-
-func (s *Scene) initCamera() {
-	w, h := s.Director.Window.Width, s.Director.Window.Height
-	s.cameras = make([]akara.EID, 0)
-	s.cameras = append(s.cameras, s.Add.Camera(0, 0, w, h))
-}
-
-func (s *Scene) renderToCamera(camera akara.EID) {
-	rt, found := s.RenderTexture2D.Get(camera)
-	if !found {
-		return
-	}
-
-	rl.BeginTextureMode(*rt.RenderTexture2D)
-	rl.ClearBackground(rl.Black)
-
-	for _, entity := range s.renderables.GetEntities() {
-		s.renderEntity(entity)
-	}
-
-	rl.EndTextureMode()
+	Cameras     []akara.EID
 }
 
 func (s *Scene) renderEntity(e akara.EID) {
@@ -111,24 +69,6 @@ func (s *Scene) renderEntity(e akara.EID) {
 	rl.DrawTextureEx(*t, position, rotation, scale, rl.White)
 }
 
-func (s *Scene) updateSceneGraph() {
-	for _, eid := range s.renderables.GetEntities() {
-		node, found := s.basicComponents.SceneGraphNode.Get(eid)
-		if !found {
-			continue
-		}
-
-		trs, found := s.basicComponents.Transform.Get(eid)
-		if !found {
-			continue
-		}
-
-		node.Local = trs.GetMatrix()
-	}
-
-	s.Graph.UpdateWorldMatrix()
-}
-
 func (s *Scene) bind(d *Director) {
 	s.Director = d
 	s.init(d.World)
@@ -151,6 +91,72 @@ func (s *Scene) unbind() {
 	s.Director = nil
 }
 
+func (s *Scene) updateSceneGraph() {
+	for _, eid := range s.renderables.GetEntities() {
+		node, found := s.SceneGraphNode.Get(eid)
+		if !found {
+			continue
+		}
+
+		trs, found := s.Transform.Get(eid)
+		if !found {
+			continue
+		}
+
+		node.Local = trs.GetMatrix()
+	}
+
+	s.Graph.UpdateWorldMatrix()
+}
+
 func (s *Scene) updateSceneObjects(dt time.Duration) {
 	s.Add.update(dt)
+}
+
+func (s *Scene) update(dt time.Duration) {
+	s.updateSceneGraph()
+	s.updateSceneObjects(dt)
+}
+
+func (s *Scene) render() {
+	if len(s.Cameras) < 1 {
+		s.initCamera()
+	}
+
+	for _, e := range s.Cameras {
+		c, found := s.Camera2D.Get(e)
+		if !found {
+			continue
+		}
+
+		rl.BeginMode2D(c.Camera2D)
+		s.renderToCamera(e)
+		rl.EndMode2D()
+	}
+}
+
+func (s *Scene) initCamera() {
+	w, h := s.Director.Window.Width, s.Director.Window.Height
+	s.Cameras = make([]akara.EID, 0)
+	s.Cameras = append(s.Cameras, s.Add.Camera(0, 0, w, h))
+}
+
+func (s *Scene) renderToCamera(cameraID akara.EID) {
+	rt, found := s.RenderTexture2D.Get(cameraID)
+	if !found {
+		return
+	}
+
+	rl.BeginTextureMode(*rt.RenderTexture2D)
+	rl.ClearBackground(rl.Black)
+
+	for _, entity := range s.renderables.GetEntities() {
+		if entity == cameraID {
+			continue
+		}
+
+		s.renderEntity(entity)
+	}
+
+	rl.EndTextureMode()
 }

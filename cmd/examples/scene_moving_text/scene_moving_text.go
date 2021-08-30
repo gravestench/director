@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gravestench/mathlib"
 	"image/color"
 	"math"
 	"math/rand"
@@ -21,6 +22,7 @@ type MovingTextScene struct {
 	director.Scene
 	textObjects [numTextObjects]akara.EID
 	Velocity VelocityFactory
+	lastMousePosition mathlib.Vector2
 }
 
 func (scene *MovingTextScene) Key() string {
@@ -52,19 +54,27 @@ func (scene *MovingTextScene) makeLabels() {
 	ww, wh := scene.Window.Width, scene.Window.Height
 
 	fontSize := wh / 10
-	fontName := "Sans"
 
 	for idx := range scene.textObjects {
 		rx, ry := rand.Intn(ww), rand.Intn(wh)
-		scene.textObjects[idx] = scene.Add.Label("", rx, ry, fontSize, fontName, randColor())
+		scene.textObjects[idx] = scene.Add.Label("", rx, ry, fontSize, "", randColor())
 	}
 }
 
-func (scene *MovingTextScene) Update(delta time.Duration) {
+func (scene *MovingTextScene) Update(_ time.Duration) {
 	scene.updateString()
 
 	for _, eid := range scene.textObjects {
 		scene.updatePosition(eid)
+		scene.updateVelocity(eid)
+	}
+
+	scene.resizeCameraWithWindow()
+
+	mp := rl.GetMousePosition()
+	scene.lastMousePosition = mathlib.Vector2{
+		X: float64(mp.X),
+		Y: float64(mp.Y),
 	}
 }
 
@@ -105,14 +115,45 @@ func (scene *MovingTextScene) updatePosition(eid akara.EID) {
 	velocity.X += (rand.Float32() * 2) - 1
 	velocity.Y += (rand.Float32() * 2) - 1
 
-	velocity.X = float32(clamp(velocity.X, -max, max))
-	velocity.Y = float32(clamp(velocity.Y, -max, max))
+	velocity.X = clamp(velocity.X, -max, max)
+	velocity.Y = clamp(velocity.Y, -max, max)
 
 	ww, wh := float32(rl.GetScreenWidth()), float32(rl.GetScreenHeight())
 	tw, th := float32(400), float32(140)
 
 	position.X = float64(wrap(float32(position.X), -tw, ww))
 	position.Y = float64(wrap(float32(position.Y), -th, wh))
+}
+
+func (scene *MovingTextScene) updateVelocity(eid akara.EID) {
+	velocity, found := scene.Velocity.Get(eid)
+	if !found  {
+		velocity = scene.Velocity.Add(eid)
+	}
+
+	mp := rl.GetMousePosition()
+	mp2 := &mathlib.Vector2{
+		X: float64(mp.X),
+		Y: float64(mp.Y),
+	}
+
+	mv := mp2.Subtract(&scene.lastMousePosition)
+	velocity.X += float32(mv.X) / 50
+	velocity.Y -= float32(mv.Y) / 50
+}
+
+func (scene *MovingTextScene) resizeCameraWithWindow() {
+	for _, e := range scene.Cameras {
+		rt, found := scene.RenderTexture2D.Get(e)
+		if !found {
+			continue
+		}
+
+		if int(rt.Texture.Width) != scene.Window.Width || int(rt.Texture.Height) != scene.Window.Height {
+			t := rl.LoadRenderTexture(int32(scene.Window.Width), int32(scene.Window.Height))
+			rt.RenderTexture2D = &t
+		}
+	}
 }
 
 func clamp(v, min, max float32) float32 {
