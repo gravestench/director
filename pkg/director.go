@@ -24,7 +24,7 @@ func New() *Director {
 
 	director.scenes = make(map[string]SceneFace)
 
-	director.initSceneSystems()
+	director.initDirectorSystems()
 
 	director.Window.Width = defaultWidth
 	director.Window.Height = defaultHeight
@@ -83,8 +83,8 @@ func (d *Director) renderScenes() {
 	}
 }
 
-func (d *Director) initSceneSystems() {
-	d.AddSystem(&renderSystem{})
+func (d *Director) initDirectorSystems() {
+	d.AddSystem(&screenRenderingSystem{})
 }
 
 const (

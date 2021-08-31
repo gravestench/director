@@ -6,7 +6,7 @@ import (
 	"github.com/gravestench/director/pkg/components"
 )
 
-type renderSystem struct {
+type screenRenderingSystem struct {
 	akara.BaseSubscriberSystem
 	components struct {
 		basicComponents
@@ -14,14 +14,14 @@ type renderSystem struct {
 	sceneCameras *akara.Subscription
 }
 
-func (sys *renderSystem) Init(world *akara.World) {
+func (sys *screenRenderingSystem) Init(world *akara.World) {
 	sys.World = world
 
 	sys.components.init(world)
 	sys.initCameraSubscription()
 }
 
-func (sys *renderSystem) IsInitialized() bool {
+func (sys *screenRenderingSystem) IsInitialized() bool {
 	if sys.World == nil {
 		return false
 	}
@@ -33,7 +33,7 @@ func (sys *renderSystem) IsInitialized() bool {
 	return true
 }
 
-func (sys *renderSystem) initCameraSubscription() {
+func (sys *screenRenderingSystem) initCameraSubscription() {
 	filter := sys.World.NewComponentFilter()
 
 	filter.Require(
@@ -45,7 +45,7 @@ func (sys *renderSystem) initCameraSubscription() {
 	sys.sceneCameras = sys.World.AddSubscription(filter.Build())
 }
 
-func (sys *renderSystem) Update() {
+func (sys *screenRenderingSystem) Update() {
 	rl.BeginDrawing()
 
 	rl.ClearBackground(rl.Black)
@@ -57,7 +57,7 @@ func (sys *renderSystem) Update() {
 	rl.EndDrawing()
 }
 
-func (sys *renderSystem) renderCamera(e akara.EID) {
+func (sys *screenRenderingSystem) renderCamera(e akara.EID) {
 	// we use the camera in the filter merely to tag the transform + rendertexture
 	// for rendering here
 	trs, found := sys.components.Transform.Get(e)
