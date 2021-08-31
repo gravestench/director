@@ -14,14 +14,17 @@ import (
 	director "github.com/gravestench/director/pkg"
 )
 
-const key = "Director Example - Moving Text"
-
-const numTextObjects = 300
+const (
+	key              = "Director Example - Moving Text"
+	numTextObjects   = 500
+	maxVelocity      = 250
+	maxVelocityDelta = maxVelocity / 10
+)
 
 type MovingTextScene struct {
 	director.Scene
-	textObjects [numTextObjects]akara.EID
-	Velocity VelocityFactory
+	textObjects       [numTextObjects]akara.EID
+	Velocity          VelocityFactory
 	lastMousePosition mathlib.Vector2
 }
 
@@ -53,7 +56,7 @@ func (scene *MovingTextScene) Init(w *akara.World) {
 func (scene *MovingTextScene) makeLabels() {
 	ww, wh := scene.Window.Width, scene.Window.Height
 
-	fontSize := wh / 10
+	fontSize := wh / 25
 
 	for idx := range scene.textObjects {
 		rx, ry := rand.Intn(ww), rand.Intn(wh)
@@ -61,12 +64,12 @@ func (scene *MovingTextScene) makeLabels() {
 	}
 }
 
-func (scene *MovingTextScene) Update(_ time.Duration) {
+func (scene *MovingTextScene) Update(dt time.Duration) {
 	scene.updateString()
 
 	for _, eid := range scene.textObjects {
-		scene.updatePosition(eid)
 		scene.updateVelocity(eid)
+		scene.updatePosition(eid, dt)
 	}
 
 	scene.resizeCameraWithWindow()
@@ -94,40 +97,48 @@ func (scene *MovingTextScene) updateString() {
 	}
 }
 
-func (scene *MovingTextScene) updatePosition(eid akara.EID) {
+func (scene *MovingTextScene) updatePosition(eid akara.EID, dt time.Duration) {
 	trs, found := scene.Transform.Get(eid)
-	if !found  {
+	if !found {
 		return
 	}
 
 	position := trs.Translation
 
 	velocity, found := scene.Velocity.Get(eid)
-	if !found  {
+	if !found {
 		velocity = scene.Velocity.Add(eid)
+		velocity.X = (rand.Float32() - 0.5) * maxVelocity
+		velocity.Y = (rand.Float32() - 0.5) * maxVelocity
 	}
 
-	const max = 8
+	velocity.X = clamp(velocity.X, -maxVelocity, maxVelocity)
+	velocity.Y = clamp(velocity.Y, -maxVelocity, maxVelocity)
 
-	position.X += float64(velocity.X)
-	position.Y += float64(velocity.Y)
+	scalar := float64(dt.Seconds())
 
-	velocity.X += (rand.Float32() * 2) - 1
-	velocity.Y += (rand.Float32() * 2) - 1
-
-	velocity.X = clamp(velocity.X, -max, max)
-	velocity.Y = clamp(velocity.Y, -max, max)
+	position.X += float64(velocity.X) * scalar
+	position.Y += float64(velocity.Y) * scalar
 
 	ww, wh := float32(rl.GetScreenWidth()), float32(rl.GetScreenHeight())
-	tw, th := float32(400), float32(140)
 
-	position.X = float64(wrap(float32(position.X), -tw, ww))
-	position.Y = float64(wrap(float32(position.Y), -th, wh))
+	var tw, th int32
+
+	t, tFound := scene.Texture2D.Get(eid)
+	rt, rtFound := scene.RenderTexture2D.Get(eid)
+	if tFound {
+		tw, th = t.Texture2D.Width, t.Texture2D.Height
+	} else if rtFound {
+		tw, th = rt.Texture.Width, rt.Texture.Height
+	}
+
+	position.X = float64(wrap(float32(position.X), float32(-tw), ww+float32(tw)))
+	position.Y = float64(wrap(float32(position.Y), float32(-th), wh+float32(th)))
 }
 
 func (scene *MovingTextScene) updateVelocity(eid akara.EID) {
 	velocity, found := scene.Velocity.Get(eid)
-	if !found  {
+	if !found {
 		velocity = scene.Velocity.Add(eid)
 	}
 
@@ -137,9 +148,12 @@ func (scene *MovingTextScene) updateVelocity(eid akara.EID) {
 		Y: float64(mp.Y),
 	}
 
+	velocity.X += (rand.Float32() * maxVelocityDelta * 2) - maxVelocityDelta
+	velocity.Y += (rand.Float32() * maxVelocityDelta * 2) - maxVelocityDelta
+
 	mv := mp2.Subtract(&scene.lastMousePosition)
-	velocity.X += float32(mv.X) / 50
-	velocity.Y -= float32(mv.Y) / 50
+	velocity.X += float32(mv.X) / 2
+	velocity.Y -= float32(mv.Y) / 2
 }
 
 func (scene *MovingTextScene) resizeCameraWithWindow() {
@@ -184,4 +198,3 @@ func randColor() color.Color {
 		A: math.MaxUint8 - uint8(rand.Intn(math.MaxUint8>>2)),
 	}
 }
-
