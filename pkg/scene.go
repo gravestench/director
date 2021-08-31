@@ -4,6 +4,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/components"
+	"github.com/gravestench/mathlib"
 	"github.com/gravestench/scenegraph"
 	"time"
 )
@@ -28,7 +29,7 @@ type hasKey interface {
 type Scene struct {
 	*Director
 	akara.BaseSystem
-	basicComponents
+	Components basicComponents
 	Graph       scenegraph.Node
 	key         string
 	Add         SceneObjectFactory
@@ -36,9 +37,11 @@ type Scene struct {
 	Cameras     []akara.EID
 }
 
+var tmpVect mathlib.Vector3
+
 func (s *Scene) renderEntity(e akara.EID) {
-	texture, textureFound := s.Texture2D.Get(e)
-	rt, rtFound := s.RenderTexture2D.Get(e)
+	texture, textureFound := s.Components.Texture2D.Get(e)
+	rt, rtFound := s.Components.RenderTexture2D.Get(e)
 	if !textureFound && !rtFound {
 		return
 	}
@@ -51,15 +54,28 @@ func (s *Scene) renderEntity(e akara.EID) {
 		t = &rt.Texture
 	}
 
-	trs, found := s.Transform.Get(e)
+	trs, found := s.Components.Transform.Get(e)
 	if !found {
 		return
 	}
 
-	x, y := trs.Translation.XY()
+	origin, found := s.Components.Origin.Get(e)
+	if !found {
+		return
+	}
+
+	tmpVect.Set(float64(rt.Texture.Width), float64(rt.Texture.Height), 1)
+
+	yRad := trs.Rotation.Y * mathlib.DegreesToRadians
+	ov2 := mathlib.NewVector2(origin.Clone().Multiply(&tmpVect).XY()).Rotate(yRad).Negate()
+	ov3 := mathlib.NewVector3(ov2.X, ov2.Y, 0)
+
+	x, y := trs.Translation.Clone().Add(ov3).XY()
+	v2 := mathlib.NewVector2(x, y)
+
 	position := rl.Vector2{
-		X: float32(x),
-		Y: float32(y),
+		X: float32(v2.X),
+		Y: float32(v2.Y),
 	}
 
 	rotation := float32(trs.Rotation.Y)
@@ -71,7 +87,7 @@ func (s *Scene) renderEntity(e akara.EID) {
 
 func (s *Scene) bind(d *Director) {
 	s.Director = d
-	s.init(d.World)
+	s.Components.init(d.World)
 	s.Add.scene = s
 
 	s.initRenderablesSubscription()
@@ -93,12 +109,12 @@ func (s *Scene) unbind() {
 
 func (s *Scene) updateSceneGraph() {
 	for _, eid := range s.renderables.GetEntities() {
-		node, found := s.SceneGraphNode.Get(eid)
+		node, found := s.Components.SceneGraphNode.Get(eid)
 		if !found {
 			continue
 		}
 
-		trs, found := s.Transform.Get(eid)
+		trs, found := s.Components.Transform.Get(eid)
 		if !found {
 			continue
 		}
@@ -124,7 +140,7 @@ func (s *Scene) render() {
 	}
 
 	for _, e := range s.Cameras {
-		c, found := s.Camera2D.Get(e)
+		c, found := s.Components.Camera2D.Get(e)
 		if !found {
 			continue
 		}
@@ -142,7 +158,7 @@ func (s *Scene) initCamera() {
 }
 
 func (s *Scene) renderToCamera(cameraID akara.EID) {
-	rt, found := s.RenderTexture2D.Get(cameraID)
+	rt, found := s.Components.RenderTexture2D.Get(cameraID)
 	if !found {
 		return
 	}

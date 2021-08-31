@@ -9,9 +9,10 @@ func main() {
 	d.Window.Height = 768
 	d.TargetFPS = 60
 
-	d.AddScene(&MovingTextScene{})
+	d.AddScene(&ShapeTestScene{})
 
 	if err := d.Run(); err != nil {
 		panic(err)
 	}
 }
+

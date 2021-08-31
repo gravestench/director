@@ -13,15 +13,15 @@ type LabelScene struct {
 	label akara.EID
 }
 
-func (l *LabelScene) Init(world *akara.World) {
-	l.Add.Label("Hello World!", 100, 100, 20, "", color.White)
+func (scene *LabelScene) Init(world *akara.World) {
+	scene.Add.Label("Hello World!", 100, 100, 20, "", color.White)
 }
 
-func (l *LabelScene) IsInitialized() bool {
+func (scene *LabelScene) IsInitialized() bool {
 	return true
 }
 
-func (l *LabelScene) Key() string {
+func (scene *LabelScene) Key() string {
 	return sceneName
 }
 

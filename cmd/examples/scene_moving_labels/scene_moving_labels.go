@@ -16,23 +16,23 @@ import (
 
 const (
 	key              = "Director Example - Moving Text"
-	numTextObjects   = 500
+	numTextObjects   = 1000
 	maxVelocity      = 250
 	maxVelocityDelta = maxVelocity / 10
 )
 
-type MovingTextScene struct {
+type MovingLabelsScene struct {
 	director.Scene
 	textObjects       [numTextObjects]akara.EID
 	Velocity          VelocityFactory
 	lastMousePosition mathlib.Vector2
 }
 
-func (scene *MovingTextScene) Key() string {
+func (scene *MovingLabelsScene) Key() string {
 	return key
 }
 
-func (scene *MovingTextScene) IsInitialized() bool {
+func (scene *MovingLabelsScene) IsInitialized() bool {
 	if scene.Director.World == nil {
 		return false
 	}
@@ -40,7 +40,7 @@ func (scene *MovingTextScene) IsInitialized() bool {
 	return true
 }
 
-func (scene *MovingTextScene) Init(w *akara.World) {
+func (scene *MovingLabelsScene) Init(w *akara.World) {
 	fmt.Println("moving text scene init")
 
 	rand.Seed(time.Now().UnixNano())
@@ -53,7 +53,7 @@ func (scene *MovingTextScene) Init(w *akara.World) {
 	scene.InjectComponent(&Velocity{}, &scene.Velocity.ComponentFactory)
 }
 
-func (scene *MovingTextScene) makeLabels() {
+func (scene *MovingLabelsScene) makeLabels() {
 	ww, wh := scene.Window.Width, scene.Window.Height
 
 	fontSize := wh / 25
@@ -64,7 +64,7 @@ func (scene *MovingTextScene) makeLabels() {
 	}
 }
 
-func (scene *MovingTextScene) Update(dt time.Duration) {
+func (scene *MovingLabelsScene) Update(dt time.Duration) {
 	scene.updateString()
 
 	for _, eid := range scene.textObjects {
@@ -81,14 +81,14 @@ func (scene *MovingTextScene) Update(dt time.Duration) {
 	}
 }
 
-func (scene *MovingTextScene) updateString() {
+func (scene *MovingLabelsScene) updateString() {
 	for _, e := range scene.textObjects {
-		text, found := scene.Text.Get(e)
+		text, found := scene.Components.Text.Get(e)
 		if !found {
 			continue
 		}
 
-		uuid, found := scene.UUID.Get(e)
+		uuid, found := scene.Components.UUID.Get(e)
 		if !found {
 			continue
 		}
@@ -97,8 +97,8 @@ func (scene *MovingTextScene) updateString() {
 	}
 }
 
-func (scene *MovingTextScene) updatePosition(eid akara.EID, dt time.Duration) {
-	trs, found := scene.Transform.Get(eid)
+func (scene *MovingLabelsScene) updatePosition(eid akara.EID, dt time.Duration) {
+	trs, found := scene.Components.Transform.Get(eid)
 	if !found {
 		return
 	}
@@ -124,8 +124,8 @@ func (scene *MovingTextScene) updatePosition(eid akara.EID, dt time.Duration) {
 
 	var tw, th int32
 
-	t, tFound := scene.Texture2D.Get(eid)
-	rt, rtFound := scene.RenderTexture2D.Get(eid)
+	t, tFound := scene.Components.Texture2D.Get(eid)
+	rt, rtFound := scene.Components.RenderTexture2D.Get(eid)
 	if tFound {
 		tw, th = t.Texture2D.Width, t.Texture2D.Height
 	} else if rtFound {
@@ -136,7 +136,7 @@ func (scene *MovingTextScene) updatePosition(eid akara.EID, dt time.Duration) {
 	position.Y = float64(wrap(float32(position.Y), float32(-th), wh+float32(th)))
 }
 
-func (scene *MovingTextScene) updateVelocity(eid akara.EID) {
+func (scene *MovingLabelsScene) updateVelocity(eid akara.EID) {
 	velocity, found := scene.Velocity.Get(eid)
 	if !found {
 		velocity = scene.Velocity.Add(eid)
@@ -156,9 +156,9 @@ func (scene *MovingTextScene) updateVelocity(eid akara.EID) {
 	velocity.Y -= float32(mv.Y) / 2
 }
 
-func (scene *MovingTextScene) resizeCameraWithWindow() {
+func (scene *MovingLabelsScene) resizeCameraWithWindow() {
 	for _, e := range scene.Cameras {
-		rt, found := scene.RenderTexture2D.Get(e)
+		rt, found := scene.Components.RenderTexture2D.Get(e)
 		if !found {
 			continue
 		}

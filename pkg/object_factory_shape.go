@@ -7,6 +7,10 @@ type shapeFactory struct {
 	components struct {
 		*basicComponents
 	}
+
+	rectangle rectangleFactory
 }
 
-func (factory *shapeFactory) update(s *Scene, dt time.Duration) {}
+func (factory *shapeFactory) update(s *Scene, dt time.Duration) {
+	factory.rectangle.update(s, dt)
+}

@@ -32,3 +32,7 @@ func (factory *SceneObjectFactory) Label(str string, x, y, size int, fontName st
 func (factory *SceneObjectFactory) Camera(x, y, w, h int) akara.EID {
 	return factory.camera.New(factory.scene, x, y, w, h)
 }
+
+func (factory *SceneObjectFactory) Rectangle(x, y, w, h int, fill, stroke color.Color) akara.EID {
+	return factory.shape.rectangle.New(factory.scene, x, y, w, h, fill, stroke)
+}

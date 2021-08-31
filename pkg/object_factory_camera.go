@@ -14,11 +14,11 @@ type cameraFactory struct {
 func (*cameraFactory) New(s *Scene, x, y, w, h int) akara.EID {
 	e := s.Add.generic.visibleEntity(s)
 
-	cam := s.Camera2D.Add(e)
+	cam := s.Components.Camera2D.Add(e)
 	cam.Camera2D = rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 0.2)
 
-	trs, _ := s.Transform.Get(e) // this is a component all visible entities have
-	rt := s.RenderTexture2D.Add(e)
+	trs, _ := s.Components.Transform.Get(e) // this is a component all visible entities have
+	rt := s.Components.RenderTexture2D.Add(e)
 
 	newRT := rl.LoadRenderTexture(int32(w), int32(h))
 	rt.RenderTexture2D = &newRT
@@ -38,12 +38,12 @@ func (factory *cameraFactory) update(s *Scene, _ time.Duration) {
 
 func (factory *cameraFactory) applyTransformToCamera(s *Scene) {
 	for _, e := range factory.entities {
-		cam, found := s.Camera2D.Get(e)
+		cam, found := s.Components.Camera2D.Get(e)
 		if !found {
 			continue
 		}
 
-		trs, found := s.Transform.Get(e)
+		trs, found := s.Components.Transform.Get(e)
 		if !found {
 			continue
 		}

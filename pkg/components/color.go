@@ -9,7 +9,7 @@ var _ akara.Component = &Color{}
 
 // Color is a component that contains normalized alpha transparency (0.0 ... 1.0)
 type Color struct {
-	color.RGBA
+	color.Color
 }
 
 // New creates a new alpha component instance. The default alpha is opaque with value 1.0

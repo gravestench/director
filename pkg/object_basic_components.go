@@ -8,46 +8,38 @@ import (
 type basicComponents struct {
 	Camera2D        components.Camera2DFactory
 	Color           components.ColorFactory
+	Debug           components.DebugFactory
+	Fill            components.FillFactory
+	Stroke          components.StrokeFactory
 	Font            components.FontFactory
+	Origin          components.OriginFactory
 	RenderTexture2D components.RenderTexture2DFactory
+	Size            components.SizeFactory
 	SceneGraphNode  components.SceneGraphNodeFactory
 	Text            components.TextFactory
 	Texture2D       components.Texture2DFactory
 	Transform       components.TransformFactory
 	UUID            components.UUIDFactory
-	Vector2         components.Vector2Factory
-	Vector3         components.Vector3Factory
-	Vector4         components.Vector4Factory
 }
 
 func (bc *basicComponents) init(w *akara.World) {
 	injectComponent(w, &components.Camera2D{}, &bc.Camera2D.ComponentFactory)
 	injectComponent(w, &components.Color{}, &bc.Color.ComponentFactory)
+	injectComponent(w, &components.Debug{}, &bc.Debug.ComponentFactory)
+	injectComponent(w, &components.Fill{}, &bc.Fill.ComponentFactory)
+	injectComponent(w, &components.Origin{}, &bc.Origin.ComponentFactory)
+	injectComponent(w, &components.Stroke{}, &bc.Stroke.ComponentFactory)
 	injectComponent(w, &components.Font{}, &bc.Font.ComponentFactory)
-	injectComponent(w, &components.Vector2{}, &bc.Vector2.ComponentFactory)
-	injectComponent(w, &components.Vector3{}, &bc.Vector3.ComponentFactory)
-	injectComponent(w, &components.Vector4{}, &bc.Vector4.ComponentFactory)
 	injectComponent(w, &components.SceneGraphNode{}, &bc.SceneGraphNode.ComponentFactory)
 	injectComponent(w, &components.Text{}, &bc.Text.ComponentFactory)
 	injectComponent(w, &components.RenderTexture2D{}, &bc.RenderTexture2D.ComponentFactory)
+	injectComponent(w, &components.Size{}, &bc.Size.ComponentFactory)
 	injectComponent(w, &components.Texture2D{}, &bc.Texture2D.ComponentFactory)
 	injectComponent(w, &components.Transform{}, &bc.Transform.ComponentFactory)
 	injectComponent(w, &components.UUID{}, &bc.UUID.ComponentFactory)
 }
 
 func (bc *basicComponents) isInit() bool {
-	if bc.Vector2.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Vector3.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Vector4.ComponentFactory == nil {
-		return false
-	}
-
 	if bc.Text.ComponentFactory == nil {
 		return false
 	}
@@ -68,7 +60,27 @@ func (bc *basicComponents) isInit() bool {
 		return false
 	}
 
+	if bc.Fill.ComponentFactory == nil {
+		return false
+	}
+
+	if bc.Origin.ComponentFactory == nil {
+		return false
+	}
+
+	if bc.Debug.ComponentFactory == nil {
+		return false
+	}
+
+	if bc.Stroke.ComponentFactory == nil {
+		return false
+	}
+
 	if bc.Font.ComponentFactory == nil {
+		return false
+	}
+
+	if bc.Size.ComponentFactory == nil {
 		return false
 	}
 
