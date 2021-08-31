@@ -7,16 +7,33 @@ import (
 	"time"
 )
 
-type rectangleFactory struct {
+type circleFactory struct {
 	entityManager
-	cache map[akara.EID]*rectangleParameters
+	cache map[akara.EID]*circleParameters
 }
 
-func (factory *rectangleFactory) New(s *Scene, x, y, w, h int, fill, stroke color.Color) akara.EID {
+type circleParameters struct {
+	width, height int
+	fill, stroke  color.Color
+}
+
+func (factory *circleFactory) putInCache(e akara.EID, width, height int, fill, stroke color.Color) {
+	entry := &circleParameters{
+		width:  width,
+		height: height,
+		fill:   fill,
+		stroke: stroke,
+	}
+
+	factory.cache[e] = entry
+}
+
+
+func (factory *circleFactory) New(s *Scene, x, y, radius int, fill, stroke color.Color) akara.EID {
 	e := s.Add.generic.visibleEntity(s)
 
 	size := s.Components.Size.Add(e)
-	size.Max.X, size.Max.Y = w, h
+	size.Max.X, size.Max.Y = radius*2, radius*2
 
 	trs, _ := s.Components.Transform.Get(e)
 	trs.Translation.X, trs.Translation.Y = float64(x), float64(y)
@@ -34,13 +51,13 @@ func (factory *rectangleFactory) New(s *Scene, x, y, w, h int, fill, stroke colo
 	return e
 }
 
-func (factory *rectangleFactory) update(s *Scene, dt time.Duration) {
+func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 	if !factory.entityManagerIsInit() {
 		factory.entityManagerInit()
 	}
 
 	if factory.cache == nil {
-		factory.cache = make(map[akara.EID]*rectangleParameters)
+		factory.cache = make(map[akara.EID]*circleParameters)
 	}
 
 	for _, e := range factory.entities {
@@ -52,18 +69,7 @@ func (factory *rectangleFactory) update(s *Scene, dt time.Duration) {
 	}
 }
 
-func colorsEqual(a, b color.Color) bool {
-	if (a == nil && b != nil) || (a != nil && b == nil) {
-		return false
-	}
-
-	er, eg, eb, ea := a.RGBA()
-	fr, fg, fb, fa := b.RGBA()
-
-	return er != fr || eg != fg || eb != fb || ea != fa
-}
-
-func (factory *rectangleFactory) needsToGenerateTexture(s *Scene, e akara.EID) bool {
+func (factory *circleFactory) needsToGenerateTexture(s *Scene, e akara.EID) bool {
 	entry, found := factory.cache[e]
 	if !found {
 		return true
@@ -108,7 +114,7 @@ func (factory *rectangleFactory) needsToGenerateTexture(s *Scene, e akara.EID) b
 	return false
 }
 
-func (factory *rectangleFactory) generateNewTexture(s *Scene, e akara.EID) {
+func (factory *circleFactory) generateNewTexture(s *Scene, e akara.EID) {
 	fill, fillFound := s.Components.Fill.Get(e)
 	stroke, strokeFound := s.Components.Stroke.Get(e)
 	col, colorFound := s.Components.Color.Get(e)
@@ -134,42 +140,27 @@ func (factory *rectangleFactory) generateNewTexture(s *Scene, e akara.EID) {
 	}
 
 	rl.BeginTextureMode(*rt.RenderTexture2D)
+	rl.ClearBackground(rl.Blank)
 
 	if fillFound {
 		fc = fill
 		r, g, b, a := fill.RGBA()
-		rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+		rl.DrawCircle(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
 	}
 
 	if !fillFound && colorFound {
 		fc = col
 		r, g, b, a := col.RGBA()
-		rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+		rl.DrawCircle(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
 	}
 
 	if strokeFound {
 		sc = stroke
 		r, g, b, a := stroke.RGBA()
-		rl.DrawRectangleLines(0, 0, w, h, rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+		rl.DrawCircleLines(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
 	}
 
 	rl.EndTextureMode()
 
 	factory.putInCache(e, int(w), int(h), fc, sc)
-}
-
-type rectangleParameters struct {
-	width, height int
-	fill, stroke  color.Color
-}
-
-func (factory *rectangleFactory) putInCache(e akara.EID, width, height int, fill, stroke color.Color) {
-	entry := &rectangleParameters{
-		width:  width,
-		height: height,
-		fill:   fill,
-		stroke: stroke,
-	}
-
-	factory.cache[e] = entry
 }

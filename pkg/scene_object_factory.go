@@ -36,3 +36,7 @@ func (factory *SceneObjectFactory) Camera(x, y, w, h int) akara.EID {
 func (factory *SceneObjectFactory) Rectangle(x, y, w, h int, fill, stroke color.Color) akara.EID {
 	return factory.shape.rectangle.New(factory.scene, x, y, w, h, fill, stroke)
 }
+
+func (factory *SceneObjectFactory) Circle(x, y, radius int, fill, stroke color.Color) akara.EID {
+	return factory.shape.circle.New(factory.scene, x, y, radius, fill, stroke)
+}
