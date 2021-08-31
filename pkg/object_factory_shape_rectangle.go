@@ -29,7 +29,7 @@ func (factory *rectangleFactory) New(s *Scene, x, y, w, h int, fill, stroke colo
 		s.Components.Stroke.Add(e).Color = stroke
 	}
 
-	factory.entities = append(factory.entities, e)
+	factory.addEntity(e)
 
 	return e
 }
@@ -43,7 +43,7 @@ func (factory *rectangleFactory) update(s *Scene, dt time.Duration) {
 		factory.cache = make(map[akara.EID]*rectangleParameters)
 	}
 
-	for _, e := range factory.entities {
+	for e := range factory.entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			return
 		}

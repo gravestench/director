@@ -37,7 +37,7 @@ func (factory *cameraFactory) update(s *Scene, _ time.Duration) {
 }
 
 func (factory *cameraFactory) applyTransformToCamera(s *Scene) {
-	for _, e := range factory.entities {
+	for e := range factory.entities {
 		cam, found := s.Components.Camera2D.Get(e)
 		if !found {
 			continue

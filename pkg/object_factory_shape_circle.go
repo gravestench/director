@@ -46,7 +46,7 @@ func (factory *circleFactory) New(s *Scene, x, y, radius int, fill, stroke color
 		s.Components.Stroke.Add(e).Color = stroke
 	}
 
-	factory.entities = append(factory.entities, e)
+	factory.addEntity(e)
 
 	return e
 }
@@ -60,7 +60,7 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 		factory.cache = make(map[akara.EID]*circleParameters)
 	}
 
-	for _, e := range factory.entities {
+	for e := range factory.entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			return
 		}

@@ -48,7 +48,7 @@ func (factory *labelFactory) New(s *Scene, str string, x, y, fontsize int, fontN
 
 	//rl.MeasureTextEx()
 
-	factory.entities = append(factory.entities, e)
+	factory.addEntity(e)
 
 	return e
 }
@@ -62,7 +62,7 @@ func (factory *labelFactory) update(s *Scene, _ time.Duration) {
 		factory.cache = make(map[akara.EID]*labelParameters)
 	}
 
-	for _, e := range factory.entities {
+	for e := range factory.entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			continue
 		}
@@ -145,7 +145,7 @@ func (factory *labelFactory) generateNewTexture(s *Scene, e akara.EID) {
 	c, colorFound := s.Components.Color.Get(e)
 
 	if !(textFound || colorFound || fontFound) {
-		factory.removalQueue = append(factory.removalQueue, e)
+		factory.removeEntity(e)
 		return
 	}
 
