@@ -6,20 +6,28 @@ import (
 	"github.com/gravestench/director/pkg/components"
 	"github.com/gravestench/mathlib"
 	"github.com/gravestench/scenegraph"
+	lua "github.com/yuin/gopher-lua"
 	"time"
 )
 
 type SceneFace interface {
 	akara.System
 	bindsToDirector
+	initializesLua
 	hasKey
 	update(duration time.Duration)
 	render()
+	concrete() *Scene
 }
 
 type bindsToDirector interface {
-	bind(*Director)
-	unbind()
+	bindDirector(*Director)
+	unbindDirector()
+}
+
+type initializesLua interface {
+	bindLua(state *lua.LState)
+	unbindLua()
 }
 
 type hasKey interface {
@@ -29,6 +37,7 @@ type hasKey interface {
 type Scene struct {
 	*Director
 	akara.BaseSystem
+	Lua *lua.LState
 	Components basicComponents
 	Graph       scenegraph.Node
 	key         string
@@ -85,12 +94,20 @@ func (s *Scene) renderEntity(e akara.EID) {
 	rl.DrawTextureEx(*t, position, rotation, scale, rl.White)
 }
 
-func (s *Scene) bind(d *Director) {
+func (s *Scene) bindDirector(d *Director) {
 	s.Director = d
 	s.Components.init(d.World)
 	s.Add.scene = s
 
 	s.initRenderablesSubscription()
+}
+
+func (s *Scene) bindLua(L *lua.LState) {
+	s.Lua = L
+}
+
+func (s *Scene) unbindLua() {
+	s.Lua = nil
 }
 
 func (s *Scene) initRenderablesSubscription() {
@@ -103,7 +120,7 @@ func (s *Scene) initRenderablesSubscription() {
 	s.renderables = s.Director.AddSubscription(f.Build())
 }
 
-func (s *Scene) unbind() {
+func (s *Scene) unbindDirector() {
 	s.Director = nil
 }
 
@@ -175,4 +192,8 @@ func (s *Scene) renderToCamera(cameraID akara.EID) {
 	}
 
 	rl.EndTextureMode()
+}
+
+func (s *Scene) concrete() *Scene {
+	return s
 }

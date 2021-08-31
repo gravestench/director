@@ -50,6 +50,8 @@ func (factory *rectangleFactory) update(s *Scene, dt time.Duration) {
 
 		factory.generateNewTexture(s, e)
 	}
+
+	factory.processRemovalQueue()
 }
 
 func colorsEqual(a, b color.Color) bool {

@@ -67,6 +67,8 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 
 		factory.generateNewTexture(s, e)
 	}
+
+	factory.processRemovalQueue()
 }
 
 func (factory *circleFactory) needsToGenerateTexture(s *Scene, e akara.EID) bool {

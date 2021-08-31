@@ -34,6 +34,7 @@ func (factory *cameraFactory) update(s *Scene, _ time.Duration) {
 	}
 
 	factory.applyTransformToCamera(s)
+	factory.processRemovalQueue()
 }
 
 func (factory *cameraFactory) applyTransformToCamera(s *Scene) {

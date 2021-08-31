@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	lua "github.com/yuin/gopher-lua"
 	"time"
 
 	"github.com/gen2brain/raylib-go/raylib"
@@ -9,6 +10,7 @@ import (
 
 type Director struct {
 	*akara.World
+	Lua *lua.LState
 	scenes map[string]SceneFace
 	Window struct {
 		Width, Height int // pixels
@@ -35,7 +37,7 @@ func New() *Director {
 }
 
 func (d *Director) AddScene(scene SceneFace) *Director {
-	scene.bind(d)
+	scene.bindDirector(d)
 
 	d.AddSystem(scene)
 	d.scenes[scene.Key()] = scene
@@ -47,7 +49,7 @@ func (d *Director) RemoveScene(key string) *Director {
 	if scene, found := d.scenes[key]; found {
 		d.RemoveSystem(scene)
 		delete(d.scenes, key)
-		scene.bind(nil)
+		scene.bindDirector(nil)
 	}
 
 	return d
@@ -81,10 +83,6 @@ func (d *Director) renderScenes() {
 	for idx := range d.scenes {
 		d.scenes[idx].render()
 	}
-}
-
-func (d *Director) initDirectorSystems() {
-	d.AddSystem(&screenRenderingSystem{})
 }
 
 const (

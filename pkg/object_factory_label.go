@@ -69,6 +69,8 @@ func (factory *labelFactory) update(s *Scene, _ time.Duration) {
 
 		factory.generateNewTexture(s, e)
 	}
+
+	factory.processRemovalQueue()
 }
 
 func (factory *labelFactory) putInCache(s *Scene, e akara.EID, str, font string, size int, c color.Color) {
