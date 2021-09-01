@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/gravestench/akara"
-	director "github.com/gravestench/director/pkg"
+	"github.com/gravestench/director/pkg/systems/scene"
 	"image/color"
 )
 
 const sceneName = "Label Scene"
 
 type LabelScene struct {
-	director.Scene
+	scene.Scene
 	label akara.EID
 }
 

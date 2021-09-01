@@ -1,11 +1,11 @@
-package pkg
+package common
 
 import (
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/components"
 )
 
-type basicComponents struct {
+type BasicComponents struct {
 	Camera2D        components.Camera2DFactory
 	Color           components.ColorFactory
 	Debug           components.DebugFactory
@@ -22,7 +22,7 @@ type basicComponents struct {
 	UUID            components.UUIDFactory
 }
 
-func (bc *basicComponents) init(w *akara.World) {
+func (bc *BasicComponents) Init(w *akara.World) {
 	injectComponent(w, &components.Camera2D{}, &bc.Camera2D.ComponentFactory)
 	injectComponent(w, &components.Color{}, &bc.Color.ComponentFactory)
 	injectComponent(w, &components.Debug{}, &bc.Debug.ComponentFactory)
@@ -39,7 +39,7 @@ func (bc *basicComponents) init(w *akara.World) {
 	injectComponent(w, &components.UUID{}, &bc.UUID.ComponentFactory)
 }
 
-func (bc *basicComponents) isInit() bool {
+func (bc *BasicComponents) IsInit() bool {
 	if bc.Text.ComponentFactory == nil {
 		return false
 	}

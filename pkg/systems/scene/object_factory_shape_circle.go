@@ -1,14 +1,15 @@
-package pkg
+package scene
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/common"
 	"image/color"
 	"time"
 )
 
 type circleFactory struct {
-	entityManager
+	common.EntityManager
 	cache map[akara.EID]*circleParameters
 }
 
@@ -46,21 +47,21 @@ func (factory *circleFactory) New(s *Scene, x, y, radius int, fill, stroke color
 		s.Components.Stroke.Add(e).Color = stroke
 	}
 
-	factory.addEntity(e)
+	factory.EntityManager.AddEntity(e)
 
 	return e
 }
 
 func (factory *circleFactory) update(s *Scene, dt time.Duration) {
-	if !factory.entityManagerIsInit() {
-		factory.entityManagerInit()
+	if !factory.EntityManager.IsInit() {
+		factory.EntityManager.Init()
 	}
 
 	if factory.cache == nil {
 		factory.cache = make(map[akara.EID]*circleParameters)
 	}
 
-	for e := range factory.entities {
+	for e := range factory.EntityManager.Entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			return
 		}
@@ -68,7 +69,7 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 		factory.generateNewTexture(s, e)
 	}
 
-	factory.processRemovalQueue()
+	factory.EntityManager.ProcessRemovalQueue()
 }
 
 func (factory *circleFactory) needsToGenerateTexture(s *Scene, e akara.EID) bool {

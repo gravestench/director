@@ -1,49 +1,30 @@
-package pkg
+package scene
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/components"
+	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/mathlib"
 	"github.com/gravestench/scenegraph"
 	lua "github.com/yuin/gopher-lua"
 	"time"
 )
 
-type SceneFace interface {
-	akara.System
-	bindsToDirector
-	initializesLua
-	hasKey
-	update(duration time.Duration)
-	render()
-	concrete() *Scene
-}
-
-type bindsToDirector interface {
-	bindDirector(*Director)
-	unbindDirector()
-}
-
-type initializesLua interface {
-	bindLua(state *lua.LState)
-	unbindLua()
-}
-
-type hasKey interface {
-	Key() string
-}
-
 type Scene struct {
-	*Director
 	akara.BaseSystem
-	Lua *lua.LState
-	Components basicComponents
+	Lua         *lua.LState
+	Components  common.BasicComponents
 	Graph       scenegraph.Node
 	key         string
-	Add         SceneObjectFactory
-	renderables *akara.Subscription
+	Add         ObjectFactory
+	Renderables *akara.Subscription
 	Cameras     []akara.EID
+	Width		int
+	Height		int
+}
+
+func New(name string) *Scene {
+	return &Scene{key: name}
 }
 
 var tmpVect mathlib.Vector3
@@ -94,38 +75,32 @@ func (s *Scene) renderEntity(e akara.EID) {
 	rl.DrawTextureEx(*t, position, rotation, scale, rl.White)
 }
 
-func (s *Scene) bindDirector(d *Director) {
-	s.Director = d
-	s.Components.init(d.World)
+func (s *Scene) Initialize(width, height int, world *akara.World, renderablesSubscription *akara.Subscription) {
 	s.Add.scene = s
+	s.Width = width
+	s.Height = height
+	s.World = world
+	s.Components.Init(s.World)
 
-	s.initRenderablesSubscription()
+	s.Renderables = renderablesSubscription
 }
 
-func (s *Scene) bindLua(L *lua.LState) {
-	s.Lua = L
+func (s *Scene) InitializeLua(luaTypes []common.LuaTypeExporter) {
+	if !s.LuaInitialized() {
+		s.Lua = lua.NewState()
+	}
 }
 
-func (s *Scene) unbindLua() {
+func (s *Scene) UninitializeLua() {
 	s.Lua = nil
 }
 
-func (s *Scene) initRenderablesSubscription() {
-	f := s.Director.NewComponentFilter()
-
-	f.Require(&components.SceneGraphNode{})
-	f.Require(&components.Transform{})
-	f.RequireOne(&components.RenderTexture2D{}, &components.Texture2D{})
-
-	s.renderables = s.Director.AddSubscription(f.Build())
-}
-
-func (s *Scene) unbindDirector() {
-	s.Director = nil
+func (s *Scene) LuaInitialized() bool {
+	return s.Lua != nil
 }
 
 func (s *Scene) updateSceneGraph() {
-	for _, eid := range s.renderables.GetEntities() {
+	for _, eid := range s.Renderables.GetEntities() {
 		node, found := s.Components.SceneGraphNode.Get(eid)
 		if !found {
 			continue
@@ -146,12 +121,16 @@ func (s *Scene) updateSceneObjects(dt time.Duration) {
 	s.Add.update(dt)
 }
 
-func (s *Scene) update(dt time.Duration) {
+func (s *Scene) Update(dt time.Duration) {
+	// override me
+}
+
+func (s *Scene) GenericUpdate(dt time.Duration) {
 	s.updateSceneGraph()
 	s.updateSceneObjects(dt)
 }
 
-func (s *Scene) render() {
+func (s *Scene) Render() {
 	if len(s.Cameras) < 1 {
 		s.initCamera()
 	}
@@ -169,9 +148,8 @@ func (s *Scene) render() {
 }
 
 func (s *Scene) initCamera() {
-	w, h := s.Director.Window.Width, s.Director.Window.Height
 	s.Cameras = make([]akara.EID, 0)
-	s.Cameras = append(s.Cameras, s.Add.Camera(0, 0, w, h))
+	s.Cameras = append(s.Cameras, s.Add.Camera(0, 0, s.Width, s.Height))
 }
 
 func (s *Scene) renderToCamera(cameraID akara.EID) {
@@ -183,7 +161,7 @@ func (s *Scene) renderToCamera(cameraID akara.EID) {
 	rl.BeginTextureMode(*rt.RenderTexture2D)
 	rl.ClearBackground(rl.Black)
 
-	for _, entity := range s.renderables.GetEntities() {
+	for _, entity := range s.Renderables.GetEntities() {
 		if entity == cameraID {
 			continue
 		}
@@ -194,6 +172,6 @@ func (s *Scene) renderToCamera(cameraID akara.EID) {
 	rl.EndTextureMode()
 }
 
-func (s *Scene) concrete() *Scene {
-	return s
+func (s *Scene) Key() string {
+	return s.key
 }

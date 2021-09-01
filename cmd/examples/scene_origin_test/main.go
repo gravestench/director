@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gravestench/director/pkg/systems/scene"
 	"image/color"
 	"math"
 	"math/rand"
@@ -30,7 +31,7 @@ const (
 )
 
 type LabelTestScene struct {
-	director.Scene
+	scene.Scene
 	singleLabel akara.EID
 	originPoint akara.EID
 }
@@ -48,7 +49,7 @@ func (scene *LabelTestScene) Init(w *akara.World) {
 }
 
 func (scene *LabelTestScene) makeLabels() {
-	ww, wh := scene.Window.Width, scene.Window.Height
+	ww, wh := scene.Width, scene.Height
 	fontSize := wh / 10
 
 	red := color.RGBA{R: 255, A: 255}
@@ -65,7 +66,7 @@ func (scene *LabelTestScene) Update(dt time.Duration) {
 }
 
 func (scene *LabelTestScene) updateLabel() {
-	ww, wh := scene.Window.Width, scene.Window.Height
+	ww, wh := scene.Width, scene.Height
 
 	o, found := scene.Components.Origin.Get(scene.singleLabel)
 	if !found {
@@ -120,8 +121,8 @@ func (scene *LabelTestScene) resizeCameraWithWindow() {
 			continue
 		}
 
-		if int(rt.Texture.Width) != scene.Window.Width || int(rt.Texture.Height) != scene.Window.Height {
-			t := rl.LoadRenderTexture(int32(scene.Window.Width), int32(scene.Window.Height))
+		if int(rt.Texture.Width) != scene.Width || int(rt.Texture.Height) != scene.Height {
+			t := rl.LoadRenderTexture(int32(scene.Width), int32(scene.Height))
 			rt.RenderTexture2D = &t
 		}
 	}

@@ -1,8 +1,9 @@
-package pkg
+package scene
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/common"
 	"image/color"
 	"math"
 	"math/rand"
@@ -10,8 +11,8 @@ import (
 )
 
 type labelFactory struct {
-	entityManager
-	*basicComponents
+	common.EntityManager
+	*common.BasicComponents
 	cache map[akara.EID]*labelParameters
 }
 
@@ -48,21 +49,21 @@ func (factory *labelFactory) New(s *Scene, str string, x, y, fontsize int, fontN
 
 	//rl.MeasureTextEx()
 
-	factory.addEntity(e)
+	factory.EntityManager.AddEntity(e)
 
 	return e
 }
 
 func (factory *labelFactory) update(s *Scene, _ time.Duration) {
-	if !factory.entityManagerIsInit() {
-		factory.entityManagerInit()
+	if !factory.EntityManager.IsInit() {
+		factory.EntityManager.Init()
 	}
 
 	if factory.cache == nil {
 		factory.cache = make(map[akara.EID]*labelParameters)
 	}
 
-	for e := range factory.entities {
+	for e := range factory.Entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			continue
 		}
@@ -70,7 +71,7 @@ func (factory *labelFactory) update(s *Scene, _ time.Duration) {
 		factory.generateNewTexture(s, e)
 	}
 
-	factory.processRemovalQueue()
+	factory.EntityManager.ProcessRemovalQueue()
 }
 
 func (factory *labelFactory) putInCache(s *Scene, e akara.EID, str, font string, size int, c color.Color) {
@@ -147,7 +148,7 @@ func (factory *labelFactory) generateNewTexture(s *Scene, e akara.EID) {
 	c, colorFound := s.Components.Color.Get(e)
 
 	if !(textFound || colorFound || fontFound) {
-		factory.removeEntity(e)
+		factory.RemoveEntity(e)
 		return
 	}
 

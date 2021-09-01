@@ -1,6 +1,8 @@
 package main
 
-import director "github.com/gravestench/director/pkg"
+import (
+	director "github.com/gravestench/director/pkg"
+)
 
 func main() {
 	d := director.New()
@@ -10,7 +12,7 @@ func main() {
 	d.Window.Title = "lua test"
 	d.TargetFPS = 60
 
-	d.AddSystem(&LuaSystem{})
+	//d.AddSystem(&lua.LuaSystem{})
 
 	if err := d.Run(); err != nil {
 		panic(err)

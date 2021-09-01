@@ -1,39 +1,40 @@
-package pkg
+package screen_rendering
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/components"
 )
 
-type screenRenderingSystem struct {
+type ScreenRenderingSystem struct {
 	akara.BaseSubscriberSystem
 	components struct {
-		basicComponents
+		common.BasicComponents
 	}
 	sceneCameras *akara.Subscription
 }
 
-func (sys *screenRenderingSystem) Init(world *akara.World) {
+func (sys *ScreenRenderingSystem) Init(world *akara.World) {
 	sys.World = world
 
-	sys.components.init(world)
+	sys.components.Init(world)
 	sys.initCameraSubscription()
 }
 
-func (sys *screenRenderingSystem) IsInitialized() bool {
+func (sys *ScreenRenderingSystem) IsInitialized() bool {
 	if sys.World == nil {
 		return false
 	}
 
-	if !sys.components.isInit() {
+	if !sys.components.IsInit() {
 		return false
 	}
 
 	return true
 }
 
-func (sys *screenRenderingSystem) initCameraSubscription() {
+func (sys *ScreenRenderingSystem) initCameraSubscription() {
 	filter := sys.World.NewComponentFilter()
 
 	filter.Require(
@@ -45,7 +46,7 @@ func (sys *screenRenderingSystem) initCameraSubscription() {
 	sys.sceneCameras = sys.World.AddSubscription(filter.Build())
 }
 
-func (sys *screenRenderingSystem) Update() {
+func (sys *ScreenRenderingSystem) Update() {
 	rl.BeginDrawing()
 
 	rl.ClearBackground(rl.Black)
@@ -57,7 +58,7 @@ func (sys *screenRenderingSystem) Update() {
 	rl.EndDrawing()
 }
 
-func (sys *screenRenderingSystem) renderCamera(e akara.EID) {
+func (sys *ScreenRenderingSystem) renderCamera(e akara.EID) {
 	// we use the camera in the filter merely to tag the transform + rendertexture
 	// for rendering here
 	trs, found := sys.components.Transform.Get(e)

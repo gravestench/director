@@ -1,4 +1,4 @@
-package pkg
+package scene
 
 import (
 	"fmt"
@@ -11,10 +11,10 @@ import (
 
 const luaRectangleTypeName = "rectangle"
 
-var luaRectangleTypeExport = func(scene *Scene) common.LuaTypeExport {
+var LuaRectangleTypeExport = func(scene *Scene) common.LuaTypeExport {
 	export := common.LuaTypeExport{
 		Name:            luaRectangleTypeName,
-		ConstructorFunc: luaRectangleConstructor(scene),
+		ConstructorFunc: scene.luaRectangleConstructor(),
 		Methods:         rectangleMethods,
 	}
 
@@ -23,7 +23,7 @@ var luaRectangleTypeExport = func(scene *Scene) common.LuaTypeExport {
 
 type lstateFn = func(state *lua.LState) int
 
-func luaRectangleConstructor(scene *Scene) lstateFn {
+func (s *Scene) luaRectangleConstructor() lstateFn {
 	return func(L *lua.LState) int {
 		// check argument count
 		if L.GetTop() != 6 {
@@ -38,7 +38,7 @@ func luaRectangleConstructor(scene *Scene) lstateFn {
 		fill, _ := util.ParseHexColor(L.CheckString(5))
 		stroke, _ := util.ParseHexColor(L.CheckString(6))
 
-		e := scene.Add.Rectangle(x, y, w, h, fill, stroke)
+		e := s.Add.Rectangle(x, y, w, h, fill, stroke)
 		v := &e
 
 		ud := L.NewUserData()

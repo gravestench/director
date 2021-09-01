@@ -1,14 +1,15 @@
-package pkg
+package scene
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/common"
 	"time"
 )
 
 type cameraFactory struct {
-	entityManager
-	*basicComponents
+	common.EntityManager
+	*common.BasicComponents
 }
 
 func (*cameraFactory) New(s *Scene, x, y, w, h int) akara.EID {
@@ -29,16 +30,16 @@ func (*cameraFactory) New(s *Scene, x, y, w, h int) akara.EID {
 }
 
 func (factory *cameraFactory) update(s *Scene, _ time.Duration) {
-	if !factory.entityManagerIsInit() {
-		factory.entityManagerInit()
+	if !factory.EntityManager.IsInit() {
+		factory.EntityManager.Init()
 	}
 
 	factory.applyTransformToCamera(s)
-	factory.processRemovalQueue()
+	factory.EntityManager.ProcessRemovalQueue()
 }
 
 func (factory *cameraFactory) applyTransformToCamera(s *Scene) {
-	for e := range factory.entities {
+	for e := range factory.Entities {
 		cam, found := s.Components.Camera2D.Get(e)
 		if !found {
 			continue

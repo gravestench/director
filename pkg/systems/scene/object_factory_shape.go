@@ -1,11 +1,13 @@
-package pkg
+package scene
 
-import "time"
+import (
+	"github.com/gravestench/director/pkg/common"
+	"time"
+)
 
 type shapeFactory struct {
-	*Director
 	components struct {
-		*basicComponents
+		*common.BasicComponents
 	}
 
 	rectangle rectangleFactory

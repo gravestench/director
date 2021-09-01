@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gravestench/director/pkg/systems/scene"
 	"github.com/gravestench/mathlib"
 	"image/color"
 	"math"
@@ -11,7 +12,6 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 
 	"github.com/gravestench/akara"
-	director "github.com/gravestench/director/pkg"
 )
 
 const (
@@ -22,7 +22,7 @@ const (
 )
 
 type MovingLabelsScene struct {
-	director.Scene
+	scene.Scene
 	textObjects       [numTextObjects]akara.EID
 	Velocity          VelocityFactory
 	lastMousePosition mathlib.Vector2
@@ -33,7 +33,7 @@ func (scene *MovingLabelsScene) Key() string {
 }
 
 func (scene *MovingLabelsScene) IsInitialized() bool {
-	if scene.Director.World == nil {
+	if scene.World == nil {
 		return false
 	}
 
@@ -47,14 +47,14 @@ func (scene *MovingLabelsScene) Init(w *akara.World) {
 
 	scene.makeLabels()
 
-	scene.Director.Window.Title = scene.Key()
-	scene.Director.World = w
-	scene.BaseSystem.World = w
+	// TODO: how do we do this now
+	//scene.Director.Window.Title = scene.Key()
+
 	scene.InjectComponent(&Velocity{}, &scene.Velocity.ComponentFactory)
 }
 
 func (scene *MovingLabelsScene) makeLabels() {
-	ww, wh := scene.Window.Width, scene.Window.Height
+	ww, wh := scene.Width, scene.Height
 
 	fontSize := wh / 25
 
@@ -163,8 +163,8 @@ func (scene *MovingLabelsScene) resizeCameraWithWindow() {
 			continue
 		}
 
-		if int(rt.Texture.Width) != scene.Window.Width || int(rt.Texture.Height) != scene.Window.Height {
-			t := rl.LoadRenderTexture(int32(scene.Window.Width), int32(scene.Window.Height))
+		if int(rt.Texture.Width) != scene.Width || int(rt.Texture.Height) != scene.Height {
+			t := rl.LoadRenderTexture(int32(scene.Width), int32(scene.Height))
 			rt.RenderTexture2D = &t
 		}
 	}

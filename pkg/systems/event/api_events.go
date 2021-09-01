@@ -1,4 +1,4 @@
-package main
+package event
 
 type ApiEvent = int
 

@@ -1,18 +1,19 @@
-package pkg
+package scene
 
 import (
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/common"
 	"time"
 )
 
 type genericFactory struct {
-	*basicComponents
+	*common.BasicComponents
 }
 
 func (factory *genericFactory) update(s *Scene, dt time.Duration) {}
 
 func (factory *genericFactory) entity(s *Scene) akara.EID {
-	e := s.Director.NewEntity()
+	e := s.NewEntity()
 
 	// a generic entity always has a UUID
 	s.Components.UUID.Add(e)

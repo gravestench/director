@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	director "github.com/gravestench/director/pkg"
+	"github.com/gravestench/director/pkg/systems/scene"
 	"math/rand"
+	"time"
 )
 
 const (
@@ -16,7 +17,7 @@ const (
 )
 
 type shapeTestFromLua struct {
-	director.Scene
+	scene.Scene
 	numRectangles int
 }
 
@@ -24,12 +25,12 @@ func (s *shapeTestFromLua) Key() string {
 	return sceneName
 }
 
-func (s *shapeTestFromLua) Update() {
+func (s *shapeTestFromLua) Update(dt time.Duration) {
 	if s.numRectangles >= maxRectangles {
 		return
 	}
 
-	ww, wh := s.Director.Window.Width, s.Director.Window.Height
+	ww, wh := s.Width, s.Height
 	rx, ry := randRange(0, ww), randRange(0, wh)
 	rw, rh := randRange(minWidth, maxWidth), randRange(minHeight, maxHeight)
 

@@ -1,14 +1,15 @@
-package pkg
+package scene
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/common"
 	"image/color"
 	"time"
 )
 
 type rectangleFactory struct {
-	entityManager
+	entityManager common.EntityManager
 	cache map[akara.EID]*rectangleParameters
 }
 
@@ -29,21 +30,21 @@ func (factory *rectangleFactory) New(s *Scene, x, y, w, h int, fill, stroke colo
 		s.Components.Stroke.Add(e).Color = stroke
 	}
 
-	factory.addEntity(e)
+	factory.entityManager.AddEntity(e)
 
 	return e
 }
 
 func (factory *rectangleFactory) update(s *Scene, dt time.Duration) {
-	if !factory.entityManagerIsInit() {
-		factory.entityManagerInit()
+	if !factory.entityManager.IsInit() {
+		factory.entityManager.Init()
 	}
 
 	if factory.cache == nil {
 		factory.cache = make(map[akara.EID]*rectangleParameters)
 	}
 
-	for e := range factory.entities {
+	for e := range factory.entityManager.Entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			return
 		}
@@ -51,7 +52,7 @@ func (factory *rectangleFactory) update(s *Scene, dt time.Duration) {
 		factory.generateNewTexture(s, e)
 	}
 
-	factory.processRemovalQueue()
+	factory.entityManager.ProcessRemovalQueue()
 }
 
 func colorsEqual(a, b color.Color) bool {

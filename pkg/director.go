@@ -1,7 +1,10 @@
 package pkg
 
 import (
-	lua "github.com/yuin/gopher-lua"
+	"github.com/gravestench/director/pkg/common"
+	"github.com/gravestench/director/pkg/components"
+	"github.com/gravestench/director/pkg/systems/screen_rendering"
+	go_lua "github.com/yuin/gopher-lua"
 	"time"
 
 	"github.com/gen2brain/raylib-go/raylib"
@@ -10,8 +13,8 @@ import (
 
 type Director struct {
 	*akara.World
-	Lua *lua.LState
-	scenes map[string]SceneFace
+	Lua    *go_lua.LState
+	Scenes map[string]common.SceneFace
 	Window struct {
 		Width, Height int // pixels
 		Title string
@@ -21,10 +24,10 @@ type Director struct {
 }
 
 func New() *Director {
-	director := &Director{}
+	director := Director{}
 	director.World = akara.NewWorld(akara.NewWorldConfig())
 
-	director.scenes = make(map[string]SceneFace)
+	director.Scenes = make(map[string]common.SceneFace)
 
 	director.initDirectorSystems()
 
@@ -33,23 +36,21 @@ func New() *Director {
 	director.Window.ScaleFactor = defaultScaleFactor
 	director.Window.Title = defaultTitle
 
-	return director
+	return &director
 }
 
-func (d *Director) AddScene(scene SceneFace) *Director {
-	scene.bindDirector(d)
+func (d *Director) AddScene(scene common.SceneFace) {
+	scene.Initialize(d.Window.Width, d.Window.Height, d.World, d.renderablesSubscription())
+	scene.InitializeLua(nil) // TODO
 
 	d.AddSystem(scene)
-	d.scenes[scene.Key()] = scene
-
-	return d
+	d.Scenes[scene.Key()] = scene
 }
 
 func (d *Director) RemoveScene(key string) *Director {
-	if scene, found := d.scenes[key]; found {
-		d.RemoveSystem(scene)
-		delete(d.scenes, key)
-		scene.bindDirector(nil)
+	if ss, found := d.Scenes[key]; found {
+		d.RemoveSystem(ss)
+		delete(d.Scenes, key)
 	}
 
 	return d
@@ -74,15 +75,20 @@ func (d *Director) updateState() {
 }
 
 func (d *Director) updateScenes(dt time.Duration) {
-	for idx := range d.scenes {
-		d.scenes[idx].update(dt)
+	for _, ss := range d.Scenes {
+		ss.Update(dt)
+		ss.GenericUpdate(dt)
 	}
 }
 
 func (d *Director) renderScenes() {
-	for idx := range d.scenes {
-		d.scenes[idx].render()
+	for idx := range d.Scenes {
+		d.Scenes[idx].Render()
 	}
+}
+
+func (d *Director) initDirectorSystems() {
+	d.AddSystem(&screen_rendering.ScreenRenderingSystem{})
 }
 
 const (
@@ -124,4 +130,14 @@ func (d *Director) Run() error {
 	}
 
 	return nil
+}
+
+func (d *Director) renderablesSubscription() *akara.Subscription {
+	f := d.NewComponentFilter()
+
+	f.Require(&components.SceneGraphNode{})
+	f.Require(&components.Transform{})
+	f.RequireOne(&components.RenderTexture2D{}, &components.Texture2D{})
+
+	return d.AddSubscription(f.Build())
 }
