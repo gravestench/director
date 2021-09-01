@@ -51,7 +51,7 @@ func (s *Scene) luaRectangleConstructor() lua.LGFunction {
 	}
 }
 
-// Checks whether the first lua argument is a *LUserData with *Rectangle and returns this *Rectangle.
+// Checks whether the first Lua argument is a *LUserData with *Rectangle and returns this *Rectangle.
 func checkRectangle(L *lua.LState) *akara.EID {
 	ud := L.CheckUserData(1)
 	if v, ok := ud.Value.(*akara.EID); ok {

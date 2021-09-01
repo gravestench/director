@@ -1,9 +1,10 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gravestench/director/cmd/examples/file_loader/loader/filesystemloader"
 	director "github.com/gravestench/director/pkg"
-	"os"
 )
 
 func main() {

@@ -13,7 +13,7 @@ func main() {
 	d.Window.Title = "lua test"
 	d.TargetFPS = 60
 
-	d.AddScene(scene.New("Lua Test Scene", "main.lua"))
+	d.AddScene(scene.NewLuaScene("Lua Test Scene", "main.lua"))
 
 	if err := d.Run(); err != nil {
 		panic(err)

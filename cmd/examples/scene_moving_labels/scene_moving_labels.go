@@ -17,7 +17,7 @@ import (
 const (
 	key              = "Director Example - Moving Text"
 	numTextObjects   = 1000
-	maxVelocity      = 250
+	maxVelocity      = 150
 	maxVelocityDelta = maxVelocity / 10
 )
 
@@ -181,13 +181,7 @@ func clamp(v, min, max float32) float32 {
 }
 
 func wrap(v, min, max float32) float32 {
-	if v > max {
-		v = min
-	} else if v < min {
-		v = max
-	}
-
-	return v
+	return float32(mathlib.WrapInt(int(v - min), int(max - min))) + min
 }
 
 func randColor() color.Color {

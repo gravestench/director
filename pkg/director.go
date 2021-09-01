@@ -14,7 +14,7 @@ import (
 type Director struct {
 	*akara.World
 	Lua    *go_lua.LState
-	Scenes map[string]common.SceneFace
+	Scenes map[string]common.Scene
 	Window struct {
 		Width, Height int // pixels
 		Title string
@@ -27,7 +27,7 @@ func New() *Director {
 	director := Director{}
 	director.World = akara.NewWorld(akara.NewWorldConfig())
 
-	director.Scenes = make(map[string]common.SceneFace)
+	director.Scenes = make(map[string]common.Scene)
 
 	director.initDirectorSystems()
 
@@ -39,7 +39,7 @@ func New() *Director {
 	return &director
 }
 
-func (d *Director) AddScene(scene common.SceneFace) {
+func (d *Director) AddScene(scene common.Scene) {
 	scene.Initialize(d.Window.Width, d.Window.Height, d.World, d.renderablesSubscription())
 	scene.InitializeLua()
 
@@ -76,7 +76,12 @@ func (d *Director) updateState() {
 
 func (d *Director) updateScenes(dt time.Duration) {
 	for _, ss := range d.Scenes {
-		ss.Update(dt)
+		if updater, ok := ss.(common.Updater); ok {
+			updater.Update()
+		} else if timeUpdater, ok := ss.(common.UpdaterTimed); ok {
+			timeUpdater.Update(dt)
+		}
+
 		ss.GenericUpdate(dt)
 	}
 }

@@ -5,21 +5,33 @@ import (
 	"time"
 )
 
-type SceneFace interface {
+type Scene interface {
 	akara.System
 	HasKey
-	InitializesLua
-	Update(duration time.Duration)
+	initializesLua
 	GenericUpdate(duration time.Duration)
 	Render()
 	Initialize(width int, height int, world *akara.World, renderablesSubscription *akara.Subscription)
+}
+
+type Updater interface {
+	Update()
+}
+
+type UpdaterTimed interface {
+	Update(duration time.Duration)
+}
+
+type LuaScene interface {
+	Scene
+	RunLuaScripts()
 }
 
 type HasKey interface {
 	Key() string
 }
 
-type InitializesLua interface {
+type initializesLua interface {
 	LuaInitialized() bool
 	InitializeLua()
 	UninitializeLua()

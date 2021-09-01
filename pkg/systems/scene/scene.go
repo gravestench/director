@@ -1,7 +1,6 @@
 package scene
 
 import (
-	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
@@ -13,23 +12,15 @@ import (
 
 type Scene struct {
 	akara.BaseSystem
-	lua         *lua.LState
-	Components  common.BasicComponents
-	Graph       scenegraph.Node
-	key         string
-	Add         ObjectFactory
-	Renderables *akara.Subscription
-	Cameras     []akara.EID
-	Width		int
-	Height		int
-	LuaScriptPath string
-}
-
-func New(name, luaScriptPath string) *Scene {
-	return &Scene{
-		key: name,
-		LuaScriptPath: luaScriptPath,
-	}
+	Lua           *lua.LState
+	Components    common.BasicComponents
+	Graph         scenegraph.Node
+	key           string
+	Add           ObjectFactory
+	Renderables   *akara.Subscription
+	Cameras       []akara.EID
+	Width         int
+	Height        int
 }
 
 var tmpVect mathlib.Vector3
@@ -91,27 +82,24 @@ func (s *Scene) Initialize(width, height int, world *akara.World, renderablesSub
 }
 
 func (s *Scene) InitializeLua() {
-	if !s.LuaInitialized() {
-		s.lua = lua.NewState()
+	if s.LuaInitialized() {
+		return
+	}
 
-		for _, luaTypeExporter := range luaTypeExporters {
-			luaTypeExport := luaTypeExporter(s)
-			common.RegisterLuaType(s.lua, luaTypeExport)
-		}
+	s.Lua = lua.NewState()
 
-		err := s.lua.DoFile(s.LuaScriptPath)
-		if err != nil {
-			fmt.Printf("Lua script failed to execute: %s\n", err.Error())
-		}
+	for _, luaTypeExporter := range luaTypeExporters {
+		luaTypeExport := luaTypeExporter(s)
+		common.RegisterLuaType(s.Lua, luaTypeExport)
 	}
 }
 
 func (s *Scene) UninitializeLua() {
-	s.lua = nil
+	s.Lua = nil
 }
 
 func (s *Scene) LuaInitialized() bool {
-	return s.lua != nil
+	return s.Lua != nil
 }
 
 func (s *Scene) updateSceneGraph() {
@@ -134,10 +122,6 @@ func (s *Scene) updateSceneGraph() {
 
 func (s *Scene) updateSceneObjects(dt time.Duration) {
 	s.Add.update(dt)
-}
-
-func (s *Scene) Update(dt time.Duration) {
-	// override me
 }
 
 func (s *Scene) GenericUpdate(dt time.Duration) {
