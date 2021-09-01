@@ -1,6 +1,7 @@
 package scene
 
 import (
+	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
@@ -12,7 +13,7 @@ import (
 
 type Scene struct {
 	akara.BaseSystem
-	Lua         *lua.LState
+	lua         *lua.LState
 	Components  common.BasicComponents
 	Graph       scenegraph.Node
 	key         string
@@ -21,10 +22,14 @@ type Scene struct {
 	Cameras     []akara.EID
 	Width		int
 	Height		int
+	LuaScriptPath string
 }
 
-func New(name string) *Scene {
-	return &Scene{key: name}
+func New(name, luaScriptPath string) *Scene {
+	return &Scene{
+		key: name,
+		LuaScriptPath: luaScriptPath,
+	}
 }
 
 var tmpVect mathlib.Vector3
@@ -85,18 +90,28 @@ func (s *Scene) Initialize(width, height int, world *akara.World, renderablesSub
 	s.Renderables = renderablesSubscription
 }
 
-func (s *Scene) InitializeLua(luaTypes []common.LuaTypeExporter) {
+func (s *Scene) InitializeLua() {
 	if !s.LuaInitialized() {
-		s.Lua = lua.NewState()
+		s.lua = lua.NewState()
+
+		for _, luaTypeExporter := range luaTypeExporters {
+			luaTypeExport := luaTypeExporter(s)
+			common.RegisterLuaType(s.lua, luaTypeExport)
+		}
+
+		err := s.lua.DoFile(s.LuaScriptPath)
+		if err != nil {
+			fmt.Printf("Lua script failed to execute: %s\n", err.Error())
+		}
 	}
 }
 
 func (s *Scene) UninitializeLua() {
-	s.Lua = nil
+	s.lua = nil
 }
 
 func (s *Scene) LuaInitialized() bool {
-	return s.Lua != nil
+	return s.lua != nil
 }
 
 func (s *Scene) updateSceneGraph() {

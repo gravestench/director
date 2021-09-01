@@ -1,7 +1,10 @@
-v = vector3.new(1, 2, 3)
-print(v:xyz())
+x = 100
+y = 100
+w = 150
+h = 200
+fill = "#ff0000"
+stroke = "#00ff00"
+rect_eid = rectangle.new(x, y, w, h, fill, stroke)
 
-v:xyz(3, 2, 1)
-print(v:xyz())
-
-print("hey everybody")
+print("created rectangle with EID: ")
+print(rect_eid)

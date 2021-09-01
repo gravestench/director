@@ -12,11 +12,8 @@ type LuaTypeExport struct {
 	Methods         map[string]lua.LGFunction
 }
 
-// LuaTypeExporter is a function that generates a LuaTypeExport for a specific Scene.
-type LuaTypeExporter func(scene *SceneFace) LuaTypeExport
-
-// RegisterType takes a LuaTypeExport and uses it to add a new global to the Lua state machine
-func RegisterType(L *lua.LState, luaTypeExport LuaTypeExport) {
+// RegisterLuaType takes a LuaTypeExport and uses it to add a new global to the Lua state machine
+func RegisterLuaType(L *lua.LState, luaTypeExport LuaTypeExport) {
 	typeMetatable := L.NewTypeMetatable(luaTypeExport.Name)
 	L.SetGlobal(luaTypeExport.Name, typeMetatable)
 

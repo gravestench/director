@@ -11,7 +11,11 @@ import (
 
 const luaRectangleTypeName = "rectangle"
 
-var LuaRectangleTypeExport = func(scene *Scene) common.LuaTypeExport {
+var rectangleMethods = map[string]lua.LGFunction{
+	"value": rectangleGet,
+}
+
+var luaRectangleTypeExporter = func(scene *Scene) common.LuaTypeExport {
 	export := common.LuaTypeExport{
 		Name:            luaRectangleTypeName,
 		ConstructorFunc: scene.luaRectangleConstructor(),
@@ -21,9 +25,7 @@ var LuaRectangleTypeExport = func(scene *Scene) common.LuaTypeExport {
 	return export
 }
 
-type lstateFn = func(state *lua.LState) int
-
-func (s *Scene) luaRectangleConstructor() lstateFn {
+func (s *Scene) luaRectangleConstructor() lua.LGFunction {
 	return func(L *lua.LState) int {
 		// check argument count
 		if L.GetTop() != 6 {
@@ -57,10 +59,6 @@ func checkRectangle(L *lua.LState) *akara.EID {
 	}
 	L.ArgError(1, "rectangle expected")
 	return nil
-}
-
-var rectangleMethods = map[string]lua.LGFunction{
-	"value": rectangleGet,
 }
 
 // Getter and setter for the Rectangle#XYZ

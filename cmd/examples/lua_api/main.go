@@ -2,6 +2,7 @@ package main
 
 import (
 	director "github.com/gravestench/director/pkg"
+	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 func main() {
@@ -12,7 +13,7 @@ func main() {
 	d.Window.Title = "lua test"
 	d.TargetFPS = 60
 
-	//d.AddSystem(&lua.LuaSystem{})
+	d.AddScene(scene.New("Lua Test Scene", "main.lua"))
 
 	if err := d.Run(); err != nil {
 		panic(err)

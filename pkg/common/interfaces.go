@@ -21,7 +21,7 @@ type HasKey interface {
 
 type InitializesLua interface {
 	LuaInitialized() bool
-	InitializeLua(luaTypes []LuaTypeExporter)
+	InitializeLua()
 	UninitializeLua()
 }
 

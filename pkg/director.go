@@ -41,7 +41,7 @@ func New() *Director {
 
 func (d *Director) AddScene(scene common.SceneFace) {
 	scene.Initialize(d.Window.Width, d.Window.Height, d.World, d.renderablesSubscription())
-	scene.InitializeLua(nil) // TODO
+	scene.InitializeLua()
 
 	d.AddSystem(scene)
 	d.Scenes[scene.Key()] = scene
