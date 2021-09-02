@@ -13,7 +13,7 @@ type genericFactory struct {
 func (factory *genericFactory) update(s *Scene, dt time.Duration) {}
 
 func (factory *genericFactory) entity(s *Scene) akara.EID {
-	e := s.NewEntity()
+	e := s.Director.NewEntity()
 
 	// a generic entity always has a UUID
 	s.Components.UUID.Add(e)
@@ -34,6 +34,10 @@ func (factory *genericFactory) visibleEntity(s *Scene) akara.EID {
 	// a visible entity will always have an origin point
 	// which is relative to its display dimensions
 	s.Components.Origin.Add(e)
+
+	// a visible entity will always have an origin point
+	// which is relative to its display dimensions
+	s.Components.Opacity.Add(e)
 
 	return e
 }

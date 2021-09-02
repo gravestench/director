@@ -17,8 +17,7 @@ function rrect()
     stroke = "#" .. rcc() .. rcc() .. rcc()
     rect_eid = rectangle.new(x, y, w, h, fill, stroke)
 
-    print("created rectangle with EID: ")
-    print(rect_eid:value())
+    print("created rectangle with EID: " .. rect_eid:value())
 end
 
 for _ = 100,0,-1

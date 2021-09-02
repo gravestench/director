@@ -1,4 +1,4 @@
-package common
+package pkg
 
 import (
 	"github.com/gravestench/akara"
@@ -11,7 +11,7 @@ type Scene interface {
 	initializesLua
 	GenericUpdate(duration time.Duration)
 	Render()
-	Initialize(width int, height int, world *akara.World, renderablesSubscription *akara.Subscription)
+	Initialize(d *Director, width int, height int)
 }
 
 type Updater interface {
@@ -35,8 +35,4 @@ type initializesLua interface {
 	LuaInitialized() bool
 	InitializeLua()
 	UninitializeLua()
-}
-
-type BasicObject interface {
-
 }

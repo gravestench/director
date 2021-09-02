@@ -1,24 +1,28 @@
 package pkg
 
 import (
-	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/components"
-	"github.com/gravestench/director/pkg/systems/screen_rendering"
-	go_lua "github.com/yuin/gopher-lua"
+	"github.com/gravestench/director/pkg/systems/tween"
 	"time"
 
 	"github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/eventemitter"
+	go_lua "github.com/yuin/gopher-lua"
+
+	"github.com/gravestench/director/pkg/components"
+	"github.com/gravestench/director/pkg/systems/screen_rendering"
 )
 
 type Director struct {
 	*akara.World
 	Lua    *go_lua.LState
-	Scenes map[string]common.Scene
+	Events *eventemitter.EventEmitter
+	Scenes map[string]Scene
+	Tweens *tween.System
 	Window struct {
 		Width, Height int // pixels
-		Title string
-		ScaleFactor float64
+		Title         string
+		ScaleFactor   float64
 	}
 	TargetFPS int
 }
@@ -26,8 +30,9 @@ type Director struct {
 func New() *Director {
 	director := Director{}
 	director.World = akara.NewWorld(akara.NewWorldConfig())
+	director.Events = eventemitter.New()
 
-	director.Scenes = make(map[string]common.Scene)
+	director.Scenes = make(map[string]Scene)
 
 	director.initDirectorSystems()
 
@@ -39,8 +44,8 @@ func New() *Director {
 	return &director
 }
 
-func (d *Director) AddScene(scene common.Scene) {
-	scene.Initialize(d.Window.Width, d.Window.Height, d.World, d.renderablesSubscription())
+func (d *Director) AddScene(scene Scene) {
+	scene.Initialize(d, d.Window.Width, d.Window.Height)
 	scene.InitializeLua()
 
 	d.AddSystem(scene)
@@ -76,9 +81,9 @@ func (d *Director) updateState() {
 
 func (d *Director) updateScenes(dt time.Duration) {
 	for _, ss := range d.Scenes {
-		if updater, ok := ss.(common.Updater); ok {
+		if updater, ok := ss.(Updater); ok {
 			updater.Update()
-		} else if timeUpdater, ok := ss.(common.UpdaterTimed); ok {
+		} else if timeUpdater, ok := ss.(UpdaterTimed); ok {
 			timeUpdater.Update(dt)
 		}
 
@@ -94,12 +99,15 @@ func (d *Director) renderScenes() {
 
 func (d *Director) initDirectorSystems() {
 	d.AddSystem(&screen_rendering.ScreenRenderingSystem{})
+
+	d.Tweens = &tween.System{}
+	d.AddSystem(d.Tweens)
 }
 
 const (
-	defaultTitle = "Director"
-	defaultWidth = 1028
-	defaultHeight = 768
+	defaultTitle       = "Director"
+	defaultWidth       = 1028
+	defaultHeight      = 768
 	defaultScaleFactor = 1.0
 )
 

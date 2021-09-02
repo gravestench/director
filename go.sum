@@ -9,6 +9,14 @@ github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 h1:EGx4pi6eqNxGa
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
 github.com/gravestench/akara v0.0.0-20210826233442-b3355e55f76a h1:0TCNfY0vlm91FPzq50QhfgvSeGXEIpMC0qWb1nw1ums=
 github.com/gravestench/akara v0.0.0-20210826233442-b3355e55f76a/go.mod h1:uxAqdO3YanpyVIUcFAJyMfpTHbYveWgm0MbJW1JBtMM=
+github.com/gravestench/akara v0.0.0-20210902013432-f814abfa0f5f h1:lkR8Q6+I4nsFZWj8iUPp3XJLlXfLEbd+3hTlgt1mFFw=
+github.com/gravestench/akara v0.0.0-20210902013432-f814abfa0f5f/go.mod h1:uxAqdO3YanpyVIUcFAJyMfpTHbYveWgm0MbJW1JBtMM=
+github.com/gravestench/akara v0.0.0-20210902013803-e7f008b68260 h1:s07F80+uzHhyiGc8qSB+iTf83ZuCJrwoOb03J7wEOyE=
+github.com/gravestench/akara v0.0.0-20210902013803-e7f008b68260/go.mod h1:uxAqdO3YanpyVIUcFAJyMfpTHbYveWgm0MbJW1JBtMM=
+github.com/gravestench/eventemitter v0.0.0-20210509162852-69e9d7324a68 h1:3o67IvJ8RJfz6zofLcOjyNnlLF5XMQSuC6ByKvwoy1k=
+github.com/gravestench/eventemitter v0.0.0-20210509162852-69e9d7324a68/go.mod h1:gAR6WXHs9cmJKjqHuZ1wa7PJf2vVGI7sOk4pp7KQTx8=
+github.com/gravestench/eventemitter v0.0.0-20210902014026-73feeec3a47f h1:qQVJjNaYRXc0TbyM5iJaShSIDh544CytFJe5sKGH5FE=
+github.com/gravestench/eventemitter v0.0.0-20210902014026-73feeec3a47f/go.mod h1:gAR6WXHs9cmJKjqHuZ1wa7PJf2vVGI7sOk4pp7KQTx8=
 github.com/gravestench/mathlib v0.0.0-20210507201615-3fd244ab01c3 h1:DCcoGOKTVaJIW2HWbBKY0SWBiu+t1+vmtYlATYYayCU=
 github.com/gravestench/mathlib v0.0.0-20210507201615-3fd244ab01c3/go.mod h1:vJAc9hlwEWypZBGynn0tycP77gmybyMaoSxJeK4tLZ0=
 github.com/gravestench/mathlib v0.0.0-20210507220915-5c4e3af775c8 h1:UVCs8y0NUu8ngHu4/QiE7wKbneQtbGi5hScJqOk1Q78=

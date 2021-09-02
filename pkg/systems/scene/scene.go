@@ -3,7 +3,9 @@ package scene
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	director "github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/common"
+	"github.com/gravestench/director/pkg/components"
 	"github.com/gravestench/mathlib"
 	"github.com/gravestench/scenegraph"
 	lua "github.com/yuin/gopher-lua"
@@ -12,15 +14,16 @@ import (
 
 type Scene struct {
 	akara.BaseSystem
-	Lua           *lua.LState
-	Components    common.BasicComponents
-	Graph         scenegraph.Node
-	key           string
-	Add           ObjectFactory
-	Renderables   *akara.Subscription
-	Cameras       []akara.EID
-	Width         int
-	Height        int
+	*director.Director
+	Lua         *lua.LState
+	Components  common.BasicComponents
+	Graph       scenegraph.Node
+	key         string
+	Add         ObjectFactory
+	Renderables *akara.Subscription
+	Cameras     []akara.EID
+	Width       int
+	Height      int
 }
 
 var tmpVect mathlib.Vector3
@@ -71,14 +74,18 @@ func (s *Scene) renderEntity(e akara.EID) {
 	rl.DrawTextureEx(*t, position, rotation, scale, rl.White)
 }
 
-func (s *Scene) Initialize(width, height int, world *akara.World, renderablesSubscription *akara.Subscription) {
+func (s *Scene) Initialize(d *director.Director, width, height int) {
 	s.Add.scene = s
 	s.Width = width
 	s.Height = height
-	s.World = world
-	s.Components.Init(s.World)
+	s.Director = d
+	s.Components.Init(s.Director.World)
 
-	s.Renderables = renderablesSubscription
+	filter := s.Director.World.NewComponentFilter()
+	filter.Require(&components.Transform{})
+	filter.RequireOne(&components.RenderTexture2D{}, &components.Texture2D{})
+
+	s.Renderables = s.Director.AddSubscription(filter.Build())
 }
 
 func (s *Scene) InitializeLua() {
@@ -158,7 +165,7 @@ func (s *Scene) renderToCamera(cameraID akara.EID) {
 	}
 
 	rl.BeginTextureMode(*rt.RenderTexture2D)
-	rl.ClearBackground(rl.Black)
+	rl.ClearBackground(rl.Blank)
 
 	for _, entity := range s.Renderables.GetEntities() {
 		if entity == cameraID {

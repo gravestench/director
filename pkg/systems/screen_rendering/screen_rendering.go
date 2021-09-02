@@ -50,11 +50,14 @@ func (sys *ScreenRenderingSystem) Update() {
 	rl.BeginDrawing()
 
 	rl.ClearBackground(rl.Black)
+	rl.BeginBlendMode(rl.BlendAlpha)
 
 	for _, e := range sys.sceneCameras.GetEntities() {
 		sys.renderCamera(e)
+		break
 	}
 
+	rl.EndBlendMode()
 	rl.EndDrawing()
 }
 
@@ -71,15 +74,20 @@ func (sys *ScreenRenderingSystem) renderCamera(e akara.EID) {
 		return
 	}
 
+	alpha := 1.0
+	opacity, found := sys.components.Opacity.Get(e)
+	if found {
+		alpha = opacity.Value
+	}
+
 	position := rl.Vector2{
 		X: float32(trs.Translation.X),
 		Y: float32(trs.Translation.Y),
 	}
 
 	rotation := float32(trs.Rotation.Y)
-
 	scale := float32(trs.Scale.X)
 
-	rl.DrawTextureEx(rt.Texture, position, rotation, scale, rl.White)
+	rl.DrawTextureEx(rt.Texture, position, rotation, scale, rl.NewColor(0xff, 0xff, 0xff, uint8(alpha * 255)))
 }
 
