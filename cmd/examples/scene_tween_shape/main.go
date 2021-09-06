@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/gravestench/director/pkg/easing"
 	"image/color"
 	"time"
 
 	"github.com/gravestench/akara"
 
 	director "github.com/gravestench/director/pkg"
+	"github.com/gravestench/director/pkg/easing"
 	"github.com/gravestench/director/pkg/systems/scene"
 	"github.com/gravestench/director/pkg/systems/tween"
 )

@@ -33,7 +33,7 @@ func (scene *MovingLabelsScene) Key() string {
 }
 
 func (scene *MovingLabelsScene) IsInitialized() bool {
-	if scene.World == nil {
+	if scene.Director.World == nil {
 		return false
 	}
 

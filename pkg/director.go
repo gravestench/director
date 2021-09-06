@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"github.com/gravestench/director/pkg/systems/input"
 	"github.com/gravestench/director/pkg/systems/tween"
 	"time"
 
@@ -19,6 +20,7 @@ type Director struct {
 	Events *eventemitter.EventEmitter
 	Scenes map[string]Scene
 	Tweens *tween.System
+	Input  *input.System
 	Window struct {
 		Width, Height int // pixels
 		Title         string
@@ -102,6 +104,9 @@ func (d *Director) initDirectorSystems() {
 
 	d.Tweens = &tween.System{}
 	d.AddSystem(d.Tweens)
+
+	d.Input = &input.System{}
+	d.AddSystem(d.Input)
 }
 
 const (

@@ -3,6 +3,7 @@ package common
 import (
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/components"
+	"github.com/gravestench/director/pkg/systems/input"
 )
 
 type BasicComponents struct {
@@ -12,6 +13,7 @@ type BasicComponents struct {
 	Fill            components.FillFactory
 	Stroke          components.StrokeFactory
 	Font            components.FontFactory
+	Interactive     input.InteractiveFactory
 	Opacity         components.OpacityFactory
 	Origin          components.OriginFactory
 	RenderTexture2D components.RenderTexture2DFactory
@@ -29,6 +31,7 @@ func (bc *BasicComponents) Init(w *akara.World) {
 	injectComponent(w, &components.Debug{}, &bc.Debug.ComponentFactory)
 	injectComponent(w, &components.Fill{}, &bc.Fill.ComponentFactory)
 	injectComponent(w, &components.Origin{}, &bc.Origin.ComponentFactory)
+	injectComponent(w, &input.Interactive{}, &bc.Interactive.ComponentFactory)
 	injectComponent(w, &components.Opacity{}, &bc.Opacity.ComponentFactory)
 	injectComponent(w, &components.Stroke{}, &bc.Stroke.ComponentFactory)
 	injectComponent(w, &components.Font{}, &bc.Font.ComponentFactory)
