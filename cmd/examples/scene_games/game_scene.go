@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-<<<<<<< HEAD
 	"strconv"
-=======
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
@@ -18,7 +15,6 @@ import (
 
 type GameScene struct {
 	scene.Scene
-<<<<<<< HEAD
 	toggleButton    akara.EID
 	toggleLabel     akara.EID
 	debugPanel      akara.EID
@@ -48,21 +44,10 @@ type ShopUpgrades struct {
 	clickerUpgrade4      akara.EID
 	clickerUpgrade4Label akara.EID
 	clickerUpgrade4Price int
-=======
-	toggleButton   akara.EID
-	toggleLabel    akara.EID
-	debugPanel     akara.EID
-	mainPanel      akara.EID
-	square         akara.EID
-	label          akara.EID
-	testLabel      akara.EID
-	isDebugEnabled bool
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 }
 
 // Game Loop
 func (scene *GameScene) Update() {
-<<<<<<< HEAD
 
 	//scene.updateLabel()
 	if scene.isDebugEnabled == false {
@@ -70,11 +55,6 @@ func (scene *GameScene) Update() {
 	} else {
 		scene.updateTestLabel()
 	}
-=======
-	scene.updateTestLabel()
-	//scene.updateLabel()
-
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 }
 
 func (scene *GameScene) makeMainPanel() {
@@ -85,15 +65,10 @@ func (scene *GameScene) makeMainPanel() {
 /****************************
 *	  Toggle debug code		*
 ****************************/
-<<<<<<< HEAD
-=======
-
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 func (scene *GameScene) makeToggleButton() {
 	purple := color.RGBA{R: 104, G: 70, B: 236, A: 255}
 	scene.toggleButton = scene.Add.Rectangle(scene.Window.Width-60, scene.Window.Height-15, 140, 30, purple, nil)
 }
-<<<<<<< HEAD
 func (scene *GameScene) toggleDebug() {
 	if scene.isDebugEnabled == false {
 		scene.isDebugEnabled = true
@@ -126,53 +101,11 @@ func (scene *GameScene) makeMouseDebugLabel() {
 	origin.X = 0
 	origin.Y = 0
 }
-=======
-
-func (scene *GameScene) toggleDebug() {
-	if scene.isDebugEnabled == false {
-		scene.isDebugEnabled = true
-		scene.clearDebugPanel()
-		scene.makeDebugPanel()
-		fmt.Println(scene.debugPanel)
-	} else {
-		scene.isDebugEnabled = false
-		scene.clearDebugPanel()
-		fmt.Println(scene.debugPanel)
-	}
-}
-
-func (scene *GameScene) clearDebugPanel() {
-	fmt.Print("Remove Debug Panel")
-	scene.Director.RemoveEntity(scene.debugPanel)
-}
-
-func (scene *GameScene) makeDebugPanel() {
-	scene.Director.RemoveEntity(scene.debugPanel)
-	background := color.RGBA{R: 21, G: 23, B: 24, A: 255}
-	scene.debugPanel = scene.Add.Rectangle(scene.Window.Width/4, scene.Window.Height/4, scene.Window.Width, scene.Window.Height, background, nil)
-}
-
-func (scene *GameScene) makeToggleLabel() {
-	tgBtnTrs, found := scene.Components.Transform.Get(scene.toggleButton)
-	if !found {
-		return
-	}
-	fmt.Print(tgBtnTrs)
-
-	white := color.RGBA{R: 255, G: 255, B: 255, A: 255}
-	scene.toggleLabel = scene.Add.Label("Toggle Debug", scene.Window.Width-30, scene.Window.Height-15, 12, "", white)
-}
-
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 func (scene *GameScene) bindDebugInput() {
 	i := scene.Components.Interactive.Add(scene.toggleButton)
 
 	i.Callback = func() (preventPropogation bool) {
 		scene.toggleDebug()
-<<<<<<< HEAD
-=======
-		fmt.Print("Test")
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 		return false
 	}
 
@@ -202,18 +135,8 @@ func (scene *GameScene) bindDebugInput() {
 
 	fmt.Print(i)
 }
-<<<<<<< HEAD
 func (scene *GameScene) updateTestLabel() {
 	text, found := scene.Components.Text.Get(scene.mouseDebugLabel)
-=======
-
-/****************************
-*	End toggle debug code	*
-****************************/
-
-func (scene *GameScene) updateTestLabel() {
-	text, found := scene.Components.Text.Get(scene.testLabel)
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 	if !found {
 		return
 	}
@@ -221,17 +144,12 @@ func (scene *GameScene) updateTestLabel() {
 	mp := rl.GetMousePosition()
 
 	const (
-<<<<<<< HEAD
 		fmtMouse = "Mouse: (%v, %v)"
-=======
-		fmtMouse = "Mouse (%v, %v)"
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 	)
 
 	text.String = fmt.Sprintf(fmtMouse, mp.X, mp.Y)
 }
 
-<<<<<<< HEAD
 /****************************
 *	End toggle debug code	*
 ****************************/
@@ -426,15 +344,10 @@ func (scene *GameScene) bindShopClickingInput() {
 	}
 
 	trs, found = scene.Components.Transform.Get(scene.upgrades.clickerUpgrade4)
-=======
-func (scene *GameScene) updateLabel() {
-	text, found := scene.Components.Text.Get(scene.label)
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 	if !found {
 		return
 	}
 
-<<<<<<< HEAD
 	i.CursorPosition = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
@@ -466,25 +379,6 @@ func (scene *GameScene) Init(world *akara.World) {
 	scene.bindDebugInput()
 	scene.bindClickingInput()
 	scene.bindShopClickingInput()
-=======
-	mp := rl.GetMousePosition()
-
-	const (
-		fmtMouse = "Mouse (%v, %v)"
-	)
-
-	text.String = fmt.Sprintf(fmtMouse, mp.X, mp.Y)
-}
-
-func (scene *GameScene) Init(world *akara.World) {
-	scene.isDebugEnabled = false
-	scene.makeMainPanel()
-	scene.makeToggleButton()
-	scene.makeToggleLabel()
-	scene.makeLabel()
-
-	scene.bindDebugInput()
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 }
 
 func (scene *GameScene) makeSquare() {
@@ -492,17 +386,6 @@ func (scene *GameScene) makeSquare() {
 	scene.square = scene.Add.Rectangle(100, 100, 30, 30, blue, nil)
 }
 
-<<<<<<< HEAD
 func (scene *GameScene) IsInitialized() bool {
-=======
-func (scene *GameScene) makeLabel() {
-	red := color.RGBA{R: 255, A: 255}
-	scene.label = scene.Add.Label("", 400, 400, 24, "", red)
-	scene.testLabel = scene.Add.Label("", 200, 200, 24, "", red)
-}
-
-func (scene *GameScene) IsInitialized() bool {
-
->>>>>>> af206846978268e8fbd85243a19b2ef9b5cbb2ee
 	return scene.toggleButton != 0
 }
