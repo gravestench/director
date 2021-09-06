@@ -9,6 +9,8 @@ import (
 	"github.com/gravestench/mathlib"
 	"github.com/gravestench/scenegraph"
 	lua "github.com/yuin/gopher-lua"
+	"reflect"
+	"strings"
 	"time"
 )
 
@@ -99,6 +101,104 @@ func (s *Scene) InitializeLua() {
 		luaTypeExport := luaTypeExporter(s)
 		common.RegisterLuaType(s.Lua, luaTypeExport)
 	}
+
+	s.initComponentsTable()
+}
+
+func (s *Scene) initComponentsTable() {
+	componentsTable := s.Lua.NewTable()
+	s.Lua.SetGlobal("components", componentsTable)
+
+	s.addTransformComponent(componentsTable)
+}
+
+func (s *Scene) addTransformComponent(mt *lua.LTable) {
+	name := strings.ToLower(reflect.TypeOf(&components.Transform{}).Elem().Name())
+	trsTable := s.Lua.NewTypeMetatable(name)
+
+	checkEid := func() *akara.EID {
+		ud := s.Lua.CheckUserData(1)
+		if v, ok := ud.Value.(*akara.EID); ok {
+			return v
+		}
+		s.Lua.ArgError(1, "EID expected")
+		return nil
+	}
+
+	makeVec3Table := func(vec3 *mathlib.Vector3) *lua.LFunction {
+		setGetXYZ := func(L *lua.LState) int {
+			if L.GetTop() == 3 {
+				x := L.CheckNumber(1)
+				y := L.CheckNumber(2)
+				z := L.CheckNumber(3)
+
+				vec3.Set(float64(x), float64(y), float64(z))
+
+				return 0
+			}
+
+			x, y, z := vec3.XYZ()
+
+			s.Lua.Push(lua.LNumber(x))
+			s.Lua.Push(lua.LNumber(y))
+			s.Lua.Push(lua.LNumber(z))
+
+			return 3
+		}
+
+		return s.Lua.NewFunction(setGetXYZ)
+	}
+
+	trsAdd := func(L *lua.LState) int {
+		if L.GetTop() != 1 {
+			return 0
+		}
+
+		trs := s.Components.Transform.Add(*checkEid())
+
+		table := L.NewTable()
+		L.SetField(table, "translation", makeVec3Table(trs.Translation))
+		L.SetField(table, "rotation", makeVec3Table(trs.Rotation))
+		L.SetField(table, "scale", makeVec3Table(trs.Scale))
+
+		ud := L.NewUserData()
+		ud.Value = table
+		L.SetMetatable(ud, L.GetTypeMetatable(name))
+		L.Push(ud)
+		return 1
+	}
+
+	trsGet := func(L *lua.LState) int {
+		if L.GetTop() != 1 {
+			return 0
+		}
+
+		id := L.CheckNumber(1)
+		trs, found := s.Components.Transform.Get(akara.EID(id))
+
+		table := L.NewTable()
+		L.SetField(table, "translation", makeVec3Table(trs.Translation))
+		L.SetField(table, "rotation", makeVec3Table(trs.Rotation))
+		L.SetField(table, "scale", makeVec3Table(trs.Scale))
+
+		truthy := lua.LFalse
+
+		if found {
+			truthy = lua.LTrue
+		}
+
+		L.SetMetatable(table, L.GetTypeMetatable(name))
+
+		L.Push(table)
+		L.Push(truthy)
+
+		return 2
+	}
+
+	s.Lua.SetField(trsTable, "add", s.Lua.NewFunction(trsAdd))
+	s.Lua.SetField(trsTable, "get", s.Lua.NewFunction(trsGet))
+
+	s.Lua.SetField(mt, name, trsTable)
 }
 
 func (s *Scene) UninitializeLua() {
@@ -171,7 +271,7 @@ func (s *Scene) renderToCamera(cameraID akara.EID) {
 
 	rl.BeginTextureMode(*rt.RenderTexture2D)
 	r, g, b, a := cam.Background.RGBA()
-	rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a),))
+	rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
 
 	for _, entity := range s.Renderables.GetEntities() {
 		if entity == cameraID {
