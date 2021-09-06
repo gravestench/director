@@ -164,8 +164,14 @@ func (s *Scene) renderToCamera(cameraID akara.EID) {
 		return
 	}
 
+	cam, found := s.Components.Camera2D.Get(cameraID)
+	if !found {
+		return
+	}
+
 	rl.BeginTextureMode(*rt.RenderTexture2D)
-	rl.ClearBackground(rl.Blank)
+	r, g, b, a := cam.Background.RGBA()
+	rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a),))
 
 	for _, entity := range s.Renderables.GetEntities() {
 		if entity == cameraID {

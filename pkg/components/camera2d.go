@@ -3,6 +3,7 @@ package components
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	"image/color"
 )
 
 var _ akara.Component = &Camera2D{}
@@ -10,15 +11,20 @@ var _ akara.Component = &Camera2D{}
 // Camera2D is a component that contains normalized alpha transparency (0.0 ... 1.0)
 type Camera2D struct {
 	rl.Camera2D
+	Background color.Color
 }
 
 // New creates a new alpha component instance. The default alpha is opaque with value 1.0
 func (*Camera2D) New() akara.Component {
-	return &Camera2D{}
+	return &Camera2D{
+		Camera2D: rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 1),
+		Background: color.Transparent,
+	}
 }
 
-// Camera2DFactory is a wrapper for the generic component factory that returns Camera2D component instances.
-// This can be embedded inside of a system to give them the methods for adding, retrieving, and removing a Camera2D.
+// Camera2DFactory is a wrapper for the generic component factory that returns
+// Camera2D component instances. This can be embedded inside of a system to give
+// them the methods for adding, retrieving, and removing a Camera2D.
 type Camera2DFactory struct {
 	*akara.ComponentFactory
 }
