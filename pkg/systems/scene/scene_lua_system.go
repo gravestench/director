@@ -78,6 +78,7 @@ func (scene *LuaScene) callLuaUpdateFn(dt time.Duration) {
 		NRet:    0,
 		Protect: true,
 	}, lua.LNumber(dt))
+
 	if err != nil {
 		fmt.Println(err)
 	}
