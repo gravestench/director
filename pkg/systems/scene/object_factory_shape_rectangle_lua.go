@@ -12,7 +12,7 @@ import (
 const luaRectangleTypeName = "rectangle"
 
 var rectangleMethods = map[string]lua.LGFunction{
-	"value": rectangleGet,
+	"id": rectangleGet,
 }
 
 var luaRectangleTypeExporter = func(scene *Scene) common.LuaTypeExport {

@@ -1,5 +1,10 @@
 math.randomseed(os.time())
 
+function coinflip()
+    v = math.random() * 2
+    return v > 1
+end
+
 -- random color component
 function rcc()
     v = math.random()
@@ -15,9 +20,13 @@ function rrect()
 
     fill = "#" .. rcc() .. rcc() .. rcc()
     stroke = "#" .. rcc() .. rcc() .. rcc()
-    rect_eid = rectangle.new(x, y, w, h, fill, stroke)
+    if coinflip() then
+        e = rectangle.new(x, y, w, h, fill, stroke)
+    else
+        e = circle.new(x, y, w/2, fill, stroke)
+    end
 
-    print("created rectangle with EID: " .. rect_eid:value())
+    print("created rectangle with EID: " .. e:id())
 end
 
 for _ = 100,0,-1
