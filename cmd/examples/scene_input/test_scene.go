@@ -45,8 +45,8 @@ func (scene *TestScene) Init(world *akara.World) {
 }
 
 func (scene *TestScene) makeSquare() {
-	red := color.RGBA{R:255, A:255}
-	scene.square = scene.Add.Rectangle(100, 100, 30, 30, red, nil)
+	blue := color.RGBA{B: 255, A:255}
+	scene.square = scene.Add.Rectangle(100, 100, 30, 30, blue, nil)
 }
 
 func (scene *TestScene) resetSquare() {
