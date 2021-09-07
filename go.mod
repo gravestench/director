@@ -3,6 +3,7 @@ module github.com/gravestench/director
 go 1.16
 
 require (
+	github.com/gempir/go-twitch-irc/v2 v2.6.0
 	github.com/gen2brain/raylib-go/raylib v0.0.0-20210905161606-6acb55e3e6d3
 	github.com/google/uuid v1.3.0
 	github.com/gravestench/akara v0.0.0-20210906071033-2e16c0de953c
