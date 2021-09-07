@@ -96,6 +96,6 @@ function randShape()
     else
         e = circle.new(x, y, w/2, fill, stroke)
     end
-    
+
     return e
 end

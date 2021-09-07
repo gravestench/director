@@ -23,11 +23,14 @@ type TestScene struct {
 		oauthKey *string
 		channel *string
 	}
+	userColors map[string]color.Color
 }
 
 func (s *TestScene) Init(_ *akara.World) {
 	s.parseFlags()
 	s.setupClient()
+
+	s.userColors = make(map[string]color.Color)
 
 	go func() {
 		s.connect() // this is blocking, so we put in a goroutine
@@ -59,22 +62,33 @@ func (s *TestScene) setupClient() {
 	s.Client = twitch.NewClient(*s.twitch.userName, *s.twitch.oauthKey)
 
 	s.OnPrivateMessage(func(msg twitch.PrivateMessage) {
-		s.newMessage(fmt.Sprintf("%v", msg.Message))
+		s.newMessage(msg.User.Name, fmt.Sprintf("%v", msg.Message))
 	})
 
 	s.OnUserJoinMessage(func(msg twitch.UserJoinMessage) {
-		s.newMessage(fmt.Sprintf("%v has joined the chat!", msg.User))
+		s.newMessage(msg.User, fmt.Sprintf("%v has joined the chat!", msg.User))
 	})
 
 	s.Client.Join(*s.twitch.channel)
 }
 
-func (s *TestScene) newMessage(msg string) {
-	white := color.RGBA{R: 255, G: 255, B: 255, A: 255,}
+func (s *TestScene) getUserColor(name string) color.Color {
+	c, found := s.userColors[name]
+	if !found {
+		c = randColor()
+		s.userColors[name] = c
+	}
+
+	return c
+}
+
+func (s *TestScene) newMessage(name, msg string) {
+	c := s.getUserColor(name)
+
 	x, y := s.Window.Width/2, s.Window.Height/2
 	fontSize := s.Window.Height / 20
 
-	label := s.Add.Label(msg, x, y, fontSize, "", white)
+	label := s.Add.Label(msg, x, y, fontSize, "", c)
 
 	trs, found := s.Components.Transform.Get(label)
 	if !found {
@@ -175,4 +189,13 @@ func (s *TestScene) randomStartEnd() (x1, y1, x2, y2 int) {
 	y2 = int(math.Cos(float64(dEnd) * mathlib.DegreesToRadians) * distance)
 
 	return x1, y1, x2, y2
+}
+
+func randColor() color.Color {
+	return &color.RGBA{
+		R: math.MaxUint8 - uint8(rand.Intn(math.MaxUint8/6)),
+		G: math.MaxUint8 - uint8(rand.Intn(math.MaxUint8/6)),
+		B: math.MaxUint8 - uint8(rand.Intn(math.MaxUint8/6)),
+		A: math.MaxUint8,
+	}
 }
