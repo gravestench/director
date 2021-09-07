@@ -197,3 +197,24 @@ func (s *Scene) renderToCamera(cameraID akara.EID) {
 func (s *Scene) Key() string {
 	return s.key
 }
+
+func (s *Scene) RemoveEntity(e akara.EID) {
+	s.Components.Camera2D.Remove(e)
+	s.Components.Color.Remove(e)
+	s.Components.Debug.Remove(e)
+	s.Components.Fill.Remove(e)
+	s.Components.Stroke.Remove(e)
+	s.Components.Font.Remove(e)
+	s.Components.Interactive.Remove(e)
+	s.Components.Opacity.Remove(e)
+	s.Components.Origin.Remove(e)
+	s.Components.RenderTexture2D.Remove(e)
+	s.Components.Size.Remove(e)
+	s.Components.SceneGraphNode.Remove(e)
+	s.Components.Text.Remove(e)
+	s.Components.Texture2D.Remove(e)
+	s.Components.Transform.Remove(e)
+	s.Components.UUID.Remove(e)
+
+	s.Director.RemoveEntity(e)
+}
