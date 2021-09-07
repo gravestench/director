@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/gravestench/akara"
@@ -17,19 +18,45 @@ import (
 type TestScene struct {
 	scene.Scene
 	*twitch.Client
+	twitch struct {
+		userName *string
+		oauthKey *string
+		channel *string
+	}
 }
 
 func (s *TestScene) Init(_ *akara.World) {
+	s.parseFlags()
 	s.setupClient()
 
 	go func() {
-		s.connect() // this is blocking, so we put in a goroutinw
+		s.connect() // this is blocking, so we put in a goroutine
 	}()
 }
 
+func (s *TestScene) parseFlags() {
+	s.twitch.userName = flag.String("u", "", "username")
+	s.twitch.oauthKey = flag.String("o", "", "oath key, like \"oauth:kjahsdkjahsdkjahsd\"")
+	s.twitch.channel = flag.String("c", "", "channel")
+
+	flag.Parse()
+}
+
 func (s *TestScene) setupClient() {
+	if *s.twitch.oauthKey == "" {
+		panic("need an oauth key")
+	}
+
+	if *s.twitch.userName == "" {
+		panic("need a username")
+	}
+
+	if *s.twitch.channel == "" {
+		panic("need a channel name")
+	}
+
 	// or client := twitch.NewAnonymousClient() for an anonymous user (no write capabilities)
-	s.Client = twitch.NewClient(twitchUsername, oathKey)
+	s.Client = twitch.NewClient(*s.twitch.userName, *s.twitch.oauthKey)
 
 	s.OnPrivateMessage(func(msg twitch.PrivateMessage) {
 		s.newMessage(fmt.Sprintf("%v", msg.Message))
@@ -39,7 +66,7 @@ func (s *TestScene) setupClient() {
 		s.newMessage(fmt.Sprintf("%v has joined the chat!", msg.User))
 	})
 
-	s.Client.Join(twitchChannel)
+	s.Client.Join(*s.twitch.channel)
 }
 
 func (s *TestScene) newMessage(msg string) {
