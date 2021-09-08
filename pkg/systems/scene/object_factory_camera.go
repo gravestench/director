@@ -16,7 +16,7 @@ type cameraFactory struct {
 func (*cameraFactory) New(s *Scene, x, y, w, h int) common.Entity {
 	e := s.Add.generic.visibleEntity(s)
 
-	cam := s.Components.Camera2D.Add(e)
+	cam := s.Components.Viewport.Add(e)
 	cam.Camera2D = rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 1)
 
 	trs, _ := s.Components.Transform.Get(e) // this is a component all visible entities have
@@ -41,7 +41,7 @@ func (factory *cameraFactory) update(s *Scene, _ time.Duration) {
 
 func (factory *cameraFactory) applyTransformToCamera(s *Scene) {
 	for e := range factory.Entities {
-		cam, found := s.Components.Camera2D.Get(e)
+		cam, found := s.Components.Viewport.Get(e)
 		if !found {
 			continue
 		}

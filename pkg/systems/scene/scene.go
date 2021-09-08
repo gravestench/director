@@ -84,7 +84,7 @@ func (s *Scene) Initialize(d *director.Director, width, height int) {
 	filter := s.Director.World.NewComponentFilter()
 	filter.Require(&components.Transform{})
 	filter.RequireOne(&components.RenderTexture2D{}, &components.Texture2D{})
-	filter.Forbid(&components.Camera2D{})
+	filter.Forbid(&components.Viewport{})
 
 	s.Renderables = s.Director.AddSubscription(filter.Build())
 }
@@ -174,7 +174,7 @@ func (s *Scene) renderEntitiesWithRespectToCamera(camera common.Entity) {
 		return
 	}
 
-	cam, found := s.Components.Camera2D.Get(camera)
+	cam, found := s.Components.Viewport.Get(camera)
 	if !found {
 		return
 	}
@@ -197,7 +197,7 @@ func (s *Scene) Key() string {
 }
 
 func (s *Scene) RemoveEntity(e common.Entity) {
-	s.Components.Camera2D.Remove(e)
+	s.Components.Viewport.Remove(e)
 	s.Components.Color.Remove(e)
 	s.Components.Debug.Remove(e)
 	s.Components.Fill.Remove(e)

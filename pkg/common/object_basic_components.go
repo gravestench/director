@@ -7,7 +7,7 @@ import (
 )
 
 type BasicComponents struct {
-	Camera2D         components.Camera2DFactory
+	Viewport         components.ViewportFactory
 	Color            components.ColorFactory
 	Debug            components.DebugFactory
 	FileLoadRequest  components.FileLoadRequestFactory
@@ -30,7 +30,7 @@ type BasicComponents struct {
 }
 
 func (bc *BasicComponents) Init(w *akara.World) {
-	injectComponent(w, &components.Camera2D{}, &bc.Camera2D.ComponentFactory)
+	injectComponent(w, &components.Viewport{}, &bc.Viewport.ComponentFactory)
 	injectComponent(w, &components.Color{}, &bc.Color.ComponentFactory)
 	injectComponent(w, &components.Debug{}, &bc.Debug.ComponentFactory)
 	injectComponent(w, &components.FileLoadRequest{}, &bc.FileLoadRequest.ComponentFactory)
@@ -117,7 +117,7 @@ func (bc *BasicComponents) IsInit() bool {
 		return false
 	}
 
-	if bc.Camera2D.ComponentFactory == nil {
+	if bc.Viewport.ComponentFactory == nil {
 		return false
 	}
 

@@ -38,7 +38,7 @@ func (sys *ScreenRenderingSystem) initCameraSubscription() {
 	filter := sys.World.NewComponentFilter()
 
 	filter.Require(
-		&components.Camera2D{},
+		&components.Viewport{},
 		&components.Transform{},
 		&components.RenderTexture2D{},
 		)
