@@ -6,7 +6,6 @@ import (
 	"github.com/gravestench/director/pkg/common/cache"
 	"github.com/gravestench/director/pkg/components"
 	"image"
-	"image/color"
 	"image/jpeg"
 	"image/png"
 	"io"
@@ -125,23 +124,5 @@ func (sys *System) createTexture(e akara.EID) {
 	_ = sys.Cache.Insert(req.Path, texture, 1)
 
 	t.Texture2D = texture
-}
-
-type imageBugHack struct {
-	img image.Image
-}
-
-func (h imageBugHack) ColorModel() color.Model {
-	return h.img.ColorModel()
-}
-
-func (h imageBugHack) Bounds() image.Rectangle {
-	return h.img.Bounds()
-}
-
-func (h imageBugHack) At(x, y int) color.Color {
-	b := h.img.Bounds()
-
-	return h.img.At(x, b.Dy()-y)
 }
 
