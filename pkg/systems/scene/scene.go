@@ -9,6 +9,7 @@ import (
 	"github.com/gravestench/mathlib"
 	"github.com/gravestench/scenegraph"
 	lua "github.com/yuin/gopher-lua"
+	"math"
 	"time"
 )
 
@@ -21,7 +22,7 @@ type Scene struct {
 	key         string
 	Add         ObjectFactory
 	Renderables *akara.Subscription
-	Cameras     []common.Entity
+	Viewports   []common.Entity
 	Width       int
 	Height      int
 }
@@ -38,7 +39,7 @@ func (s *Scene) renderEntity(e common.Entity) {
 	var t *rl.Texture2D
 
 	if !rtFound {
-		t = &texture.Texture2D
+		t = texture.Texture2D
 	} else {
 		t = &rt.Texture
 	}
@@ -50,6 +51,23 @@ func (s *Scene) renderEntity(e common.Entity) {
 
 	origin, found := s.Components.Origin.Get(e)
 	if !found {
+		return
+	}
+
+	tint := rl.White
+
+	opacity, found := s.Components.Opacity.Get(e)
+	if found {
+		if opacity.Value > 1 {
+			opacity.Value = 1
+		} else if opacity.Value < 0 {
+			opacity.Value = 0
+		}
+
+		tint.A = uint8(float64(math.MaxUint8) * opacity.Value)
+	}
+
+	if tint.A == 0 {
 		return
 	}
 
@@ -71,7 +89,7 @@ func (s *Scene) renderEntity(e common.Entity) {
 
 	scale := float32(trs.Scale.X)
 
-	rl.DrawTextureEx(*t, position, rotation, scale, rl.White)
+	rl.DrawTextureEx(*t, position, rotation, scale, tint)
 }
 
 func (s *Scene) Initialize(d *director.Director, width, height int) {
@@ -154,18 +172,18 @@ func (s *Scene) GenericUpdate(dt time.Duration) {
 }
 
 func (s *Scene) Render() {
-	if len(s.Cameras) < 1 {
-		s.initCamera()
+	if len(s.Viewports) < 1 {
+		s.initViewport()
 	}
 
-	for _, cameraEntity := range s.Cameras {
+	for _, cameraEntity := range s.Viewports {
 		s.renderEntitiesWithRespectToCamera(cameraEntity)
 	}
 }
 
-func (s *Scene) initCamera() {
-	s.Cameras = make([]common.Entity, 0)
-	s.Cameras = append(s.Cameras, s.Add.Camera(0, 0, s.Width, s.Height))
+func (s *Scene) initViewport() {
+	s.Viewports = make([]common.Entity, 0)
+	s.Viewports = append(s.Viewports, s.Add.Camera(0, 0, s.Width, s.Height))
 }
 
 func (s *Scene) renderEntitiesWithRespectToCamera(camera common.Entity) {
@@ -179,8 +197,9 @@ func (s *Scene) renderEntitiesWithRespectToCamera(camera common.Entity) {
 		return
 	}
 
-	rl.BeginTextureMode(*rt.RenderTexture2D)
 	r, g, b, a := cam.Background.RGBA()
+
+	rl.BeginTextureMode(*rt.RenderTexture2D)
 	rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
 	rl.BeginMode2D(cam.Camera2D)
 
@@ -197,22 +216,32 @@ func (s *Scene) Key() string {
 }
 
 func (s *Scene) RemoveEntity(e common.Entity) {
-	s.Components.Viewport.Remove(e)
-	s.Components.Color.Remove(e)
-	s.Components.Debug.Remove(e)
-	s.Components.Fill.Remove(e)
-	s.Components.Stroke.Remove(e)
-	s.Components.Font.Remove(e)
-	s.Components.Interactive.Remove(e)
-	s.Components.Opacity.Remove(e)
-	s.Components.Origin.Remove(e)
-	s.Components.RenderTexture2D.Remove(e)
-	s.Components.Size.Remove(e)
-	s.Components.SceneGraphNode.Remove(e)
-	s.Components.Text.Remove(e)
-	s.Components.Texture2D.Remove(e)
-	s.Components.Transform.Remove(e)
-	s.Components.UUID.Remove(e)
+	factories := []*akara.ComponentFactory{
+		s.Components.Viewport.ComponentFactory,
+		s.Components.Color.ComponentFactory,
+		s.Components.Debug.ComponentFactory,
+		s.Components.FileLoadRequest.ComponentFactory,
+		s.Components.FileLoadResponse.ComponentFactory,
+		s.Components.FileType.ComponentFactory,
+		s.Components.Fill.ComponentFactory,
+		s.Components.Animation.ComponentFactory,
+		s.Components.Origin.ComponentFactory,
+		s.Components.Opacity.ComponentFactory,
+		s.Components.Stroke.ComponentFactory,
+		s.Components.Font.ComponentFactory,
+		s.Components.SceneGraphNode.ComponentFactory,
+		s.Components.Text.ComponentFactory,
+		s.Components.RenderTexture2D.ComponentFactory,
+		s.Components.Size.ComponentFactory,
+		s.Components.Texture2D.ComponentFactory,
+		s.Components.Transform.ComponentFactory,
+		s.Components.UUID.ComponentFactory,
+	}
+
+	// nuke all components the entity may have
+	for idx := range factories {
+		factories[idx].Remove(e)
+	}
 
 	s.Director.RemoveEntity(e)
 }

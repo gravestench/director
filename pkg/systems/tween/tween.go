@@ -47,21 +47,21 @@ func (t *Tween) Complete() float64 {
 }
 
 func (t *Tween) Update(dt time.Duration) *Tween {
-	elapsedBefore := t.elapsed
-
 	if t.mode == paused || t.mode == finished {
 		return t
 	}
 
 	t.elapsed += dt
 
-	t.elapsed = t.elapsed % t.duration
-
-	if t.elapsed < elapsedBefore && t.repeatCount > 0 {
-		t.repeatCount--
-	} else if t.elapsed < elapsedBefore && t.repeatCount == 0 {
-		t.onComplete()
-		t.Stop()
+	if t.elapsed > t.duration {
+		t.elapsed %= t.duration
+		if t.repeatCount > 0 {
+			t.repeatCount--
+		} else {
+			t.onComplete()
+			t.elapsed = t.delay + t.duration
+			t.Stop()
+		}
 	}
 
 	if t.elapsed < t.delay {

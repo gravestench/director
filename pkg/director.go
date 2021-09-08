@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"github.com/gravestench/director/pkg/systems/animation"
 	"github.com/gravestench/director/pkg/systems/texture_manager"
 	"time"
 
@@ -117,6 +118,8 @@ func (d *Director) initDirectorSystems() {
 
 	d.Texture = &texture_manager.System{}
 	d.AddSystem(d.Texture)
+
+	d.AddSystem(&animation.System{})
 }
 
 const (

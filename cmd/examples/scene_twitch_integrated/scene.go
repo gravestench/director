@@ -1,11 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"image/color"
+	"io"
+	"log"
 	"math"
 	"math/rand"
+	"net/http"
 	"time"
 
 	"github.com/gravestench/akara"
@@ -24,26 +28,32 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+const (
+	fmtBTTVUserEmoteEndpoint = "https://api.betterttv.net/3/cached/users/twitch/%s"
+	fmtBTTVEmoteURL = "https://cdn.betterttv.net/emote/%s/3x"
+)
+
 type testScene struct {
 	scene.Scene
 	ircClient   *twitch.Client
 	helixClient *helix.Client
 	twitch      struct {
-		userName *string
-		oauthKey *string
-		channel *string
-		clientid *string
-		clientSecret *string
+		userName        *string
+		oauthKey        *string
+		channel         *string
+		clientid        *string
+		clientSecret    *string
 		userAccessToken *string
+		userid          string
 	}
 	userColors map[string]color.Color
-	emoteMap map[string]string
+	emoteMap   map[string]string
 }
 
 func (scene *testScene) Init(_ *akara.World) {
-	scene.parseFlags() // the command line flags have all the twitch api stuff
+	scene.parseFlags()   // the command line flags have all the twitch api stuff
 	scene.setupClients() // we set up the two titch client instances
-	scene.initEmotes() // set up a mapping of emote strings to URLs
+	scene.initEmotes()   // set up a mapping of emote strings to URLs
 
 	// users in chat will e
 	scene.userColors = make(map[string]color.Color)
@@ -58,11 +68,36 @@ func (scene *testScene) initEmotes() {
 
 	allEmotes, err := scene.helixClient.GetGlobalEmotes()
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
 	}
 
 	for _, emote := range allEmotes.Data.Emotes {
 		scene.emoteMap[emote.Name] = emote.Images.Url4x
+	}
+
+	scene.initBTTVEmotes()
+}
+
+func (scene *testScene) initBTTVEmotes() {
+	res, err := http.Get(fmt.Sprintf(fmtBTTVUserEmoteEndpoint, scene.twitch.userid))
+	if err != nil {
+		return
+	}
+
+	data, err := io.ReadAll(res.Body)
+	if err != nil {
+		return
+	}
+
+	userEmoteInfo := &BTTVUserEmotesDescriptor{}
+	err = json.Unmarshal(data, userEmoteInfo)
+	if err != nil {
+		return
+	}
+
+	for _, emote := range userEmoteInfo.SharedEmotes {
+		emoteURL := fmt.Sprintf(fmtBTTVEmoteURL, emote.ID)
+		scene.emoteMap[emote.Code] = emoteURL
 	}
 }
 
@@ -79,45 +114,63 @@ func (scene *testScene) parseFlags() {
 
 func (scene *testScene) setupClients() {
 	if *scene.twitch.oauthKey == "" {
-		panic("need an oauth key")
+		log.Panicln("need an oauth key")
 	}
 
 	if *scene.twitch.userName == "" {
-		panic("need a username")
+		log.Panicln("need a username")
 	}
 
 	if *scene.twitch.channel == "" {
-		panic("need a channel name")
+		log.Panicln("need a channel name")
 	}
 
 	if *scene.twitch.clientid == "" {
-		panic("need an client id")
+		log.Panicln("need an client id, see https://dev.twitch.tv/console")
 	}
 
 	if *scene.twitch.clientSecret == "" {
-		panic("need a user access token see https://github.com/twitchdev/authentication-go-sample")
+		log.Panicln("need a client secret, see https://dev.twitch.tv/console")
 	}
 
 	if *scene.twitch.userAccessToken == "" {
-		panic("need an client id")
+		log.Panicln("need a user access token see https://github.com/twitchdev/authentication-go-sample")
 	}
-
 
 	client, _ := helix.NewClient(&helix.Options{
 		ClientID:        *scene.twitch.clientid,
-		ClientSecret: *scene.twitch.clientSecret,
+		ClientSecret:    *scene.twitch.clientSecret,
 		UserAccessToken: *scene.twitch.userAccessToken,
 		RedirectURI:     "http://localhost",
 	})
 
-	if isValid, _, err := client.ValidateToken(*scene.twitch.userAccessToken); !isValid {
-		panic(err)
+	isValid, _, err := client.ValidateToken(*scene.twitch.userAccessToken)
+	if !isValid {
+		log.Panicln("could not validate using user access token")
+	}
+
+	if err != nil {
+		log.Panicln(err)
 	}
 
 	scene.helixClient = client
 
+	usersResponse, err := scene.helixClient.GetUsers(&helix.UsersParams{
+		Logins: []string{*scene.twitch.userName},
+	})
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	if len(usersResponse.Data.Users) < 1 {
+		log.Panicln("expecting to yield a user from twitch client")
+	}
+
+	scene.twitch.userid = usersResponse.Data.Users[0].ID
+
 	// or client := twitch.NewAnonymousClient() for an anonymous user (no write capabilities)
-	scene.ircClient = twitch.NewClient(*scene.twitch.userName, "oauth:" + *scene.twitch.oauthKey)
+	scene.ircClient = twitch.NewClient(*scene.twitch.userName, "oauth:"+*scene.twitch.oauthKey)
 
 	scene.ircClient.OnPrivateMessage(func(msg twitch.PrivateMessage) {
 		scene.newMessage(msg.User.Name, msg.Message)
@@ -141,6 +194,8 @@ func (scene *testScene) getUserColor(name string) color.Color {
 }
 
 func (scene *testScene) newMessage(name, msg string) {
+	fmt.Printf("%s: %s\n", name, msg)
+
 	c := scene.getUserColor(name)
 
 	x, y := scene.Window.Width/2, scene.Window.Height/2
@@ -174,7 +229,7 @@ func (scene *testScene) newMessage(name, msg string) {
 	startX, startY, endX, endY := scene.randomStartEnd()
 	cx, cy := scene.Window.Width/2, scene.Window.Height/2
 
-	rcx, rcy := cx/2 + rand.Intn(cx), cy/2 + rand.Intn(cy)
+	rcx, rcy := cx/2+rand.Intn(cx), cy/2+rand.Intn(cy)
 
 	tb := tween.NewBuilder()
 
@@ -187,8 +242,9 @@ func (scene *testScene) newMessage(name, msg string) {
 
 	tb.OnUpdate(func(progress float64) {
 		opacity.Value = progress
-		x := float64(startX) + (progress * float64(rcx - startX))
-		y := float64(startY) + (progress * float64(rcy - startY))
+
+		x := float64(startX) + (progress * float64(rcx-startX))
+		y := float64(startY) + (progress * float64(rcy-startY))
 
 		trs.Translation.Set(x, y, trs.Translation.Z)
 	})
@@ -200,13 +256,13 @@ func (scene *testScene) newMessage(name, msg string) {
 		tb2.Ease(easing.ElasticOut, []float64{0.5, 0.85, 0.5})
 		tb2.OnStart(func() {
 			trs.Translation.Set(float64(startX), float64(startY), trs.Translation.Z)
-			opacity.Value = 0
+			opacity.Value = 1
 		})
 
 		tb2.OnUpdate(func(progress float64) {
 			opacity.Value = 1 - progress
-			x := float64(rcx) + (progress * float64(endX - rcx))
-			y := float64(rcy) + (progress * float64(endY - rcy))
+			x := float64(rcx) + (progress * float64(endX-rcx))
+			y := float64(rcy) + (progress * float64(endY-rcy))
 
 			trs.Translation.Set(x, y, trs.Translation.Z)
 		})
@@ -222,7 +278,7 @@ func (scene *testScene) newMessage(name, msg string) {
 }
 
 func (scene *testScene) resizeCameraWithWindow() {
-	for _, e := range scene.Cameras {
+	for _, e := range scene.Viewports {
 		rt, found := scene.Components.RenderTexture2D.Get(e)
 		if !found {
 			continue
@@ -238,7 +294,7 @@ func (scene *testScene) resizeCameraWithWindow() {
 func (scene *testScene) connect() {
 	err := scene.ircClient.Connect()
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
 	}
 }
 
@@ -260,11 +316,11 @@ func (scene *testScene) randomStartEnd() (x1, y1, x2, y2 int) {
 
 	distance := 1.5 * float64(scene.Window.Width)
 
-	x1 = int(math.Sin(float64(dStart) * mathlib.DegreesToRadians) * distance)
-	y1 = int(math.Cos(float64(dStart) * mathlib.DegreesToRadians) * distance)
+	x1 = int(math.Sin(float64(dStart)*mathlib.DegreesToRadians) * distance)
+	y1 = int(math.Cos(float64(dStart)*mathlib.DegreesToRadians) * distance)
 
-	x2 = int(math.Sin(float64(dEnd) * mathlib.DegreesToRadians) * distance)
-	y2 = int(math.Cos(float64(dEnd) * mathlib.DegreesToRadians) * distance)
+	x2 = int(math.Sin(float64(dEnd)*mathlib.DegreesToRadians) * distance)
+	y2 = int(math.Cos(float64(dEnd)*mathlib.DegreesToRadians) * distance)
 
 	return x1, y1, x2, y2
 }

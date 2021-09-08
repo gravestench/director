@@ -11,7 +11,7 @@ var _ akara.Component = &Texture2D{}
 
 // Texture2D is a wrapper for a raylib texture
 type Texture2D struct {
-	rl.Texture2D
+	*rl.Texture2D
 }
 
 // New creates a new raylib texture

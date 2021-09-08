@@ -1,15 +1,18 @@
 package texture_manager
 
 import (
+	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/common/cache"
 	"github.com/gravestench/director/pkg/components"
 	"image"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
+	"time"
 )
 
 const (
@@ -24,6 +27,7 @@ type System struct {
 		fileLoadResponse components.FileLoadResponseFactory
 		fileType components.FileTypeFactory
 		texture2d components.Texture2DFactory
+		animations components.AnimationFactory
 	}
 	subscriptions struct {
 		needsTexture *akara.Subscription
@@ -44,6 +48,7 @@ func (sys *System) initComponents() {
 	sys.InjectComponent(&components.FileLoadResponse{}, &sys.components.fileLoadResponse.ComponentFactory)
 	sys.InjectComponent(&components.FileType{}, &sys.components.fileType.ComponentFactory)
 	sys.InjectComponent(&components.Texture2D{}, &sys.components.texture2d.ComponentFactory)
+	sys.InjectComponent(&components.Animation{}, &sys.components.animations.ComponentFactory)
 }
 
 func (sys *System) initSubscriptions() {
@@ -100,7 +105,7 @@ func (sys *System) createTexture(e common.Entity) {
 	}
 
 	if entry, found := sys.Cache.Retrieve(req.Path); found {
-		sys.components.texture2d.Add(e).Texture2D = entry.(rl.Texture2D)
+		sys.components.texture2d.Add(e).Texture2D = entry.(*rl.Texture2D)
 		return
 	}
 
@@ -111,19 +116,65 @@ func (sys *System) createTexture(e common.Entity) {
 		img, err = png.Decode(res.Stream)
 	case "image/jpg", "image/jpeg":
 		img, err = jpeg.Decode(res.Stream)
+	case "image/gif":
+		var gifImage *gif.GIF
+
+		gifImage, err = gif.DecodeAll(res.Stream)
+
+		if gifImage != nil {
+			if len(gifImage.Image) > 1 {
+				sys.createGifAnimation(e, gifImage)
+				return // we handle cache stuff inside of createGifAnimation
+			}
+
+			img = gifImage.Image[0]
+		}
 	default:
 		return
 	}
 
-	if err != nil {
+	if img == nil || err != nil {
 		return
 	}
 
 	t := sys.components.texture2d.Add(e)
 	texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: img}))
 
-	_ = sys.Cache.Insert(req.Path, texture, 1)
+	_ = sys.Cache.Insert(req.Path, &texture, 1)
 
-	t.Texture2D = texture
+	t.Texture2D = &texture
 }
 
+func (sys *System) createGifAnimation(e common.Entity, gifImg *gif.GIF) {
+	req, found := sys.components.fileLoadRequest.Get(e)
+	if !found {
+		return
+	}
+
+	anim := sys.components.animations.Add(e)
+
+	t := sys.components.texture2d.Add(e)
+
+	for idx := range gifImg.Image {
+
+		anim.FrameImages = append(anim.FrameImages, gifImg.Image[idx])
+		cacheKey := fmt.Sprintf("%s::frame%v", req.Path, idx)
+
+		delay := time.Second/100 * time.Duration(gifImg.Delay[idx])
+		anim.FrameDurations = append(anim.FrameDurations, delay)
+
+		if t, found := sys.Cache.Retrieve(cacheKey); found {
+			anim.FrameTextures = append(anim.FrameTextures, t.(*rl.Texture2D))
+			continue
+		}
+
+		texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: anim.FrameImages[idx]}))
+		anim.FrameTextures = append(anim.FrameTextures, &texture)
+
+		_ = sys.Cache.Insert(cacheKey, &texture, 1)
+	}
+
+	anim.UntilNextFrame = anim.FrameDurations[0]
+
+	t.Texture2D = anim.FrameTextures[0]
+}

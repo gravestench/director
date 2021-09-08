@@ -158,7 +158,7 @@ func (scene *MovingLabelsScene) updateVelocity(eid Entity) {
 }
 
 func (scene *MovingLabelsScene) resizeCameraWithWindow() {
-	for _, e := range scene.Cameras {
+	for _, e := range scene.Viewports {
 		rt, found := scene.Components.RenderTexture2D.Get(e)
 		if !found {
 			continue

@@ -1,12 +1,17 @@
 package main
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/systems/scene"
-	"github.com/gravestench/mathlib"
+	"github.com/gravestench/director/pkg/easing"
+	"github.com/gravestench/director/pkg/systems/tween"
 	"math/rand"
 	"time"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/gravestench/akara"
+	"github.com/gravestench/mathlib"
+
+	. "github.com/gravestench/director/pkg/common"
+	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 const (
@@ -16,7 +21,7 @@ const (
 
 type testScene struct {
 	scene.Scene
-	images []akara.EID
+	images []Entity
 	elapsed time.Duration
 }
 
@@ -52,9 +57,32 @@ func (scene *testScene) handleNewImage() {
 
 	scene.setRandomImagePosition(newImage)
 	scene.images = append(scene.images, newImage)
+
+	scene.fadeIn(newImage)
 }
 
-func (scene *testScene) updatePosition(e akara.EID) {
+func (scene *testScene) fadeIn(e Entity) {
+	t := tween.NewBuilder()
+	t.Time(time.Second)
+	t.Ease(easing.Sine)
+
+	opacity, found := scene.Components.Opacity.Get(e)
+	if !found {
+		return
+	}
+
+	t.OnUpdate(func(progress float64) {
+		opacity.Value = progress
+	})
+
+	t.OnUpdate(func(progress float64) {
+		opacity.Value = progress
+	})
+
+	scene.Tweens.New(t)
+}
+
+func (scene *testScene) updatePosition(e Entity) {
 	trs, found := scene.Components.Transform.Get(e)
 	if !found {
 		return
@@ -78,7 +106,7 @@ func (scene *testScene) updatePosition(e akara.EID) {
 }
 
 func (scene *testScene) resizeCameraWithWindow() {
-	for _, e := range scene.Cameras {
+	for _, e := range scene.Viewports {
 		rt, found := scene.Components.RenderTexture2D.Get(e)
 		if !found {
 			continue
@@ -95,7 +123,7 @@ func (scene *testScene) resizeCameraWithWindow() {
 	}
 }
 
-func (scene *testScene) setRandomImagePosition(e akara.EID) {
+func (scene *testScene) setRandomImagePosition(e Entity) {
 	x, y := rand.Intn(scene.Window.Width), rand.Intn(scene.Window.Height)
 	trs, _ := scene.Components.Transform.Get(e)
 

@@ -14,7 +14,7 @@ type BasicComponents struct {
 	FileLoadResponse components.FileLoadResponseFactory
 	FileType         components.FileTypeFactory
 	Fill             components.FillFactory
-	Image            components.ImageFactory
+	Animation        components.AnimationFactory
 	Stroke           components.StrokeFactory
 	Font             components.FontFactory
 	Interactive      input.InteractiveFactory
@@ -37,7 +37,7 @@ func (bc *BasicComponents) Init(w *akara.World) {
 	injectComponent(w, &components.FileLoadResponse{}, &bc.FileLoadResponse.ComponentFactory)
 	injectComponent(w, &components.FileType{}, &bc.FileType.ComponentFactory)
 	injectComponent(w, &components.Fill{}, &bc.Fill.ComponentFactory)
-	injectComponent(w, &components.Image{}, &bc.Image.ComponentFactory)
+	injectComponent(w, &components.Animation{}, &bc.Animation.ComponentFactory)
 	injectComponent(w, &components.Origin{}, &bc.Origin.ComponentFactory)
 	injectComponent(w, &input.Interactive{}, &bc.Interactive.ComponentFactory)
 	injectComponent(w, &components.Opacity{}, &bc.Opacity.ComponentFactory)
@@ -89,7 +89,7 @@ func (bc *BasicComponents) IsInit() bool {
 		return false
 	}
 
-	if bc.Image.ComponentFactory == nil {
+	if bc.Animation.ComponentFactory == nil {
 		return false
 	}
 
