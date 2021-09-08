@@ -115,8 +115,6 @@ func (scene *TestScene) bindInput() {
 			Y: scene.Window.Height - (int(trs.Translation.Y) - size.Dy()/2),
 		},
 	}
-
-	fmt.Print(i)
 }
 
 func (scene *TestScene) IsInitialized() bool {

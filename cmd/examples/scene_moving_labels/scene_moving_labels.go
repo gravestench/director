@@ -88,12 +88,12 @@ func (scene *MovingLabelsScene) updateString() {
 			continue
 		}
 
-		//uuid, found := scene.Components.UUID.Get(e)
-		//if !found {
-		//	continue
-		//}
+		uuid, found := scene.Components.UUID.Get(e)
+		if !found {
+			continue
+		}
 
-		text.String = "Be Right Back"
+		text.String = uuid.String()[:4]
 	}
 }
 

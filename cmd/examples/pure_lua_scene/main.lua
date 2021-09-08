@@ -12,9 +12,9 @@ end
 
 function update(timeDelta)
     elapsed = elapsed + timeDelta
-    for _, e in ipairs(shapes) do
-        updatePosition(e:id())
-        updateRotation(e:id())
+    for _, entity in ipairs(shapes) do
+        updatePosition(entity:id())
+        updateRotation(entity:id())
         updateOrigin(e:id())
     end
 end

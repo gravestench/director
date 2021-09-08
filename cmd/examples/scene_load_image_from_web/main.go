@@ -1,8 +1,6 @@
 package main
 
-import (
-	director "github.com/gravestench/director/pkg"
-)
+import director "github.com/gravestench/director/pkg"
 
 func main() {
 	d := director.New()

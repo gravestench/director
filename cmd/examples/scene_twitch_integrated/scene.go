@@ -3,110 +3,174 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/gempir/go-twitch-irc/v2"
+	"image/color"
+	"math"
+	"math/rand"
+	"time"
+
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/easing"
 	"github.com/gravestench/director/pkg/systems/scene"
 	"github.com/gravestench/director/pkg/systems/tween"
 	"github.com/gravestench/mathlib"
-	"image/color"
-	"math"
-	"math/rand"
-	"time"
+
+	// using two twitch libraries because one of them provided a method for pulling emotes
+	// and the other was easy to use at the time i initially wrote this example
+	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/nicklaw5/helix"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-type TestScene struct {
+type testScene struct {
 	scene.Scene
-	*twitch.Client
-	twitch struct {
+	ircClient   *twitch.Client
+	helixClient *helix.Client
+	twitch      struct {
 		userName *string
 		oauthKey *string
 		channel *string
+		clientid *string
+		clientSecret *string
+		userAccessToken *string
 	}
 	userColors map[string]color.Color
+	emoteMap map[string]string
 }
 
-func (s *TestScene) Init(_ *akara.World) {
-	s.parseFlags()
-	s.setupClient()
+func (scene *testScene) Init(_ *akara.World) {
+	scene.parseFlags() // the command line flags have all the twitch api stuff
+	scene.setupClients() // we set up the two titch client instances
+	scene.initEmotes() // set up a mapping of emote strings to URLs
 
-	s.userColors = make(map[string]color.Color)
+	// users in chat will e
+	scene.userColors = make(map[string]color.Color)
 
 	go func() {
-		s.connect() // this is blocking, so we put in a goroutine
+		scene.connect() // this is blocking, so we put in a goroutine
 	}()
 }
 
-func (s *TestScene) parseFlags() {
-	s.twitch.userName = flag.String("u", "", "username")
-	s.twitch.oauthKey = flag.String("o", "", "oath key, like \"oauth:kjahsdkjahsdkjahsd\"")
-	s.twitch.channel = flag.String("c", "", "channel")
+func (scene *testScene) initEmotes() {
+	scene.emoteMap = make(map[string]string)
+
+	allEmotes, err := scene.helixClient.GetGlobalEmotes()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, emote := range allEmotes.Data.Emotes {
+		scene.emoteMap[emote.Name] = emote.Images.Url4x
+	}
+}
+
+func (scene *testScene) parseFlags() {
+	scene.twitch.userName = flag.String("user", "", "username")
+	scene.twitch.channel = flag.String("channel", "", "channel")
+	scene.twitch.oauthKey = flag.String("oauth", "", "oath key")
+	scene.twitch.clientid = flag.String("clientid", "", "client id token")
+	scene.twitch.clientSecret = flag.String("clientsecret", "", "client secret")
+	scene.twitch.userAccessToken = flag.String("useraccesstoken", "", "client id token")
 
 	flag.Parse()
 }
 
-func (s *TestScene) setupClient() {
-	if *s.twitch.oauthKey == "" {
+func (scene *testScene) setupClients() {
+	if *scene.twitch.oauthKey == "" {
 		panic("need an oauth key")
 	}
 
-	if *s.twitch.userName == "" {
+	if *scene.twitch.userName == "" {
 		panic("need a username")
 	}
 
-	if *s.twitch.channel == "" {
+	if *scene.twitch.channel == "" {
 		panic("need a channel name")
 	}
 
+	if *scene.twitch.clientid == "" {
+		panic("need an client id")
+	}
+
+	if *scene.twitch.clientSecret == "" {
+		panic("need a user access token see https://github.com/twitchdev/authentication-go-sample")
+	}
+
+	if *scene.twitch.userAccessToken == "" {
+		panic("need an client id")
+	}
+
+
+	client, _ := helix.NewClient(&helix.Options{
+		ClientID:        *scene.twitch.clientid,
+		ClientSecret: *scene.twitch.clientSecret,
+		UserAccessToken: *scene.twitch.userAccessToken,
+		RedirectURI:     "http://localhost",
+	})
+
+	if isValid, _, err := client.ValidateToken(*scene.twitch.userAccessToken); !isValid {
+		panic(err)
+	}
+
+	scene.helixClient = client
+
 	// or client := twitch.NewAnonymousClient() for an anonymous user (no write capabilities)
-	s.Client = twitch.NewClient(*s.twitch.userName, *s.twitch.oauthKey)
+	scene.ircClient = twitch.NewClient(*scene.twitch.userName, "oauth:" + *scene.twitch.oauthKey)
 
-	s.OnPrivateMessage(func(msg twitch.PrivateMessage) {
-		s.newMessage(msg.User.Name, fmt.Sprintf("%v", msg.Message))
+	scene.ircClient.OnPrivateMessage(func(msg twitch.PrivateMessage) {
+		scene.newMessage(msg.User.Name, msg.Message)
 	})
 
-	s.OnUserJoinMessage(func(msg twitch.UserJoinMessage) {
-		s.newMessage(msg.User, fmt.Sprintf("%v has joined the chat!", msg.User))
+	scene.ircClient.OnUserJoinMessage(func(msg twitch.UserJoinMessage) {
+		scene.newMessage(msg.User, fmt.Sprintf("%v has joined the chat!", msg.User))
 	})
 
-	s.Client.Join(*s.twitch.channel)
+	scene.ircClient.Join(*scene.twitch.channel)
 }
 
-func (s *TestScene) getUserColor(name string) color.Color {
-	c, found := s.userColors[name]
+func (scene *testScene) getUserColor(name string) color.Color {
+	c, found := scene.userColors[name]
 	if !found {
 		c = randColor()
-		s.userColors[name] = c
+		scene.userColors[name] = c
 	}
 
 	return c
 }
 
-func (s *TestScene) newMessage(name, msg string) {
-	c := s.getUserColor(name)
+func (scene *testScene) newMessage(name, msg string) {
+	c := scene.getUserColor(name)
 
-	x, y := s.Window.Width/2, s.Window.Height/2
-	fontSize := s.Window.Height / 20
+	x, y := scene.Window.Width/2, scene.Window.Height/2
+	fontSize := scene.Window.Height / 20
 
-	label := s.Add.Label(msg, x, y, fontSize, "", c)
+	var entity akara.EID
 
-	trs, found := s.Components.Transform.Get(label)
+	if emoteURL, found := scene.emoteMap[msg]; found {
+		entity = scene.Add.Image(emoteURL, x, y)
+	} else {
+		entity = scene.Add.Label(msg, x, y, fontSize, "", c)
+
+		text, found := scene.Components.Text.Get(entity)
+		if !found {
+			return
+		}
+
+		text.String = msg
+	}
+
+	trs, found := scene.Components.Transform.Get(entity)
 	if !found {
 		return
 	}
 
-	opacity, found := s.Components.Opacity.Get(label)
+	opacity, found := scene.Components.Opacity.Get(entity)
 	if !found {
-		opacity = s.Components.Opacity.Add(label)
+		opacity = scene.Components.Opacity.Add(entity)
 	}
 
-	text, found := s.Components.Text.Get(label)
-	if !found {
-		return
-	}
-
-	startX, startY, endX, endY := s.randomStartEnd()
-	cx, cy := s.Window.Width/2, s.Window.Height/2
+	startX, startY, endX, endY := scene.randomStartEnd()
+	cx, cy := scene.Window.Width/2, scene.Window.Height/2
 
 	rcx, rcy := cx/2 + rand.Intn(cx), cy/2 + rand.Intn(cy)
 
@@ -146,33 +210,45 @@ func (s *TestScene) newMessage(name, msg string) {
 		})
 
 		tb2.OnComplete(func() {
-			s.RemoveEntity(label)
+			scene.RemoveEntity(entity)
 		})
 
-		s.Tweens.New(tb2)
+		scene.Tweens.New(tb2)
 	})
 
-	s.Tweens.New(tb)
-
-	text.String = msg
+	scene.Tweens.New(tb)
 }
 
-func (s *TestScene) connect() {
-	err := s.Connect()
+func (scene *testScene) resizeCameraWithWindow() {
+	for _, e := range scene.Cameras {
+		rt, found := scene.Components.RenderTexture2D.Get(e)
+		if !found {
+			continue
+		}
+
+		if int(rt.Texture.Width) != scene.Window.Width || int(rt.Texture.Height) != scene.Window.Height {
+			t := rl.LoadRenderTexture(int32(scene.Window.Width), int32(scene.Window.Height))
+			rt.RenderTexture2D = &t
+		}
+	}
+}
+
+func (scene *testScene) connect() {
+	err := scene.ircClient.Connect()
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (s *TestScene) IsInitialized() bool {
-	return s.Client != nil
+func (scene *testScene) IsInitialized() bool {
+	return scene.ircClient != nil
 }
 
-func (s *TestScene) Update() {
-	// no op
+func (scene *testScene) Update() {
+	scene.resizeCameraWithWindow()
 }
 
-func (s *TestScene) randomStartEnd() (x1, y1, x2, y2 int) {
+func (scene *testScene) randomStartEnd() (x1, y1, x2, y2 int) {
 	const (
 		maxDegree = 360
 	)
@@ -180,7 +256,7 @@ func (s *TestScene) randomStartEnd() (x1, y1, x2, y2 int) {
 	dStart := rand.Intn(maxDegree)
 	dEnd := (dStart + 180) % maxDegree
 
-	distance := 1.5 * float64(s.Window.Width)
+	distance := 1.5 * float64(scene.Window.Width)
 
 	x1 = int(math.Sin(float64(dStart) * mathlib.DegreesToRadians) * distance)
 	y1 = int(math.Cos(float64(dStart) * mathlib.DegreesToRadians) * distance)
