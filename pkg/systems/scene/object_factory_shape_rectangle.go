@@ -2,7 +2,6 @@ package scene
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
 	"image/color"
 	"time"
@@ -10,10 +9,10 @@ import (
 
 type rectangleFactory struct {
 	entityManager common.EntityManager
-	cache map[akara.EID]*rectangleParameters
+	cache map[common.Entity]*rectangleParameters
 }
 
-func (factory *rectangleFactory) New(s *Scene, x, y, w, h int, fill, stroke color.Color) akara.EID {
+func (factory *rectangleFactory) New(s *Scene, x, y, w, h int, fill, stroke color.Color) common.Entity {
 	e := s.Add.generic.visibleEntity(s)
 
 	size := s.Components.Size.Add(e)
@@ -41,7 +40,7 @@ func (factory *rectangleFactory) update(s *Scene, dt time.Duration) {
 	}
 
 	if factory.cache == nil {
-		factory.cache = make(map[akara.EID]*rectangleParameters)
+		factory.cache = make(map[common.Entity]*rectangleParameters)
 	}
 
 	for e := range factory.entityManager.Entities {
@@ -66,7 +65,7 @@ func colorsEqual(a, b color.Color) bool {
 	return er != fr || eg != fg || eb != fb || ea != fa
 }
 
-func (factory *rectangleFactory) needsToGenerateTexture(s *Scene, e akara.EID) bool {
+func (factory *rectangleFactory) needsToGenerateTexture(s *Scene, e common.Entity) bool {
 	entry, found := factory.cache[e]
 	if !found {
 		return true
@@ -111,7 +110,7 @@ func (factory *rectangleFactory) needsToGenerateTexture(s *Scene, e akara.EID) b
 	return false
 }
 
-func (factory *rectangleFactory) generateNewTexture(s *Scene, e akara.EID) {
+func (factory *rectangleFactory) generateNewTexture(s *Scene, e common.Entity) {
 	fill, fillFound := s.Components.Fill.Get(e)
 	stroke, strokeFound := s.Components.Stroke.Get(e)
 	col, colorFound := s.Components.Color.Get(e)
@@ -166,7 +165,7 @@ type rectangleParameters struct {
 	fill, stroke  color.Color
 }
 
-func (factory *rectangleFactory) putInCache(e akara.EID, width, height int, fill, stroke color.Color) {
+func (factory *rectangleFactory) putInCache(e common.Entity, width, height int, fill, stroke color.Color) {
 	entry := &rectangleParameters{
 		width:  width,
 		height: height,

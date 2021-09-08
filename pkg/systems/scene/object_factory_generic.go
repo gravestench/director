@@ -1,7 +1,6 @@
 package scene
 
 import (
-	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
 	"time"
 )
@@ -12,7 +11,7 @@ type genericFactory struct {
 
 func (factory *genericFactory) update(s *Scene, dt time.Duration) {}
 
-func (factory *genericFactory) entity(s *Scene) akara.EID {
+func (factory *genericFactory) entity(s *Scene) common.Entity {
 	e := s.Director.NewEntity()
 
 	// a generic entity always has a UUID
@@ -21,7 +20,7 @@ func (factory *genericFactory) entity(s *Scene) akara.EID {
 	return e
 }
 
-func (factory *genericFactory) visibleEntity(s *Scene) akara.EID {
+func (factory *genericFactory) visibleEntity(s *Scene) common.Entity {
 	e := factory.entity(s)
 
 	// it will always set its parent to the scene's root scene graph node

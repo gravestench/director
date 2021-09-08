@@ -2,7 +2,6 @@ package scene
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
 	"image/color"
 	"math"
@@ -13,7 +12,7 @@ import (
 type labelFactory struct {
 	common.EntityManager
 	*common.BasicComponents
-	cache map[akara.EID]*labelParameters
+	cache map[common.Entity]*labelParameters
 }
 
 type labelParameters struct {
@@ -25,7 +24,7 @@ type labelParameters struct {
 }
 
 
-func (factory *labelFactory) New(s *Scene, str string, x, y, fontsize int, fontName string, c color.Color) akara.EID {
+func (factory *labelFactory) New(s *Scene, str string, x, y, fontsize int, fontName string, c color.Color) common.Entity {
 	e := s.Add.generic.visibleEntity(s)
 
 	trs, _ := s.Components.Transform.Get(e) // this is a component all visible entities have
@@ -60,7 +59,7 @@ func (factory *labelFactory) update(s *Scene, _ time.Duration) {
 	}
 
 	if factory.cache == nil {
-		factory.cache = make(map[akara.EID]*labelParameters)
+		factory.cache = make(map[common.Entity]*labelParameters)
 	}
 
 	for e := range factory.Entities {
@@ -74,7 +73,7 @@ func (factory *labelFactory) update(s *Scene, _ time.Duration) {
 	factory.EntityManager.ProcessRemovalQueue()
 }
 
-func (factory *labelFactory) putInCache(s *Scene, e akara.EID, str, font string, size int, c color.Color) {
+func (factory *labelFactory) putInCache(_ *Scene, e common.Entity, str, font string, size int, c color.Color) {
 	r, g, b, a := c.RGBA() // need to make a copy
 
 	entry := &labelParameters{
@@ -92,7 +91,7 @@ func (factory *labelFactory) putInCache(s *Scene, e akara.EID, str, font string,
 	factory.cache[e] = entry
 }
 
-func (factory *labelFactory) needsToGenerateTexture(s *Scene, e akara.EID) bool {
+func (factory *labelFactory) needsToGenerateTexture(s *Scene, e common.Entity) bool {
 	entry, found := factory.cache[e]
 	if !found || entry == nil {
 		return true
@@ -142,7 +141,7 @@ func (factory *labelFactory) needsToGenerateTexture(s *Scene, e akara.EID) bool 
 	return false
 }
 
-func (factory *labelFactory) generateNewTexture(s *Scene, e akara.EID) {
+func (factory *labelFactory) generateNewTexture(s *Scene, e common.Entity) {
 	text, textFound := s.Components.Text.Get(e)
 	font, fontFound := s.Components.Font.Get(e)
 	c, colorFound := s.Components.Color.Get(e)

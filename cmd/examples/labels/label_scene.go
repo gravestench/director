@@ -21,7 +21,7 @@ func (scene *LabelScene) IsInitialized() bool {
 	return true
 }
 
-func (scene *LabelScene) Init(world *akara.World) {
+func (scene *LabelScene) Init(_ *akara.World) {
 	scene.Add.Label("Hello World!", 200, 200, 20, "", color.White)
 }
 

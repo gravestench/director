@@ -1,7 +1,7 @@
 package scene
 
 import (
-	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/components"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -40,7 +40,7 @@ func (s *Scene) luaOriginGet() lua.LGFunction {
 		}
 
 		id := L.CheckNumber(1)
-		origin, found := s.Components.Origin.Get(akara.EID(id))
+		origin, found := s.Components.Origin.Get(common.Entity(id))
 
 		truthy := lua.LFalse
 		if !found {

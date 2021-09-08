@@ -21,14 +21,14 @@ type Scene struct {
 	key         string
 	Add         ObjectFactory
 	Renderables *akara.Subscription
-	Cameras     []akara.EID
+	Cameras     []common.Entity
 	Width       int
 	Height      int
 }
 
 var tmpVect mathlib.Vector3
 
-func (s *Scene) renderEntity(e akara.EID) {
+func (s *Scene) renderEntity(e common.Entity) {
 	texture, textureFound := s.Components.Texture2D.Get(e)
 	rt, rtFound := s.Components.RenderTexture2D.Get(e)
 	if !textureFound && !rtFound {
@@ -84,6 +84,7 @@ func (s *Scene) Initialize(d *director.Director, width, height int) {
 	filter := s.Director.World.NewComponentFilter()
 	filter.Require(&components.Transform{})
 	filter.RequireOne(&components.RenderTexture2D{}, &components.Texture2D{})
+	filter.Forbid(&components.Camera2D{})
 
 	s.Renderables = s.Director.AddSubscription(filter.Build())
 }
@@ -157,30 +158,23 @@ func (s *Scene) Render() {
 		s.initCamera()
 	}
 
-	for _, e := range s.Cameras {
-		c, found := s.Components.Camera2D.Get(e)
-		if !found {
-			continue
-		}
-
-		rl.BeginMode2D(c.Camera2D)
-		s.renderToCamera(e)
-		rl.EndMode2D()
+	for _, cameraEntity := range s.Cameras {
+		s.renderEntitiesWithRespectToCamera(cameraEntity)
 	}
 }
 
 func (s *Scene) initCamera() {
-	s.Cameras = make([]akara.EID, 0)
+	s.Cameras = make([]common.Entity, 0)
 	s.Cameras = append(s.Cameras, s.Add.Camera(0, 0, s.Width, s.Height))
 }
 
-func (s *Scene) renderToCamera(cameraID akara.EID) {
-	rt, found := s.Components.RenderTexture2D.Get(cameraID)
+func (s *Scene) renderEntitiesWithRespectToCamera(camera common.Entity) {
+	rt, found := s.Components.RenderTexture2D.Get(camera)
 	if !found {
 		return
 	}
 
-	cam, found := s.Components.Camera2D.Get(cameraID)
+	cam, found := s.Components.Camera2D.Get(camera)
 	if !found {
 		return
 	}
@@ -188,15 +182,13 @@ func (s *Scene) renderToCamera(cameraID akara.EID) {
 	rl.BeginTextureMode(*rt.RenderTexture2D)
 	r, g, b, a := cam.Background.RGBA()
 	rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+	rl.BeginMode2D(cam.Camera2D)
 
 	for _, entity := range s.Renderables.GetEntities() {
-		if entity == cameraID {
-			continue
-		}
-
 		s.renderEntity(entity)
 	}
 
+	rl.EndMode2D()
 	rl.EndTextureMode()
 }
 
@@ -204,7 +196,7 @@ func (s *Scene) Key() string {
 	return s.key
 }
 
-func (s *Scene) RemoveEntity(e akara.EID) {
+func (s *Scene) RemoveEntity(e common.Entity) {
 	s.Components.Camera2D.Remove(e)
 	s.Components.Color.Remove(e)
 	s.Components.Debug.Remove(e)

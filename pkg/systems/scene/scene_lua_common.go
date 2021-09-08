@@ -1,14 +1,14 @@
 package scene
 
 import (
-	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/mathlib"
 	lua "github.com/yuin/gopher-lua"
 )
 
-func (s *Scene) luaCheckEID() *akara.EID {
+func (s *Scene) luaCheckEID() *common.Entity {
 	ud := s.Lua.CheckUserData(1)
-	if v, ok := ud.Value.(*akara.EID); ok {
+	if v, ok := ud.Value.(*common.Entity); ok {
 		return v
 	}
 

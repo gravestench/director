@@ -1,8 +1,9 @@
 package tween
 
 import (
-	"github.com/gravestench/akara"
 	"time"
+
+	"github.com/gravestench/akara"
 )
 
 type System struct {
@@ -34,7 +35,7 @@ func (s *System) Update(duration time.Duration) {
 	}
 }
 
-func (s *System) Init(world *akara.World) {
+func (s *System) Init(_ *akara.World) {
 	s.tweens = make([]*Tween, 0)
 }
 

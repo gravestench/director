@@ -3,6 +3,7 @@ package texture_manager
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/common/cache"
 	"github.com/gravestench/director/pkg/components"
 	"image"
@@ -78,7 +79,7 @@ func (sys *System) Update() {
 	}
 }
 
-func (sys *System) createTexture(e akara.EID) {
+func (sys *System) createTexture(e common.Entity) {
 	var img image.Image
 
 	var err error

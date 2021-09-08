@@ -1,10 +1,11 @@
 package scene
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/common"
 	"time"
+
+	"github.com/gravestench/director/pkg/common"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type cameraFactory struct {
@@ -12,11 +13,11 @@ type cameraFactory struct {
 	*common.BasicComponents
 }
 
-func (*cameraFactory) New(s *Scene, x, y, w, h int) akara.EID {
+func (*cameraFactory) New(s *Scene, x, y, w, h int) common.Entity {
 	e := s.Add.generic.visibleEntity(s)
 
 	cam := s.Components.Camera2D.Add(e)
-	cam.Camera2D = rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 0.2)
+	cam.Camera2D = rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 1)
 
 	trs, _ := s.Components.Transform.Get(e) // this is a component all visible entities have
 	rt := s.Components.RenderTexture2D.Add(e)

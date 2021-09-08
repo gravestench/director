@@ -2,19 +2,21 @@ package main
 
 import (
 	"fmt"
-	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/systems/input"
 	"image"
 	"image/color"
 
+	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/gravestench/akara"
+
+	. "github.com/gravestench/director/pkg/common"
+	"github.com/gravestench/director/pkg/systems/input"
 	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 type TestScene struct {
 	scene.Scene
-	square akara.EID
-	label akara.EID
+	square Entity
+	label Entity
 }
 
 func (scene *TestScene) Update() {

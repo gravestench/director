@@ -34,7 +34,6 @@ func (scene *testScene) Update(dt time.Duration) {
 	scene.elapsed += dt
 
 	scene.handleNewImage()
-
 	scene.resizeCameraWithWindow()
 
 	for _, e := range scene.images {

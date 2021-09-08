@@ -3,14 +3,13 @@ package scene
 import (
 	"time"
 
-	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
 )
 
 type imageFactory struct {
 	*common.BasicComponents
 	common.EntityManager
-	cache map[akara.EID]*imageParameters
+	cache map[common.Entity]*imageParameters
 }
 
 type imageParameters struct {
@@ -25,13 +24,13 @@ func (factory *imageFactory) update(s *Scene, _ time.Duration) {
 	}
 
 	if factory.cache == nil {
-		factory.cache = make(map[akara.EID]*imageParameters)
+		factory.cache = make(map[common.Entity]*imageParameters)
 	}
 
 	factory.EntityManager.ProcessRemovalQueue()
 }
 
-func (factory *imageFactory) New(s *Scene, uri string, x, y int) akara.EID {
+func (factory *imageFactory) New(s *Scene, uri string, x, y int) common.Entity {
 	e := s.Add.generic.visibleEntity(s)
 
 	trs, _ := s.Components.Transform.Get(e) // this is a component all visible entities have
@@ -45,7 +44,7 @@ func (factory *imageFactory) New(s *Scene, uri string, x, y int) akara.EID {
 	return e
 }
 
-func (factory *imageFactory) putInCache(s *Scene, e akara.EID, uri string, x, y int) {
+func (factory *imageFactory) putInCache(s *Scene, e common.Entity, uri string, x, y int) {
 	entry := &imageParameters{
 		uri: uri,
 	}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	. "github.com/gravestench/director/pkg/common"
 	"image"
 	"image/color"
 	"strconv"
@@ -15,34 +16,34 @@ import (
 
 type GameScene struct {
 	scene.Scene
-	toggleButton    akara.EID
-	toggleLabel     akara.EID
-	debugPanel      akara.EID
-	mainPanel       akara.EID
-	square          akara.EID
-	label           akara.EID
-	mouseDebugLabel akara.EID
-	isDebugEnabled  bool
-	balanceLabel    akara.EID
-	balanceValue    int
-	clickButton     akara.EID
-	clickValue      int
-	shopPanel       akara.EID
 	upgrades        ShopUpgrades
+	toggleButton    Entity
+	toggleLabel     Entity
+	debugPanel      Entity
+	mainPanel       Entity
+	square          Entity
+	label           Entity
+	mouseDebugLabel Entity
+	balanceLabel    Entity
+	clickButton     Entity
+	shopPanel       Entity
+	isDebugEnabled  bool
+	balanceValue    int
+	clickValue      int
 }
 
 type ShopUpgrades struct {
-	clickerUpgrade1      akara.EID
-	clickerUpgrade1Label akara.EID
+	clickerUpgrade1      Entity
+	clickerUpgrade1Label Entity
+	clickerUpgrade2      Entity
+	clickerUpgrade2Label Entity
+	clickerUpgrade3      Entity
+	clickerUpgrade3Label Entity
+	clickerUpgrade4      Entity
+	clickerUpgrade4Label Entity
 	clickerUpgrade1Price int
-	clickerUpgrade2      akara.EID
-	clickerUpgrade2Label akara.EID
 	clickerUpgrade2Price int
-	clickerUpgrade3      akara.EID
-	clickerUpgrade3Label akara.EID
 	clickerUpgrade3Price int
-	clickerUpgrade4      akara.EID
-	clickerUpgrade4Label akara.EID
 	clickerUpgrade4Price int
 }
 

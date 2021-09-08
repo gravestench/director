@@ -10,8 +10,9 @@ import (
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-
 	"github.com/gravestench/akara"
+
+	. "github.com/gravestench/director/pkg/common"
 )
 
 const (
@@ -23,7 +24,7 @@ const (
 
 type MovingLabelsScene struct {
 	scene.Scene
-	textObjects       [numTextObjects]akara.EID
+	textObjects       [numTextObjects]Entity
 	Velocity          VelocityFactory
 	lastMousePosition mathlib.Vector2
 }
@@ -97,7 +98,7 @@ func (scene *MovingLabelsScene) updateString() {
 	}
 }
 
-func (scene *MovingLabelsScene) updatePosition(eid akara.EID, dt time.Duration) {
+func (scene *MovingLabelsScene) updatePosition(eid Entity, dt time.Duration) {
 	trs, found := scene.Components.Transform.Get(eid)
 	if !found {
 		return
@@ -136,7 +137,7 @@ func (scene *MovingLabelsScene) updatePosition(eid akara.EID, dt time.Duration) 
 	position.Y = float64(wrap(float32(position.Y), float32(-th), wh+float32(th)))
 }
 
-func (scene *MovingLabelsScene) updateVelocity(eid akara.EID) {
+func (scene *MovingLabelsScene) updateVelocity(eid Entity) {
 	velocity, found := scene.Velocity.Get(eid)
 	if !found {
 		velocity = scene.Velocity.Add(eid)

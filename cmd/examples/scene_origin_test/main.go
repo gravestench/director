@@ -10,6 +10,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	director "github.com/gravestench/director/pkg"
+	. "github.com/gravestench/director/pkg/common"
 )
 
 func main() {
@@ -32,8 +33,8 @@ const (
 
 type LabelTestScene struct {
 	scene.Scene
-	singleLabel akara.EID
-	originPoint akara.EID
+	singleLabel Entity
+	originPoint Entity
 }
 
 func (scene *LabelTestScene) Key() string {

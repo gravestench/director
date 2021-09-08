@@ -1,9 +1,11 @@
 package main
 
 import (
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/systems/scene"
 	"image/color"
+
+	"github.com/gravestench/akara"
+
+	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 const (

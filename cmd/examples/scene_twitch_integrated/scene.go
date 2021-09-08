@@ -9,15 +9,17 @@ import (
 	"time"
 
 	"github.com/gravestench/akara"
+	"github.com/gravestench/mathlib"
+
+	// and the other was easy to use at the time i initially wrote this example
+	// using two twitch libraries because one of them provided a method for pulling emotes
+	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/nicklaw5/helix"
+
+	. "github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/easing"
 	"github.com/gravestench/director/pkg/systems/scene"
 	"github.com/gravestench/director/pkg/systems/tween"
-	"github.com/gravestench/mathlib"
-
-	// using two twitch libraries because one of them provided a method for pulling emotes
-	// and the other was easy to use at the time i initially wrote this example
-	"github.com/gempir/go-twitch-irc/v2"
-	"github.com/nicklaw5/helix"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -144,7 +146,7 @@ func (scene *testScene) newMessage(name, msg string) {
 	x, y := scene.Window.Width/2, scene.Window.Height/2
 	fontSize := scene.Window.Height / 20
 
-	var entity akara.EID
+	var entity Entity
 
 	if emoteURL, found := scene.emoteMap[msg]; found {
 		entity = scene.Add.Image(emoteURL, x, y)

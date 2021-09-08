@@ -2,7 +2,6 @@ package scene
 
 import (
 	"fmt"
-	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -46,9 +45,9 @@ func (s *Scene) luaImageConstructor() lua.LGFunction {
 }
 
 // Checks whether the first Lua argument is a *LUserData with *Image and returns this *Image.
-func checkImage(L *lua.LState) *akara.EID {
+func checkImage(L *lua.LState) *common.Entity {
 	ud := L.CheckUserData(1)
-	if v, ok := ud.Value.(*akara.EID); ok {
+	if v, ok := ud.Value.(*common.Entity); ok {
 		return v
 	}
 	L.ArgError(1, "image expected")
@@ -64,8 +63,8 @@ func imageGet(L *lua.LState) int {
 	return 1
 }
 
-func imageFromLua(ud *lua.LUserData) (*akara.EID, error) {
-	if vv, ok := ud.Value.(*akara.EID); ok {
+func imageFromLua(ud *lua.LUserData) (*common.Entity, error) {
+	if vv, ok := ud.Value.(*common.Entity); ok {
 		return vv, nil
 	}
 

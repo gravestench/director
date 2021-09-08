@@ -2,7 +2,6 @@ package scene
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
 	"image/color"
 	"time"
@@ -10,7 +9,7 @@ import (
 
 type circleFactory struct {
 	common.EntityManager
-	cache map[akara.EID]*circleParameters
+	cache map[common.Entity]*circleParameters
 }
 
 type circleParameters struct {
@@ -18,7 +17,7 @@ type circleParameters struct {
 	fill, stroke  color.Color
 }
 
-func (factory *circleFactory) putInCache(e akara.EID, width, height int, fill, stroke color.Color) {
+func (factory *circleFactory) putInCache(e common.Entity, width, height int, fill, stroke color.Color) {
 	entry := &circleParameters{
 		width:  width,
 		height: height,
@@ -30,7 +29,7 @@ func (factory *circleFactory) putInCache(e akara.EID, width, height int, fill, s
 }
 
 
-func (factory *circleFactory) New(s *Scene, x, y, radius int, fill, stroke color.Color) akara.EID {
+func (factory *circleFactory) New(s *Scene, x, y, radius int, fill, stroke color.Color) common.Entity {
 	e := s.Add.generic.visibleEntity(s)
 
 	size := s.Components.Size.Add(e)
@@ -58,7 +57,7 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 	}
 
 	if factory.cache == nil {
-		factory.cache = make(map[akara.EID]*circleParameters)
+		factory.cache = make(map[common.Entity]*circleParameters)
 	}
 
 	for e := range factory.EntityManager.Entities {
@@ -72,7 +71,7 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 	factory.EntityManager.ProcessRemovalQueue()
 }
 
-func (factory *circleFactory) needsToGenerateTexture(s *Scene, e akara.EID) bool {
+func (factory *circleFactory) needsToGenerateTexture(s *Scene, e common.Entity) bool {
 	entry, found := factory.cache[e]
 	if !found {
 		return true
@@ -117,7 +116,7 @@ func (factory *circleFactory) needsToGenerateTexture(s *Scene, e akara.EID) bool
 	return false
 }
 
-func (factory *circleFactory) generateNewTexture(s *Scene, e akara.EID) {
+func (factory *circleFactory) generateNewTexture(s *Scene, e common.Entity) {
 	fill, fillFound := s.Components.Fill.Get(e)
 	stroke, strokeFound := s.Components.Stroke.Get(e)
 	col, colorFound := s.Components.Color.Get(e)

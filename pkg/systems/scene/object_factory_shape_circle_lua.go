@@ -5,7 +5,6 @@ import (
 
 	lua "github.com/yuin/gopher-lua"
 
-	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/util"
 )
@@ -52,9 +51,9 @@ func (s *Scene) luaCircleConstructor() lua.LGFunction {
 }
 
 // Checks whether the first Lua argument is a *LUserData with *Circle and returns this *Circle.
-func checkCircle(L *lua.LState) *akara.EID {
+func checkCircle(L *lua.LState) *common.Entity {
 	ud := L.CheckUserData(1)
-	if v, ok := ud.Value.(*akara.EID); ok {
+	if v, ok := ud.Value.(*common.Entity); ok {
 		return v
 	}
 	L.ArgError(1, "circle expected")
@@ -70,8 +69,8 @@ func circleGet(L *lua.LState) int {
 	return 1
 }
 
-func circleFromLua(ud *lua.LUserData) (*akara.EID, error) {
-	if vv, ok := ud.Value.(*akara.EID); ok {
+func circleFromLua(ud *lua.LUserData) (*common.Entity, error) {
+	if vv, ok := ud.Value.(*common.Entity); ok {
 		return vv, nil
 	}
 

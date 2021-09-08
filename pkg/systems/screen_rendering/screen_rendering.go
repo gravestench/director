@@ -61,7 +61,7 @@ func (sys *ScreenRenderingSystem) Update() {
 	rl.EndDrawing()
 }
 
-func (sys *ScreenRenderingSystem) renderCamera(e akara.EID) {
+func (sys *ScreenRenderingSystem) renderCamera(e common.Entity) {
 	// we use the camera in the filter merely to tag the transform + rendertexture
 	// for rendering here
 	trs, found := sys.components.Transform.Get(e)

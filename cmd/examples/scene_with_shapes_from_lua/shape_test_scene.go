@@ -25,7 +25,7 @@ func (s *shapeTestFromLua) Key() string {
 	return sceneName
 }
 
-func (s *shapeTestFromLua) Update(dt time.Duration) {
+func (s *shapeTestFromLua) Update(_ time.Duration) {
 	if s.numRectangles >= maxRectangles {
 		return
 	}
