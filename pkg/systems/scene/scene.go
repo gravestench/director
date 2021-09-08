@@ -95,6 +95,12 @@ func (s *Scene) InitializeLua() {
 
 	s.Lua = lua.NewState()
 
+	var luaTypeExporters = []func(*Scene) common.LuaTypeExport{
+		luaRectangleTypeExporter,
+		luaCircleTypeExporter,
+		luaImageTypeExporter,
+	}
+
 	for _, luaTypeExporter := range luaTypeExporters {
 		luaTypeExport := luaTypeExporter(s)
 		common.RegisterLuaType(s.Lua, luaTypeExport)
