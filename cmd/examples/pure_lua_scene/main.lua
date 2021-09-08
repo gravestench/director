@@ -6,7 +6,7 @@ elapsed = 0
 function init()
     for i = 0,100,1
     do
-        shapes[i] = randShape()
+        shapes[i] = randObject()
     end
 end
 
@@ -15,7 +15,7 @@ function update(timeDelta)
     for _, entity in ipairs(shapes) do
         updatePosition(entity:id())
         updateRotation(entity:id())
-        updateOrigin(e:id())
+        --updateOrigin(entity:id())
     end
 end
 
@@ -82,7 +82,7 @@ function randColor()
     return "#" .. r .. g .. b
 end
 
-function randShape()
+function randObject()
     x = math.random(0, 1024)
     y = math.random(0, 768)
     w = math.random(0, 150/2) * 2
@@ -91,10 +91,15 @@ function randShape()
     fill = randColor()
     stroke = randColor()
 
-    if coinFlip() then
+    randNumber = math.random() * 3
+
+    if randNumber > 2 then
         e = rectangle.new(x, y, w, h, fill, stroke)
-    else
+    elseif randNumber > 1 then
         e = circle.new(x, y, w/2, fill, stroke)
+    else
+        KEKW = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
+        e = image.new(KEKW, x, y)
     end
 
     return e
