@@ -41,3 +41,7 @@ func (factory *ObjectFactory) Rectangle(x, y, w, h int, fill, stroke color.Color
 func (factory *ObjectFactory) Circle(x, y, radius int, fill, stroke color.Color) akara.EID {
 	return factory.shape.circle.New(factory.scene, x, y, radius, fill, stroke)
 }
+
+func (factory *ObjectFactory) Image(uri string, x, y int) akara.EID {
+	return factory.image.New(factory.scene, uri, x, y)
+}

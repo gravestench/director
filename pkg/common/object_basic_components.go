@@ -7,29 +7,37 @@ import (
 )
 
 type BasicComponents struct {
-	Camera2D        components.Camera2DFactory
-	Color           components.ColorFactory
-	Debug           components.DebugFactory
-	Fill            components.FillFactory
-	Stroke          components.StrokeFactory
-	Font            components.FontFactory
-	Interactive     input.InteractiveFactory
-	Opacity         components.OpacityFactory
-	Origin          components.OriginFactory
-	RenderTexture2D components.RenderTexture2DFactory
-	Size            components.SizeFactory
-	SceneGraphNode  components.SceneGraphNodeFactory
-	Text            components.TextFactory
-	Texture2D       components.Texture2DFactory
-	Transform       components.TransformFactory
-	UUID            components.UUIDFactory
+	Camera2D         components.Camera2DFactory
+	Color            components.ColorFactory
+	Debug            components.DebugFactory
+	FileLoadRequest  components.FileLoadRequestFactory
+	FileLoadResponse components.FileLoadResponseFactory
+	FileType         components.FileTypeFactory
+	Fill             components.FillFactory
+	Image            components.ImageFactory
+	Stroke           components.StrokeFactory
+	Font             components.FontFactory
+	Interactive      input.InteractiveFactory
+	Opacity          components.OpacityFactory
+	Origin           components.OriginFactory
+	RenderTexture2D  components.RenderTexture2DFactory
+	Size             components.SizeFactory
+	SceneGraphNode   components.SceneGraphNodeFactory
+	Text             components.TextFactory
+	Texture2D        components.Texture2DFactory
+	Transform        components.TransformFactory
+	UUID             components.UUIDFactory
 }
 
 func (bc *BasicComponents) Init(w *akara.World) {
 	injectComponent(w, &components.Camera2D{}, &bc.Camera2D.ComponentFactory)
 	injectComponent(w, &components.Color{}, &bc.Color.ComponentFactory)
 	injectComponent(w, &components.Debug{}, &bc.Debug.ComponentFactory)
+	injectComponent(w, &components.FileLoadRequest{}, &bc.FileLoadRequest.ComponentFactory)
+	injectComponent(w, &components.FileLoadResponse{}, &bc.FileLoadResponse.ComponentFactory)
+	injectComponent(w, &components.FileType{}, &bc.FileType.ComponentFactory)
 	injectComponent(w, &components.Fill{}, &bc.Fill.ComponentFactory)
+	injectComponent(w, &components.Image{}, &bc.Image.ComponentFactory)
 	injectComponent(w, &components.Origin{}, &bc.Origin.ComponentFactory)
 	injectComponent(w, &input.Interactive{}, &bc.Interactive.ComponentFactory)
 	injectComponent(w, &components.Opacity{}, &bc.Opacity.ComponentFactory)
@@ -65,7 +73,23 @@ func (bc *BasicComponents) IsInit() bool {
 		return false
 	}
 
+	if bc.FileType.ComponentFactory == nil {
+		return false
+	}
+
+	if bc.FileLoadRequest.ComponentFactory == nil {
+		return false
+	}
+
+	if bc.FileLoadResponse.ComponentFactory == nil {
+		return false
+	}
+
 	if bc.Fill.ComponentFactory == nil {
+		return false
+	}
+
+	if bc.Image.ComponentFactory == nil {
 		return false
 	}
 

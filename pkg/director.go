@@ -1,8 +1,7 @@
 package pkg
 
 import (
-	"github.com/gravestench/director/pkg/systems/input"
-	"github.com/gravestench/director/pkg/systems/tween"
+	"github.com/gravestench/director/pkg/systems/texture_manager"
 	"time"
 
 	"github.com/gen2brain/raylib-go/raylib"
@@ -11,17 +10,22 @@ import (
 	go_lua "github.com/yuin/gopher-lua"
 
 	"github.com/gravestench/director/pkg/components"
+	"github.com/gravestench/director/pkg/systems/file_loader"
+	"github.com/gravestench/director/pkg/systems/input"
 	"github.com/gravestench/director/pkg/systems/screen_rendering"
+	"github.com/gravestench/director/pkg/systems/tween"
 )
 
 type Director struct {
 	*akara.World
-	Lua    *go_lua.LState
-	Events *eventemitter.EventEmitter
-	Scenes map[string]Scene
-	Tweens *tween.System
-	Input  *input.System
-	Window struct {
+	Lua     *go_lua.LState
+	Events  *eventemitter.EventEmitter
+	Scenes  map[string]Scene
+	Load    *file_loader.System
+	Texture *texture_manager.System
+	Tweens  *tween.System
+	Input   *input.System
+	Window  struct {
 		Width, Height int // pixels
 		Title         string
 		ScaleFactor   float64
@@ -107,6 +111,12 @@ func (d *Director) initDirectorSystems() {
 
 	d.Input = &input.System{}
 	d.AddSystem(d.Input)
+
+	d.Load = &file_loader.System{}
+	d.AddSystem(d.Load)
+
+	d.Texture = &texture_manager.System{}
+	d.AddSystem(d.Texture)
 }
 
 const (

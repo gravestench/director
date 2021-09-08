@@ -53,7 +53,7 @@ func (s *Scene) renderEntity(e akara.EID) {
 		return
 	}
 
-	tmpVect.Set(float64(rt.Texture.Width), float64(rt.Texture.Height), 1)
+	tmpVect.Set(float64(t.Width), float64(t.Height), 1)
 
 	yRad := trs.Rotation.Y * mathlib.DegreesToRadians
 	ov2 := mathlib.NewVector2(origin.Clone().Multiply(&tmpVect).XY()).Rotate(yRad).Negate()
