@@ -131,6 +131,10 @@ func (sys *System) determineFileType(e akara.EID) {
 		return
 	}
 
+	if res.Stream == nil {
+		return
+	}
+
 	data, err := io.ReadAll(res.Stream)
 	if err != nil {
 		return

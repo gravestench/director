@@ -45,7 +45,12 @@ func (l *Loader) Exists(p string) bool {
 
 func (l *Loader) Load(p string) (io.ReadSeeker, error) {
 	if entry, found := l.cache.Retrieve(p); found {
-		return entry.(io.ReadSeeker), nil
+		rs, ok := entry.(io.ReadSeeker)
+		if !ok {
+			return nil, nil
+		}
+
+		return rs, nil
 	}
 
 	resp, err := http.Get(p)
@@ -58,8 +63,9 @@ func (l *Loader) Load(p string) (io.ReadSeeker, error) {
 		return nil, err
 	}
 
-	reader := bytes.NewReader(data)
-	 _ = l.cache.Insert(p, reader, 1)
+	go func(){
+		_ = l.cache.Insert(p, bytes.NewReader(data), 1)
+	}()
 
-	return reader, nil
+	return nil, nil
 }

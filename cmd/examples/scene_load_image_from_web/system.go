@@ -6,36 +6,53 @@ import (
 	"github.com/gravestench/director/pkg/systems/scene"
 	"github.com/gravestench/mathlib"
 	"math/rand"
+	"time"
 )
 
 const (
-	maxImages = 30
+	newImageInterval = time.Millisecond * 100
 	imgUrl = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
 )
 
 type testScene struct {
 	scene.Scene
 	images []akara.EID
+	elapsed time.Duration
 }
 
 func (scene *testScene) Init(_ *akara.World) {
-	for len(scene.images) < maxImages {
-		scene.images = append(scene.images, scene.Add.Image(imgUrl, 0, 0))
-	}
-
-	scene.setRandomImagePositions()
+	img := scene.Add.Image(imgUrl, 0, 0)
+	scene.setRandomImagePosition(img)
+	scene.images = append(scene.images, img)
 }
 
 func (scene *testScene) IsInitialized() bool {
 	return true
 }
 
-func (scene *testScene) Update() {
+func (scene *testScene) Update(dt time.Duration) {
+	scene.elapsed += dt
+
+	scene.handleNewImage()
+
 	scene.resizeCameraWithWindow()
 
 	for _, e := range scene.images {
 		scene.updatePosition(e)
 	}
+}
+
+func (scene *testScene) handleNewImage() {
+	if scene.elapsed < newImageInterval {
+		return
+	}
+
+	scene.elapsed = 0
+
+	newImage := scene.Add.Image(imgUrl, 0, 0)
+
+	scene.setRandomImagePosition(newImage)
+	scene.images = append(scene.images, newImage)
 }
 
 func (scene *testScene) updatePosition(e akara.EID) {
@@ -72,16 +89,16 @@ func (scene *testScene) resizeCameraWithWindow() {
 			t := rl.LoadRenderTexture(int32(scene.Window.Width), int32(scene.Window.Height))
 			rt.RenderTexture2D = &t
 
-			scene.setRandomImagePositions()
+			for _, e := range scene.images {
+				scene.setRandomImagePosition(e)
+			}
 		}
 	}
 }
 
-func (scene *testScene) setRandomImagePositions() {
-	for _, e := range scene.images {
-		x, y := rand.Intn(scene.Window.Width), rand.Intn(scene.Window.Height)
-		trs, _ := scene.Components.Transform.Get(e)
+func (scene *testScene) setRandomImagePosition(e akara.EID) {
+	x, y := rand.Intn(scene.Window.Width), rand.Intn(scene.Window.Height)
+	trs, _ := scene.Components.Transform.Get(e)
 
-		trs.Translation.Set(float64(x), float64(y), 0)
-	}
+	trs.Translation.Set(float64(x), float64(y), 0)
 }

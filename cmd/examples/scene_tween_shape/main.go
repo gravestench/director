@@ -34,15 +34,15 @@ type TweenTest struct {
 }
 
 func (t *TweenTest) Update() {
-	if t.squareTween == nil {
-		t.makeTween()
-	}
+	// noop
 }
 
 func (t *TweenTest) Init(_ *akara.World) {
 	red := color.RGBA{R: 255, A:255}
 
 	t.object = t.Add.Label("LOLWUT", 1024/2, 768/2, 100, "", red)
+
+	t.makeTween()
 }
 
 func (t *TweenTest) IsInitialized() bool {

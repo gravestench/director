@@ -100,7 +100,7 @@ func (c *Cache) Retrieve(key string) (interface{}, bool) {
 	defer c.mutex.Unlock()
 
 	node, found := c.lookup[key]
-	if !found {
+	if !found        {
 		return nil, false
 	}
 
