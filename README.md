@@ -1,3 +1,6 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/Gravestench/Director)](https://goreportcard.com/report/github.com/Gravestench/Director)
+[![Twitch Status](https://img.shields.io/twitch/status/gravestench_?style=social)](https://www.twitch.tv/gravestench_)
+
 # About
 `Director` is an abstraction for "scenes" written on top of raylib-go and akara.
 
