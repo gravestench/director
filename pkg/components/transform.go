@@ -24,8 +24,6 @@ func (t *Transform) GetMatrix() *mathlib.Matrix4 {
 
 // New creates a new alpha component instance. The default alpha is opaque with value 1.0
 func (*Transform) New() akara.Component {
-	const defaultTransform = 1.0
-
 	return &Transform{
 		Translation: mathlib.NewVector3(0, 0, 0),
 		Rotation:    mathlib.NewVector3(0, 0, 0),

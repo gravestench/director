@@ -6,17 +6,12 @@ import (
 	"image"
 )
 
-const (
-	logPrefixInputSystem = "Input System"
-)
-
 // static check that System implements the System interface
 var _ akara.System = &System{}
 
 // System is responsible for handling interactive entities
 type System struct {
 	akara.BaseSystem
-	configs      *akara.Subscription
 	interactives *akara.Subscription
 	inputState   *Vector
 	Components   struct {

@@ -1,8 +1,6 @@
 package scene
 
 import (
-	"fmt"
-
 	lua "github.com/yuin/gopher-lua"
 
 	"github.com/gravestench/director/pkg/common"
@@ -67,12 +65,4 @@ func circleGet(L *lua.LState) int {
 	L.Push(lua.LNumber(*p))
 
 	return 1
-}
-
-func circleFromLua(ud *lua.LUserData) (*common.Entity, error) {
-	if vv, ok := ud.Value.(*common.Entity); ok {
-		return vv, nil
-	}
-
-	return nil, fmt.Errorf("failed to convert userdata to circle")
 }

@@ -10,11 +10,17 @@ import (
 	"github.com/gravestench/eventemitter"
 	go_lua "github.com/yuin/gopher-lua"
 
-	"github.com/gravestench/director/pkg/components"
 	"github.com/gravestench/director/pkg/systems/file_loader"
 	"github.com/gravestench/director/pkg/systems/input"
 	"github.com/gravestench/director/pkg/systems/screen_rendering"
 	"github.com/gravestench/director/pkg/systems/tween"
+)
+
+const (
+	defaultTitle       = "Director"
+	defaultWidth       = 1028
+	defaultHeight      = 768
+	defaultScaleFactor = 1.0
 )
 
 type Director struct {
@@ -122,13 +128,6 @@ func (d *Director) initDirectorSystems() {
 	d.AddSystem(&animation.System{})
 }
 
-const (
-	defaultTitle       = "Director"
-	defaultWidth       = 1028
-	defaultHeight      = 768
-	defaultScaleFactor = 1.0
-)
-
 func (d *Director) Run() error {
 	now := time.Now()
 	last := now
@@ -161,14 +160,4 @@ func (d *Director) Run() error {
 	}
 
 	return nil
-}
-
-func (d *Director) renderablesSubscription() *akara.Subscription {
-	f := d.NewComponentFilter()
-
-	f.Require(&components.SceneGraphNode{})
-	f.Require(&components.Transform{})
-	f.RequireOne(&components.RenderTexture2D{}, &components.Texture2D{})
-
-	return d.AddSubscription(f.Build())
 }

@@ -9,22 +9,11 @@ import (
 type imageFactory struct {
 	*common.BasicComponents
 	common.EntityManager
-	cache map[common.Entity]*imageParameters
 }
 
-type imageParameters struct {
-	uri           string
-	width, height int
-	debug         bool
-}
-
-func (factory *imageFactory) update(s *Scene, _ time.Duration) {
+func (factory *imageFactory) update(_ *Scene, _ time.Duration) {
 	if !factory.EntityManager.IsInit() {
 		factory.EntityManager.Init()
-	}
-
-	if factory.cache == nil {
-		factory.cache = make(map[common.Entity]*imageParameters)
 	}
 
 	factory.EntityManager.ProcessRemovalQueue()
@@ -42,12 +31,4 @@ func (factory *imageFactory) New(s *Scene, uri string, x, y int) common.Entity {
 	factory.EntityManager.AddEntity(e)
 
 	return e
-}
-
-func (factory *imageFactory) putInCache(s *Scene, e common.Entity, uri string, x, y int) {
-	entry := &imageParameters{
-		uri: uri,
-	}
-
-	factory.cache[e] = entry
 }

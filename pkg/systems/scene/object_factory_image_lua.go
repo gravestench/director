@@ -1,7 +1,6 @@
 package scene
 
 import (
-	"fmt"
 	"github.com/gravestench/director/pkg/common"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -61,12 +60,4 @@ func imageGet(L *lua.LState) int {
 	L.Push(lua.LNumber(*p))
 
 	return 1
-}
-
-func imageFromLua(ud *lua.LUserData) (*common.Entity, error) {
-	if vv, ok := ud.Value.(*common.Entity); ok {
-		return vv, nil
-	}
-
-	return nil, fmt.Errorf("failed to convert userdata to image")
 }
