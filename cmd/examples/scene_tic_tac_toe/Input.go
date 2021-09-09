@@ -19,7 +19,3 @@ func (scene *Input) Init(_ *akara.World) {
 func (scene *Input) IsInitialized() bool {
 	return true
 }
-
-
-
-

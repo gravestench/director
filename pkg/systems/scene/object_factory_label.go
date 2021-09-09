@@ -20,9 +20,8 @@ type labelParameters struct {
 	fontSize int
 	fontFace string
 	color    color.Color
-	debug 	 bool
+	debug    bool
 }
-
 
 func (factory *labelFactory) New(s *Scene, str string, x, y, fontsize int, fontName string, c color.Color) common.Entity {
 	e := s.Add.generic.visibleEntity(s)
@@ -80,7 +79,7 @@ func (factory *labelFactory) putInCache(_ *Scene, e common.Entity, str, font str
 		text:     str,
 		fontSize: size,
 		fontFace: font,
-		color:    color.RGBA{
+		color: color.RGBA{
 			R: uint8(r),
 			G: uint8(g),
 			B: uint8(b),

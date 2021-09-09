@@ -9,7 +9,7 @@ import (
 
 type rectangleFactory struct {
 	entityManager common.EntityManager
-	cache map[common.Entity]*rectangleParameters
+	cache         map[common.Entity]*rectangleParameters
 }
 
 func (factory *rectangleFactory) New(s *Scene, x, y, w, h int, fill, stroke color.Color) common.Entity {

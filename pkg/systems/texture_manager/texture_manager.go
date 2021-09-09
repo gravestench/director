@@ -23,11 +23,11 @@ type System struct {
 	akara.BaseSystem
 	*cache.Cache
 	components struct {
-		fileLoadRequest components.FileLoadRequestFactory
+		fileLoadRequest  components.FileLoadRequestFactory
 		fileLoadResponse components.FileLoadResponseFactory
-		fileType components.FileTypeFactory
-		texture2d components.Texture2DFactory
-		animations components.AnimationFactory
+		fileType         components.FileTypeFactory
+		texture2d        components.Texture2DFactory
+		animations       components.AnimationFactory
 	}
 	subscriptions struct {
 		needsTexture *akara.Subscription
@@ -160,7 +160,7 @@ func (sys *System) createGifAnimation(e common.Entity, gifImg *gif.GIF) {
 		anim.FrameImages = append(anim.FrameImages, gifImg.Image[idx])
 		cacheKey := fmt.Sprintf("%s::frame%v", req.Path, idx)
 
-		delay := time.Second/100 * time.Duration(gifImg.Delay[idx])
+		delay := time.Second / 100 * time.Duration(gifImg.Delay[idx])
 		anim.FrameDurations = append(anim.FrameDurations, delay)
 
 		if t, found := sys.Cache.Retrieve(cacheKey); found {

@@ -30,7 +30,7 @@ import (
 
 const (
 	fmtBTTVUserEmoteEndpoint = "https://api.betterttv.net/3/cached/users/twitch/%s"
-	fmtBTTVEmoteURL = "https://cdn.betterttv.net/emote/%s/3x"
+	fmtBTTVEmoteURL          = "https://cdn.betterttv.net/emote/%s/3x"
 )
 
 type testScene struct {

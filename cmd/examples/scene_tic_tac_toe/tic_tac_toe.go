@@ -27,8 +27,6 @@ func (scene *TicTacToe) Init(_ *akara.World) {
 	scene.reset()
 }
 
-
-
 func (scene *TicTacToe) bindEvents() {
 	scene.Events.On(EventReset, func(args ...interface{}) {
 		scene.reset()

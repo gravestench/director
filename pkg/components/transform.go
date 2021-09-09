@@ -28,8 +28,8 @@ func (*Transform) New() akara.Component {
 
 	return &Transform{
 		Translation: mathlib.NewVector3(0, 0, 0),
-		Rotation: mathlib.NewVector3(0, 0, 0),
-		Scale: mathlib.NewVector3(1, 1, 1),
+		Rotation:    mathlib.NewVector3(0, 0, 0),
+		Scale:       mathlib.NewVector3(1, 1, 1),
 	}
 }
 

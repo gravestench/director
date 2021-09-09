@@ -18,7 +18,7 @@ type Viewport struct {
 // New creates a new viewport
 func (*Viewport) New() akara.Component {
 	return &Viewport{
-		Camera2D: rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 1),
+		Camera2D:   rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 1),
 		Background: color.Transparent,
 	}
 }

@@ -38,5 +38,3 @@ func (m *VelocityFactory) Get(id akara.EID) (*Velocity, bool) {
 
 	return component.(*Velocity), found
 }
-
-

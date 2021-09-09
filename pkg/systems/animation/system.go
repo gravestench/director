@@ -66,4 +66,3 @@ func (sys *System) updateAnimation(e common.Entity, dt time.Duration) {
 
 	tex.Texture2D = anim.FrameTextures[anim.CurrentFrame]
 }
-

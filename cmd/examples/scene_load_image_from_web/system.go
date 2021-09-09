@@ -16,12 +16,12 @@ import (
 
 const (
 	newImageInterval = time.Millisecond * 100
-	imgUrl = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
+	imgUrl           = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
 )
 
 type testScene struct {
 	scene.Scene
-	images []Entity
+	images  []Entity
 	elapsed time.Duration
 }
 
@@ -96,12 +96,12 @@ func (scene *testScene) updatePosition(e Entity) {
 	tw, th := tex.Width, tex.Height
 
 	trs.Translation.Add(mathlib.NewVector3(float64(rand.Intn(3)-1), float64(rand.Intn(3)-1), 0))
-	if trs.Translation.X > float64(scene.Window.Width + int(tw/2)) {
-		trs.Translation.X = float64(-tw/2)
+	if trs.Translation.X > float64(scene.Window.Width+int(tw/2)) {
+		trs.Translation.X = float64(-tw / 2)
 	}
 
-	if trs.Translation.Y > float64(scene.Window.Height + int(th/2)) {
-		trs.Translation.Y = float64(-th/2)
+	if trs.Translation.Y > float64(scene.Window.Height+int(th/2)) {
+		trs.Translation.Y = float64(-th / 2)
 	}
 }
 

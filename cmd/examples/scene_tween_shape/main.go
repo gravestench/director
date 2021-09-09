@@ -39,7 +39,7 @@ func (t *TweenTest) Update() {
 }
 
 func (t *TweenTest) Init(_ *akara.World) {
-	red := color.RGBA{R: 255, A:255}
+	red := color.RGBA{R: 255, A: 255}
 
 	t.object = t.Add.Label("LOLWUT", 1024/2, 768/2, 100, "", red)
 

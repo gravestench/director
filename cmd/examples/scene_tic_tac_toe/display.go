@@ -42,7 +42,7 @@ func (scene *Display) makeGraphics() {
 
 	highlight := color.RGBA{R: 255, G: 255, A: 128}
 
-	scene.ui.prompt = scene.Add.Label("Testing!", 1024>>1, 768>>1, wh / 6, "", color.White)
+	scene.ui.prompt = scene.Add.Label("Testing!", 1024>>1, 768>>1, wh/6, "", color.White)
 	scene.ui.highlight = scene.Add.Rectangle(-cellSize, -cellSize, w, h, highlight, nil)
 
 	scene.ui.x = make([]akara.EID, numCells)
@@ -52,7 +52,7 @@ func (scene *Display) makeGraphics() {
 	for idx := range scene.ui.x {
 		ox := (idx % 3) * cellSize
 		oy := (idx / 3) * -cellSize
-		scene.ui.x[idx] = scene.Add.Label(PlayerX.String(), x + ox, y + oy, innerCellSize, "", color.White)
-		scene.ui.o[idx] = scene.Add.Label(PlayerO.String(), x + ox, y + oy, innerCellSize, "", color.White)
+		scene.ui.x[idx] = scene.Add.Label(PlayerX.String(), x+ox, y+oy, innerCellSize, "", color.White)
+		scene.ui.o[idx] = scene.Add.Label(PlayerO.String(), x+ox, y+oy, innerCellSize, "", color.White)
 	}
 }

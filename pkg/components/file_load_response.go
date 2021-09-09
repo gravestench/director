@@ -31,5 +31,3 @@ func (m *FileLoadResponseFactory) Get(id akara.EID) (*FileLoadResponse, bool) {
 
 	return component.(*FileLoadResponse), found
 }
-
-

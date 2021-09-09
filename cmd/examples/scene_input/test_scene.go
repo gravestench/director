@@ -16,14 +16,13 @@ import (
 type TestScene struct {
 	scene.Scene
 	square Entity
-	label Entity
+	label  Entity
 }
 
 func (scene *TestScene) Update() {
 	scene.updateLabel()
 	scene.resetSquare()
 }
-
 
 func (scene *TestScene) updateLabel() {
 	text, found := scene.Components.Text.Get(scene.label)
@@ -47,7 +46,7 @@ func (scene *TestScene) Init(world *akara.World) {
 }
 
 func (scene *TestScene) makeSquare() {
-	blue := color.RGBA{B: 255, A:255}
+	blue := color.RGBA{B: 255, A: 255}
 	scene.square = scene.Add.Rectangle(100, 100, 30, 30, blue, nil)
 }
 
@@ -57,7 +56,7 @@ func (scene *TestScene) resetSquare() {
 		return
 	}
 
-	r,g,b,a := fill.Color.RGBA()
+	r, g, b, a := fill.Color.RGBA()
 	if g > 0 {
 		g -= 1
 		fill.Color = color.RGBA{
@@ -79,7 +78,7 @@ func (scene *TestScene) setSquareColor(c color.Color) {
 }
 
 func (scene *TestScene) makeLabel() {
-	red := color.RGBA{R:255, A:255}
+	red := color.RGBA{R: 255, A: 255}
 	scene.label = scene.Add.Label("", 400, 400, 24, "", red)
 }
 
@@ -87,7 +86,7 @@ func (scene *TestScene) bindInput() {
 	i := scene.Components.Interactive.Add(scene.square)
 
 	i.Callback = func() (preventPropogation bool) {
-		yellow := color.RGBA{R:255, G: 255, A:255}
+		yellow := color.RGBA{R: 255, G: 255, A: 255}
 
 		scene.setSquareColor(yellow)
 

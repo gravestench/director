@@ -41,7 +41,7 @@ func (sys *ScreenRenderingSystem) initCameraSubscription() {
 		&components.Viewport{},
 		&components.Transform{},
 		&components.RenderTexture2D{},
-		)
+	)
 
 	sys.sceneCameras = sys.World.AddSubscription(filter.Build())
 }
@@ -88,6 +88,5 @@ func (sys *ScreenRenderingSystem) renderCamera(e common.Entity) {
 	rotation := float32(trs.Rotation.Y)
 	scale := float32(trs.Scale.X)
 
-	rl.DrawTextureEx(rt.Texture, position, rotation, scale, rl.NewColor(0xff, 0xff, 0xff, uint8(alpha * 255)))
+	rl.DrawTextureEx(rt.Texture, position, rotation, scale, rl.NewColor(0xff, 0xff, 0xff, uint8(alpha*255)))
 }
-

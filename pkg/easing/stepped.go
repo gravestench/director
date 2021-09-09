@@ -19,7 +19,7 @@ func (*SteppedEaseProvider) New(params []float64) func(float64) float64 {
 			return 1
 		}
 
-		return ((steps * v)  + 1) * (1 / steps)
+		return ((steps * v) + 1) * (1 / steps)
 	}
 
 	return linear

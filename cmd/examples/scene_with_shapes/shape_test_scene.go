@@ -17,8 +17,8 @@ type ShapeTestScene struct {
 }
 
 func (s *ShapeTestScene) Init(_ *akara.World) {
-	yellow := color.RGBA{R: 255, G: 255, A:255}
-	pink := color.RGBA{R: 255, B:255, A:255}
+	yellow := color.RGBA{R: 255, G: 255, A: 255}
+	pink := color.RGBA{R: 255, B: 255, A: 255}
 
 	ww, wh := s.Width, s.Height
 
@@ -33,4 +33,3 @@ func (s *ShapeTestScene) IsInitialized() bool {
 func (s *ShapeTestScene) Key() string {
 	return sceneName
 }
-

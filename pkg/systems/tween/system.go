@@ -42,4 +42,3 @@ func (s *System) Init(_ *akara.World) {
 func (s *System) IsInitialized() bool {
 	return s.tweens != nil
 }
-

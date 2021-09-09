@@ -39,4 +39,3 @@ func (m *FileTypeFactory) Get(id akara.EID) (*FileType, bool) {
 
 	return component.(*FileType), found
 }
-

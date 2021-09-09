@@ -7,7 +7,7 @@ import (
 
 const (
 	defaultAmplitude = 0.1
-	defaultPeriod = 0.1
+	defaultPeriod    = 0.1
 )
 
 var _ EaseFunctionProvider = &ElasticOutEaseProvider{}

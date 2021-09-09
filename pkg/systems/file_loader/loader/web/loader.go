@@ -63,7 +63,7 @@ func (l *Loader) Load(p string) (io.ReadSeeker, error) {
 		return nil, err
 	}
 
-	go func(){
+	go func() {
 		_ = l.cache.Insert(p, bytes.NewReader(data), 1)
 	}()
 
