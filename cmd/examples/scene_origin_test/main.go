@@ -74,8 +74,8 @@ func (scene *LabelTestScene) updateLabel() {
 		return
 	}
 
-	n := float64(time.Now().UnixNano())/1e9
-	o.X, o.Y = (math.Sin(n)/2) + 0.5, (math.Cos(n)/2) + 0.5
+	n := float64(time.Now().UnixNano()) / 1e9
+	o.X, o.Y = (math.Sin(n)/2)+0.5, (math.Cos(n)/2)+0.5
 
 	trs, found := scene.Components.Transform.Get(scene.singleLabel)
 	if !found {

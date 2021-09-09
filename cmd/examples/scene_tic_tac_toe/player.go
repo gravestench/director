@@ -25,9 +25,9 @@ func (p Player) String() string {
 func (p Player) Color() color.Color {
 	switch p {
 	case PlayerX:
-		return color.RGBA{R:0xFF, G: 0xFF, A: 0xFF}
+		return color.RGBA{R: 0xFF, G: 0xFF, A: 0xFF}
 	case PlayerO:
-		return color.RGBA{R:0xFF, B: 0xFF, A: 0xFF}
+		return color.RGBA{R: 0xFF, B: 0xFF, A: 0xFF}
 	default:
 		return color.RGBA{}
 	}

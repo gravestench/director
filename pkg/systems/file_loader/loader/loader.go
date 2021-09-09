@@ -8,7 +8,7 @@ import (
 )
 
 type Loader struct {
-	providers           []Provider
+	providers []Provider
 }
 
 func (l *Loader) AddProvider(provider Provider) {

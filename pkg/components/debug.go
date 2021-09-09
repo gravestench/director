@@ -7,7 +7,7 @@ import (
 var _ akara.Component = &Debug{}
 
 // Debug is a tag component, used as a flag for debugging an entity.
-type Debug struct {}
+type Debug struct{}
 
 // New creates a new alpha component instance. The default alpha is opaque with value 1.0
 func (*Debug) New() akara.Component {

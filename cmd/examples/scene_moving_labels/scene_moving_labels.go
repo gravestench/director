@@ -182,7 +182,7 @@ func clamp(v, min, max float32) float32 {
 }
 
 func wrap(v, min, max float32) float32 {
-	return float32(mathlib.WrapInt(int(v - min), int(max - min))) + min
+	return float32(mathlib.WrapInt(int(v-min), int(max-min))) + min
 }
 
 func randColor() color.Color {

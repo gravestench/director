@@ -8,7 +8,7 @@ type QuinticOutEaseProvider struct{}
 
 func (*QuinticOutEaseProvider) New(_ []float64) func(float64) float64 {
 	quintic := func(v float64) float64 {
-		return v * v * v * v * v + 1
+		return v*v*v*v*v + 1
 	}
 
 	return quintic

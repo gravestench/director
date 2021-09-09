@@ -9,7 +9,7 @@ import (
 
 type ObjectFactory struct {
 	common.BasicComponents
-	scene *Scene
+	scene   *Scene
 	generic genericFactory
 	shape   shapeFactory
 	image   imageFactory

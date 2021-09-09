@@ -73,4 +73,3 @@ func (s *Scene) makeLuaTableComponentTransform(trs *components.Transform) *lua.L
 
 	return table
 }
-

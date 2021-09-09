@@ -7,4 +7,3 @@ type Provider interface {
 	Exists(path string) bool
 	Load(path string) (io.ReadSeeker, error)
 }
-

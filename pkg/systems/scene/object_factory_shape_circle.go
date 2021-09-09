@@ -28,7 +28,6 @@ func (factory *circleFactory) putInCache(e common.Entity, width, height int, fil
 	factory.cache[e] = entry
 }
 
-
 func (factory *circleFactory) New(s *Scene, x, y, radius int, fill, stroke color.Color) common.Entity {
 	e := s.Add.generic.visibleEntity(s)
 

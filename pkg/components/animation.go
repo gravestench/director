@@ -12,18 +12,18 @@ var _ akara.Component = &Animation{}
 
 // Animation is a component that contains normalized alpha transparency (0.0 ... 1.0)
 type Animation struct {
-	FrameImages []image.Image
-	FrameTextures []*rl.Texture2D
+	FrameImages    []image.Image
+	FrameTextures  []*rl.Texture2D
 	FrameDurations []time.Duration
-	CurrentFrame int
+	CurrentFrame   int
 	UntilNextFrame time.Duration
 }
 
 // New creates a new alpha component instance. The default alpha is opaque with value 1.0
 func (*Animation) New() akara.Component {
 	return &Animation{
-		FrameImages: make([]image.Image, 0),
-		FrameTextures: make([]*rl.Texture2D, 0),
+		FrameImages:    make([]image.Image, 0),
+		FrameTextures:  make([]*rl.Texture2D, 0),
 		FrameDurations: make([]time.Duration, 0),
 	}
 }
@@ -48,6 +48,3 @@ func (m *AnimationFactory) Get(id akara.EID) (*Animation, bool) {
 
 	return component.(*Animation), found
 }
-
-
-

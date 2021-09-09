@@ -27,10 +27,10 @@ func (*BounceOutEaseProvider) New(_ []float64) func(float64) float64 {
 		} else if v < magic10/magic1 {
 			return magic2*(v-magic8/magic1)*v + magic9
 		} else if v < magic3/magic1 {
-			return magic2 * (v - magic5 / magic1) * v + magic4
+			return magic2*(v-magic5/magic1)*v + magic4
 		}
 
-		return magic2 * (v - magic6 / magic1) * v + magic7
+		return magic2*(v-magic6/magic1)*v + magic7
 	}
 
 	return bounce
@@ -42,15 +42,15 @@ func (*BounceInEaseProvider) New(_ []float64) func(float64) float64 {
 	bounce := func(v float64) float64 {
 		v = 1 - v
 
-		if (v < 1 / magic1) {
+		if v < 1/magic1 {
 			return 1 - (magic2 * v * v)
-		} else if (v < 2 / magic1) {
-			return 1 - (magic2 * (v - magic8 / magic1) * v + magic9)
-		} else if (v < magic3 / magic1) {
-			return 1 - (magic2 * (v - magic5 / magic1) * v + magic4)
+		} else if v < 2/magic1 {
+			return 1 - (magic2*(v-magic8/magic1)*v + magic9)
+		} else if v < magic3/magic1 {
+			return 1 - (magic2*(v-magic5/magic1)*v + magic4)
 		}
 
-		return 1 - (magic2 * (v - magic6 / magic1) * v + magic7)
+		return 1 - (magic2*(v-magic6/magic1)*v + magic7)
 	}
 
 	return bounce
@@ -62,27 +62,27 @@ func (*BounceInOutEaseProvider) New(_ []float64) func(float64) float64 {
 	bounce := func(v float64) float64 {
 		var reverse = false
 
-		if (v < 0.5) {
+		if v < 0.5 {
 			v = 1 - (v * 2)
 			reverse = true
 		} else {
 			v = (v * 2) - 1
 		}
 
-		if (v < 1 / magic1) {
+		if v < 1/magic1 {
 			v = magic2 * v * v
-		} else if (v < magic10 / magic1) {
-			v = magic2 * (v - magic8 / magic1) * v + magic9
-		} else if (v < magic3 / magic1) {
-			v = magic2 * (v - magic5 / magic1) * v + magic4
+		} else if v < magic10/magic1 {
+			v = magic2*(v-magic8/magic1)*v + magic9
+		} else if v < magic3/magic1 {
+			v = magic2*(v-magic5/magic1)*v + magic4
 		} else {
-			v = magic2 * (v - magic6 / magic1) * v + magic7
+			v = magic2*(v-magic6/magic1)*v + magic7
 		}
 
-		if (reverse) {
+		if reverse {
 			return (1 - v) * 0.5
 		} else {
-			return v * 0.5 + 0.5
+			return v*0.5 + 0.5
 		}
 	}
 

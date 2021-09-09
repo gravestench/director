@@ -55,7 +55,6 @@ func (sys *System) initProviders() {
 	sys.AddProvider(web.New())
 }
 
-
 func (sys *System) initSubscriptions() {
 	sys.initLoadRequestSubscription()
 	sys.initTypeResolutionSubscription()

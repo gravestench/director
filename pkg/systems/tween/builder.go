@@ -23,7 +23,6 @@ type tweenConfig struct {
 	onUpdate    func(complete float64)
 }
 
-
 func NewBuilder() *Builder {
 	tb := &Builder{}
 	tb.cfg = &tweenConfig{}

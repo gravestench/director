@@ -6,11 +6,11 @@ import (
 
 const (
 	gridOrder = 3
-	numCells = gridOrder * gridOrder
+	numCells  = gridOrder * gridOrder
 )
 
 type state struct {
-	turn Player
+	turn  Player
 	cells []Player
 }
 
@@ -52,4 +52,3 @@ func (m *GameStateFactory) Get(id akara.EID) (*GameState, bool) {
 
 	return component.(*GameState), found
 }
-

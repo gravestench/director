@@ -7,7 +7,7 @@ import (
 var _ akara.Component = &FileLoadRequest{}
 
 type FileLoadRequest struct {
-	Path string
+	Path     string
 	Attempts int
 }
 
@@ -31,5 +31,3 @@ func (m *FileLoadRequestFactory) Get(id akara.EID) (*FileLoadRequest, bool) {
 
 	return component.(*FileLoadRequest), found
 }
-
-

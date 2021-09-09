@@ -28,7 +28,7 @@ func main() {
 }
 
 const (
-	key              = "Director Example - Label Test"
+	key = "Director Example - Label Test"
 )
 
 type LabelTestScene struct {
@@ -74,8 +74,8 @@ func (scene *LabelTestScene) updateLabel() {
 
 	col.Color = randColor()
 
-	trs.Translation.X = float64(ww)/2
-	trs.Translation.Y = float64(wh)/2
+	trs.Translation.X = float64(ww) / 2
+	trs.Translation.Y = float64(wh) / 2
 
 	text, found := scene.Components.Text.Get(scene.singleLabel)
 	if !found {

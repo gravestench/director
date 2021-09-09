@@ -36,7 +36,7 @@ func (*SineInEaseProvider) New(_ []float64) func(float64) float64 {
 			return 1
 		}
 
-		return 1 - math.Cos(v * mathlib.TAU)
+		return 1 - math.Cos(v*mathlib.TAU)
 	}
 
 	return sine
@@ -52,7 +52,7 @@ func (*SineInOutEaseProvider) New(_ []float64) func(float64) float64 {
 			return 1
 		}
 
-		return 0.5 * (1 - math.Cos(mathlib.PI * v))
+		return 0.5 * (1 - math.Cos(mathlib.PI*v))
 	}
 
 	return sine

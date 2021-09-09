@@ -13,7 +13,7 @@ const (
 type Tween struct {
 	*tweenConfig
 	mode
-	elapsed    time.Duration
+	elapsed time.Duration
 }
 
 func (t *Tween) Start() *Tween {
@@ -43,7 +43,7 @@ func (t *Tween) Pause() *Tween {
 }
 
 func (t *Tween) Complete() float64 {
-	return float64((t.elapsed - t.delay).Milliseconds())/float64(t.duration.Milliseconds())
+	return float64((t.elapsed - t.delay).Milliseconds()) / float64(t.duration.Milliseconds())
 }
 
 func (t *Tween) Update(dt time.Duration) *Tween {

@@ -71,4 +71,3 @@ func (s *Scene) makeLuaTableComponentOrigin(origin *components.Origin) *lua.LTab
 
 	return table
 }
-

@@ -8,12 +8,12 @@ import (
 )
 
 const (
-	sceneName = "lua shape test scene"
+	sceneName     = "lua shape test scene"
 	maxRectangles = 500
-	minWidth = 10
-	maxWidth = 200
-	minHeight = 10
-	maxHeight = 200
+	minWidth      = 10
+	maxWidth      = 200
+	minHeight     = 10
+	maxHeight     = 200
 )
 
 type shapeTestFromLua struct {
@@ -46,6 +46,5 @@ func (s *shapeTestFromLua) Update(_ time.Duration) {
 }
 
 func randRange(min, max int) int {
-	return rand.Intn(max - min) + min
+	return rand.Intn(max-min) + min
 }
-
