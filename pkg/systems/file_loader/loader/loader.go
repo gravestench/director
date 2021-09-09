@@ -8,11 +8,11 @@ import (
 )
 
 type Loader struct {
-	providers []Provider
+	Providers []Provider
 }
 
 func (l *Loader) AddProvider(provider Provider) {
-	l.providers = append(l.providers, provider)
+	l.Providers = append(l.Providers, provider)
 }
 
 func (l *Loader) Load(path string) (io.ReadSeeker, error) {
@@ -22,12 +22,12 @@ func (l *Loader) Load(path string) (io.ReadSeeker, error) {
 
 	path = strings.ReplaceAll(path, "\\", "/")
 
-	for providerIdx := range l.providers {
-		if !l.providers[providerIdx].Exists(path) {
+	for providerIdx := range l.Providers {
+		if !l.Providers[providerIdx].Exists(path) {
 			continue
 		}
 
-		return l.providers[providerIdx].Load(path)
+		return l.Providers[providerIdx].Load(path)
 	}
 
 	return nil, fmt.Errorf("file not found: \"%s\"", path)

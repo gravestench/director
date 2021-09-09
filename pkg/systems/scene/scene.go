@@ -20,7 +20,7 @@ type Scene struct {
 	Components  common.BasicComponents
 	Graph       scenegraph.Node
 	key         string
-	Add         ObjectFactory
+	Add         SceneObjectFactory
 	Renderables *akara.Subscription
 	Viewports   []common.Entity
 	Width       int

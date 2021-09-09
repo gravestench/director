@@ -22,11 +22,6 @@ type UpdaterTimed interface {
 	Update(duration time.Duration)
 }
 
-type LuaScene interface {
-	Scene
-	RunLuaScripts()
-}
-
 type HasKey interface {
 	Key() string
 }

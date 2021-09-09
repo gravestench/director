@@ -28,7 +28,7 @@ type Director struct {
 	Lua     *go_lua.LState
 	Events  *eventemitter.EventEmitter
 	Scenes  map[string]Scene
-	Load    *file_loader.System
+	Loader  *file_loader.System
 	Texture *texture_manager.System
 	Tweens  *tween.System
 	Input   *input.System
@@ -119,8 +119,8 @@ func (d *Director) initDirectorSystems() {
 	d.Input = &input.System{}
 	d.AddSystem(d.Input)
 
-	d.Load = &file_loader.System{}
-	d.AddSystem(d.Load)
+	d.Loader = &file_loader.System{}
+	d.AddSystem(d.Loader)
 
 	d.Texture = &texture_manager.System{}
 	d.AddSystem(d.Texture)
