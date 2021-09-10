@@ -12,14 +12,14 @@ type ScreenRenderingSystem struct {
 	components struct {
 		common.BasicComponents
 	}
-	sceneCameras *akara.Subscription
+	sceneViewports *akara.Subscription
 }
 
 func (sys *ScreenRenderingSystem) Init(world *akara.World) {
 	sys.World = world
 
 	sys.components.Init(world)
-	sys.initCameraSubscription()
+	sys.initViewportSubscription()
 }
 
 func (sys *ScreenRenderingSystem) IsInitialized() bool {
@@ -34,7 +34,7 @@ func (sys *ScreenRenderingSystem) IsInitialized() bool {
 	return true
 }
 
-func (sys *ScreenRenderingSystem) initCameraSubscription() {
+func (sys *ScreenRenderingSystem) initViewportSubscription() {
 	filter := sys.World.NewComponentFilter()
 
 	filter.Require(
@@ -43,25 +43,24 @@ func (sys *ScreenRenderingSystem) initCameraSubscription() {
 		&components.RenderTexture2D{},
 	)
 
-	sys.sceneCameras = sys.World.AddSubscription(filter.Build())
+	sys.sceneViewports = sys.World.AddSubscription(filter.Build())
 }
 
 func (sys *ScreenRenderingSystem) Update() {
 	rl.BeginDrawing()
 
-	rl.ClearBackground(rl.Black)
+	rl.ClearBackground(rl.Blank)
 	rl.BeginBlendMode(rl.BlendAlpha)
 
-	for _, e := range sys.sceneCameras.GetEntities() {
-		sys.renderCamera(e)
-		break
+	for _, e := range sys.sceneViewports.GetEntities() {
+		sys.renderViewport(e)
 	}
 
 	rl.EndBlendMode()
 	rl.EndDrawing()
 }
 
-func (sys *ScreenRenderingSystem) renderCamera(e common.Entity) {
+func (sys *ScreenRenderingSystem) renderViewport(e common.Entity) {
 	// we use the camera in the filter merely to tag the transform + rendertexture
 	// for rendering here
 	trs, found := sys.components.Transform.Get(e)
@@ -74,10 +73,17 @@ func (sys *ScreenRenderingSystem) renderCamera(e common.Entity) {
 		return
 	}
 
-	alpha := 1.0
+	var alpha uint8
+
 	opacity, found := sys.components.Opacity.Get(e)
 	if found {
-		alpha = opacity.Value
+		if opacity.Value > 1 {
+			opacity.Value = 1
+		} else if opacity.Value < 0 {
+			opacity.Value = 0
+		}
+
+		alpha = uint8(opacity.Value*255)
 	}
 
 	position := rl.Vector2{
@@ -88,5 +94,5 @@ func (sys *ScreenRenderingSystem) renderCamera(e common.Entity) {
 	rotation := float32(trs.Rotation.Y)
 	scale := float32(trs.Scale.X)
 
-	rl.DrawTextureEx(rt.Texture, position, rotation, scale, rl.NewColor(0xff, 0xff, 0xff, uint8(alpha*255)))
+	rl.DrawTextureEx(rt.Texture, position, rotation, scale, rl.NewColor(0xff, 0xff, 0xff, alpha))
 }

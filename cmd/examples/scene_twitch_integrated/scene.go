@@ -50,6 +50,10 @@ type testScene struct {
 	emoteMap   map[string]string
 }
 
+func (scene *testScene) Key() string {
+	return "twitch integration test"
+}
+
 func (scene *testScene) Init(_ *akara.World) {
 	scene.parseFlags()   // the command line flags have all the twitch api stuff
 	scene.setupClients() // we set up the two titch client instances
@@ -279,14 +283,29 @@ func (scene *testScene) newMessage(name, msg string) {
 
 func (scene *testScene) resizeCameraWithWindow() {
 	for _, e := range scene.Viewports {
-		rt, found := scene.Components.RenderTexture2D.Get(e)
+		vp, found := scene.Components.Viewport.Get(e)
 		if !found {
 			continue
 		}
 
-		if int(rt.Texture.Width) != scene.Window.Width || int(rt.Texture.Height) != scene.Window.Height {
+		vprt, found := scene.Components.RenderTexture2D.Get(e)
+		if !found {
+			continue
+		}
+
+		camrt, found := scene.Components.RenderTexture2D.Get(vp.CameraEntity)
+		if !found {
+			continue
+		}
+
+		if int(vprt.Texture.Width) != scene.Window.Width || int(vprt.Texture.Height) != scene.Window.Height {
 			t := rl.LoadRenderTexture(int32(scene.Window.Width), int32(scene.Window.Height))
-			rt.RenderTexture2D = &t
+			vprt.RenderTexture2D = &t
+		}
+
+		if int(camrt.Texture.Width) != scene.Window.Width || int(camrt.Texture.Height) != scene.Window.Height {
+			t := rl.LoadRenderTexture(int32(scene.Window.Width), int32(scene.Window.Height))
+			camrt.RenderTexture2D = &t
 		}
 	}
 }

@@ -34,6 +34,10 @@ type TweenTest struct {
 	squareTween *tween.Tween
 }
 
+func (t *TweenTest) Key() string {
+	return "tween test"
+}
+
 func (t *TweenTest) Update() {
 	// noop
 }

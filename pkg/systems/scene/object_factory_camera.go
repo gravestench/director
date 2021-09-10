@@ -1,11 +1,9 @@
 package scene
 
 import (
-	"time"
-
-	"github.com/gravestench/director/pkg/common"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/gravestench/director/pkg/common"
+	"time"
 )
 
 type cameraFactory struct {
@@ -14,20 +12,20 @@ type cameraFactory struct {
 }
 
 func (*cameraFactory) New(s *Scene, x, y, w, h int) common.Entity {
-	e := s.Add.generic.visibleEntity(s)
+	ce := s.Add.generic.visibleEntity(s)
 
-	cam := s.Components.Viewport.Add(e)
+	cam := s.Components.Camera.Add(ce)
 	cam.Camera2D = rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 1)
 
-	trs, _ := s.Components.Transform.Get(e) // this is a component all visible entities have
-	rt := s.Components.RenderTexture2D.Add(e)
+	trs, _ := s.Components.Transform.Get(ce) // this is a component all visible entities have
+	rt := s.Components.RenderTexture2D.Add(ce)
 
 	newRT := rl.LoadRenderTexture(int32(w), int32(h))
 	rt.RenderTexture2D = &newRT
 
 	trs.Translation.Set(float64(x), float64(y), trs.Translation.Z)
 
-	return e
+	return ce
 }
 
 func (factory *cameraFactory) update(s *Scene, _ time.Duration) {
@@ -35,26 +33,5 @@ func (factory *cameraFactory) update(s *Scene, _ time.Duration) {
 		factory.EntityManager.Init()
 	}
 
-	factory.applyTransformToCamera(s)
 	factory.EntityManager.ProcessRemovalQueue()
-}
-
-func (factory *cameraFactory) applyTransformToCamera(s *Scene) {
-	for e := range factory.Entities {
-		cam, found := s.Components.Viewport.Get(e)
-		if !found {
-			continue
-		}
-
-		trs, found := s.Components.Transform.Get(e)
-		if !found {
-			continue
-		}
-
-		cam.Rotation = float32(trs.Rotation.Y)
-		cam.Offset = rl.Vector2{
-			X: float32(trs.Translation.X),
-			Y: float32(trs.Translation.Y),
-		}
-	}
 }

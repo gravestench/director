@@ -5,7 +5,6 @@ import (
 	"github.com/gravestench/akara"
 	director "github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/components"
 	"github.com/gravestench/mathlib"
 	"github.com/gravestench/scenegraph"
 	lua "github.com/yuin/gopher-lua"
@@ -16,15 +15,15 @@ import (
 type Scene struct {
 	akara.BaseSystem
 	*director.Director
-	Lua         *lua.LState
-	Components  common.BasicComponents
-	Graph       scenegraph.Node
-	key         string
-	Add         SceneObjectFactory
-	Renderables *akara.Subscription
-	Viewports   []common.Entity
-	Width       int
-	Height      int
+	Lua        *lua.LState
+	Components common.BasicComponents
+	Graph      scenegraph.Node
+	key        string
+	Add        SceneObjectFactory
+	renderList []common.Entity
+	Viewports  []common.Entity
+	Width      int
+	Height     int
 }
 
 var tmpVect mathlib.Vector3
@@ -71,40 +70,27 @@ func (s *Scene) renderEntity(e common.Entity) {
 		return
 	}
 
+	// this is rotating around the origin point from the origin component
 	tmpVect.Set(float64(t.Width), float64(t.Height), 1)
-
 	yRad := trs.Rotation.Y * mathlib.DegreesToRadians
 	ov2 := mathlib.NewVector2(origin.Clone().Multiply(&tmpVect).XY()).Rotate(yRad).Negate()
 	ov3 := mathlib.NewVector3(ov2.X, ov2.Y, 0)
-
 	x, y := trs.Translation.Clone().Add(ov3).XY()
 	v2 := mathlib.NewVector2(x, y)
 
-	position := rl.Vector2{
-		X: float32(v2.X),
-		Y: float32(v2.Y),
-	}
-
+	position := rl.Vector2{X: float32(v2.X), Y: float32(v2.Y)}
 	rotation := float32(trs.Rotation.Y)
-
 	scale := float32(trs.Scale.X)
 
 	rl.DrawTextureEx(*t, position, rotation, scale, tint)
 }
 
-func (s *Scene) Initialize(d *director.Director, width, height int) {
+func (s *Scene) GenericSceneInit(d *director.Director, width, height int) {
 	s.Add.scene = s
 	s.Width = width
 	s.Height = height
 	s.Director = d
 	s.Components.Init(s.Director.World)
-
-	filter := s.Director.World.NewComponentFilter()
-	filter.Require(&components.Transform{})
-	filter.RequireOne(&components.RenderTexture2D{}, &components.Texture2D{})
-	filter.Forbid(&components.Viewport{})
-
-	s.Renderables = s.Director.AddSubscription(filter.Build())
 }
 
 func (s *Scene) InitializeLua() {
@@ -145,7 +131,7 @@ func (s *Scene) LuaInitialized() bool {
 }
 
 func (s *Scene) updateSceneGraph() {
-	for _, eid := range s.Renderables.GetEntities() {
+	for _, eid := range s.renderList {
 		node, found := s.Components.SceneGraphNode.Get(eid)
 		if !found {
 			continue
@@ -176,48 +162,94 @@ func (s *Scene) Render() {
 		s.initViewport()
 	}
 
-	for _, cameraEntity := range s.Viewports {
-		s.renderEntitiesWithRespectToCamera(cameraEntity)
+	for _, e := range s.Viewports {
+		s.renderCameraForViewport(e)
+		s.renderCameraToViewport(e)
 	}
 }
 
 func (s *Scene) initViewport() {
 	s.Viewports = make([]common.Entity, 0)
-	s.Viewports = append(s.Viewports, s.Add.Camera(0, 0, s.Width, s.Height))
+	s.Width, s.Height = s.Window.Width, s.Window.Height
+	s.Viewports = append(s.Viewports, s.Add.Viewport(0, 0, s.Width, s.Height))
 }
 
-func (s *Scene) renderEntitiesWithRespectToCamera(camera common.Entity) {
-	rt, found := s.Components.RenderTexture2D.Get(camera)
+func (s *Scene) renderCameraForViewport(viewport common.Entity) {
+	vp, found := s.Components.Viewport.Get(viewport)
 	if !found {
 		return
 	}
 
-	cam, found := s.Components.Viewport.Get(camera)
+	cam, found := s.Components.Camera.Get(vp.CameraEntity)
 	if !found {
 		return
 	}
 
-	r, g, b, a := cam.Background.RGBA()
+	camrt, found := s.Components.RenderTexture2D.Get(vp.CameraEntity)
+	if !found {
+		return
+	}
 
-	rl.BeginTextureMode(*rt.RenderTexture2D)
-	rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+	rl.BeginTextureMode(*camrt.RenderTexture2D)
+	defer rl.EndTextureMode()
+
 	rl.BeginMode2D(cam.Camera2D)
+	defer rl.EndMode2D()
 
-	for _, entity := range s.Renderables.GetEntities() {
+	r, g, b, a := vp.Background.RGBA()
+	rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+
+	for _, entity := range s.renderList {
+		if entity == vp.CameraEntity || entity == viewport {
+			continue
+		}
+
 		s.renderEntity(entity)
 	}
-
-	rl.EndMode2D()
-	rl.EndTextureMode()
 }
 
-func (s *Scene) Key() string {
-	return s.key
+func (s *Scene) renderCameraToViewport(viewport common.Entity) {
+	vp, found := s.Components.Viewport.Get(viewport)
+	if !found {
+		return
+	}
+
+	vprt, found := s.Components.RenderTexture2D.Get(viewport)
+	if !found {
+		return
+	}
+
+	camrt, found := s.Components.RenderTexture2D.Get(vp.CameraEntity)
+	if !found {
+		return
+	}
+
+	rl.BeginTextureMode(*vprt.RenderTexture2D)
+	defer rl.EndTextureMode()
+
+	rl.ClearBackground(rl.Blank)
+
+	src := rl.Rectangle{
+		X:      0,
+		Y:      float32(camrt.Texture.Height),
+		Width:  float32(camrt.Texture.Width),
+		Height: -float32(camrt.Texture.Height),
+	}
+
+	dst := rl.Rectangle{
+		X:      0,
+		Y:      0,
+		Width:  float32(vprt.Texture.Width),
+		Height: float32(vprt.Texture.Height),
+	}
+
+	rl.DrawTexturePro(camrt.Texture, src, dst, rl.Vector2{}, 0, rl.White)
 }
 
 func (s *Scene) RemoveEntity(e common.Entity) {
 	factories := []*akara.ComponentFactory{
 		s.Components.Viewport.ComponentFactory,
+		s.Components.Camera.ComponentFactory,
 		s.Components.Color.ComponentFactory,
 		s.Components.Debug.ComponentFactory,
 		s.Components.FileLoadRequest.ComponentFactory,
@@ -242,6 +274,15 @@ func (s *Scene) RemoveEntity(e common.Entity) {
 	for idx := range factories {
 		factories[idx].Remove(e)
 	}
+
+
+	for idx := range s.renderList {
+		if s.renderList[idx] == e {
+			s.renderList = append(s.renderList[:idx], s.renderList[idx+1:]...)
+			break
+		}
+	}
+
 
 	s.Director.RemoveEntity(e)
 }

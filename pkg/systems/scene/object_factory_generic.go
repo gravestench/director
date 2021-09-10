@@ -34,9 +34,11 @@ func (factory *genericFactory) visibleEntity(s *Scene) common.Entity {
 	// which is relative to its display dimensions
 	s.Components.Origin.Add(e)
 
-	// a visible entity will always have an origin point
-	// which is relative to its display dimensions
+	// a visible entity will always have an opacity
 	s.Components.Opacity.Add(e)
+
+	// add this to the scene's render list
+	s.renderList = append(s.renderList, e)
 
 	return e
 }

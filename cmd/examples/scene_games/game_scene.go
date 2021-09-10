@@ -47,6 +47,10 @@ type ShopUpgrades struct {
 	clickerUpgrade4Price int
 }
 
+func (scene *GameScene) Key() string {
+	return "Game Test"
+}
+
 // Game Loop
 func (scene *GameScene) Update() {
 
@@ -81,8 +85,8 @@ func (scene *GameScene) toggleDebug() {
 	}
 }
 func (scene *GameScene) clearDebugPanel() {
-	scene.Director.RemoveEntity(scene.debugPanel)
-	scene.Director.RemoveEntity(scene.mouseDebugLabel)
+	scene.RemoveEntity(scene.debugPanel)
+	scene.RemoveEntity(scene.mouseDebugLabel)
 }
 func (scene *GameScene) makeDebugPanel() {
 	background := color.RGBA{R: 21, G: 23, B: 24, A: 255}
@@ -243,8 +247,8 @@ func (scene *GameScene) bindShopClickingInput() {
 	i.Callback = func() (preventPropogation bool) {
 		fmt.Print(scene.clickValue)
 		scene.upgradeClicker(1)
-		scene.Director.RemoveEntity(scene.upgrades.clickerUpgrade1)
-		scene.Director.RemoveEntity(scene.upgrades.clickerUpgrade1Label)
+		scene.RemoveEntity(scene.upgrades.clickerUpgrade1)
+		scene.RemoveEntity(scene.upgrades.clickerUpgrade1Label)
 		return false
 	}
 	i.Vector = input.NewInputVector()
@@ -273,8 +277,8 @@ func (scene *GameScene) bindShopClickingInput() {
 	i = scene.Components.Interactive.Add(scene.upgrades.clickerUpgrade2)
 	i.Callback = func() (preventPropogation bool) {
 		scene.upgradeClicker(2)
-		scene.Director.RemoveEntity(scene.upgrades.clickerUpgrade2)
-		scene.Director.RemoveEntity(scene.upgrades.clickerUpgrade2Label)
+		scene.RemoveEntity(scene.upgrades.clickerUpgrade2)
+		scene.RemoveEntity(scene.upgrades.clickerUpgrade2Label)
 		return false
 	}
 	i.Vector = input.NewInputVector()
@@ -303,8 +307,8 @@ func (scene *GameScene) bindShopClickingInput() {
 	i = scene.Components.Interactive.Add(scene.upgrades.clickerUpgrade3)
 	i.Callback = func() (preventPropogation bool) {
 		scene.upgradeClicker(4)
-		scene.Director.RemoveEntity(scene.upgrades.clickerUpgrade3)
-		scene.Director.RemoveEntity(scene.upgrades.clickerUpgrade3Label)
+		scene.RemoveEntity(scene.upgrades.clickerUpgrade3)
+		scene.RemoveEntity(scene.upgrades.clickerUpgrade3Label)
 		return false
 	}
 	i.Vector = input.NewInputVector()
@@ -333,8 +337,8 @@ func (scene *GameScene) bindShopClickingInput() {
 	i = scene.Components.Interactive.Add(scene.upgrades.clickerUpgrade4)
 	i.Callback = func() (preventPropogation bool) {
 		scene.upgradeClicker(8)
-		scene.Director.RemoveEntity(scene.upgrades.clickerUpgrade4)
-		scene.Director.RemoveEntity(scene.upgrades.clickerUpgrade4Label)
+		scene.RemoveEntity(scene.upgrades.clickerUpgrade4)
+		scene.RemoveEntity(scene.upgrades.clickerUpgrade4Label)
 		return false
 	}
 	i.Vector = input.NewInputVector()

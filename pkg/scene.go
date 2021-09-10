@@ -10,8 +10,8 @@ type Scene interface {
 	HasKey
 	initializesLua
 	GenericUpdate(duration time.Duration)
+	GenericSceneInit(d *Director, width int, height int)
 	Render()
-	Initialize(d *Director, width int, height int)
 }
 
 type Updater interface {

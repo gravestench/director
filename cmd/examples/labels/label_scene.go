@@ -1,9 +1,10 @@
 package main
 
 import (
+	"image/color"
+
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/systems/scene"
-	"image/color"
 )
 
 const sceneName = "Label Scene"

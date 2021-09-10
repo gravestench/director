@@ -8,6 +8,7 @@ import (
 
 type BasicComponents struct {
 	Viewport         components.ViewportFactory
+	Camera           components.CameraFactory
 	Color            components.ColorFactory
 	Debug            components.DebugFactory
 	FileLoadRequest  components.FileLoadRequestFactory
@@ -31,6 +32,7 @@ type BasicComponents struct {
 
 func (bc *BasicComponents) Init(w *akara.World) {
 	injectComponent(w, &components.Viewport{}, &bc.Viewport.ComponentFactory)
+	injectComponent(w, &components.Camera{}, &bc.Camera.ComponentFactory)
 	injectComponent(w, &components.Color{}, &bc.Color.ComponentFactory)
 	injectComponent(w, &components.Debug{}, &bc.Debug.ComponentFactory)
 	injectComponent(w, &components.FileLoadRequest{}, &bc.FileLoadRequest.ComponentFactory)
@@ -53,75 +55,24 @@ func (bc *BasicComponents) Init(w *akara.World) {
 }
 
 func (bc *BasicComponents) IsInit() bool {
-	if bc.Text.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Texture2D.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.RenderTexture2D.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Transform.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Color.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.FileType.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.FileLoadRequest.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.FileLoadResponse.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Fill.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Animation.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Origin.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Opacity.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Debug.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Stroke.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Font.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Size.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.Viewport.ComponentFactory == nil {
-		return false
-	}
-
-	if bc.UUID.ComponentFactory == nil {
+	if bc.Text.ComponentFactory == nil ||
+		bc.Texture2D.ComponentFactory == nil ||
+		bc.RenderTexture2D.ComponentFactory == nil ||
+		bc.Transform.ComponentFactory == nil ||
+		bc.Color.ComponentFactory == nil ||
+		bc.FileType.ComponentFactory == nil ||
+		bc.FileLoadRequest.ComponentFactory == nil ||
+		bc.FileLoadResponse.ComponentFactory == nil ||
+		bc.Fill.ComponentFactory == nil ||
+		bc.Animation.ComponentFactory == nil ||
+		bc.Origin.ComponentFactory == nil ||
+		bc.Opacity.ComponentFactory == nil ||
+		bc.Debug.ComponentFactory == nil ||
+		bc.Stroke.ComponentFactory == nil ||
+		bc.Font.ComponentFactory == nil ||
+		bc.Size.ComponentFactory == nil ||
+		bc.Viewport.ComponentFactory == nil ||
+		bc.UUID.ComponentFactory == nil {
 		return false
 	}
 

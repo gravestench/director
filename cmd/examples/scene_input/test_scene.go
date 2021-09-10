@@ -19,6 +19,10 @@ type TestScene struct {
 	label  Entity
 }
 
+func (scene *TestScene) Key() string {
+	return "test"
+}
+
 func (scene *TestScene) Update() {
 	scene.updateLabel()
 	scene.resetSquare()

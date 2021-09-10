@@ -16,19 +16,12 @@ import (
 	"github.com/gravestench/director/pkg/systems/tween"
 )
 
-const (
-	defaultTitle       = "Director"
-	defaultWidth       = 1028
-	defaultHeight      = 768
-	defaultScaleFactor = 1.0
-)
-
 type Director struct {
 	*akara.World
 	Lua     *go_lua.LState
 	Events  *eventemitter.EventEmitter
 	Scenes  map[string]Scene
-	Loader  *file_loader.System
+	Load    *file_loader.System
 	Texture *texture_manager.System
 	Tweens  *tween.System
 	Input   *input.System
@@ -58,7 +51,7 @@ func New() *Director {
 }
 
 func (d *Director) AddScene(scene Scene) {
-	scene.Initialize(d, d.Window.Width, d.Window.Height)
+	scene.GenericSceneInit(d, d.Window.Width, d.Window.Height)
 	scene.InitializeLua()
 
 	d.AddSystem(scene)
@@ -94,12 +87,6 @@ func (d *Director) updateState() {
 
 func (d *Director) updateScenes(dt time.Duration) {
 	for _, ss := range d.Scenes {
-		if updater, ok := ss.(Updater); ok {
-			updater.Update()
-		} else if timeUpdater, ok := ss.(UpdaterTimed); ok {
-			timeUpdater.Update(dt)
-		}
-
 		ss.GenericUpdate(dt)
 	}
 }
@@ -119,14 +106,21 @@ func (d *Director) initDirectorSystems() {
 	d.Input = &input.System{}
 	d.AddSystem(d.Input)
 
-	d.Loader = &file_loader.System{}
-	d.AddSystem(d.Loader)
+	d.Load = &file_loader.System{}
+	d.AddSystem(d.Load)
 
 	d.Texture = &texture_manager.System{}
 	d.AddSystem(d.Texture)
 
 	d.AddSystem(&animation.System{})
 }
+
+const (
+	defaultTitle       = "Director"
+	defaultWidth       = 1028
+	defaultHeight      = 768
+	defaultScaleFactor = 1.0
+)
 
 func (d *Director) Run() error {
 	now := time.Now()

@@ -9,16 +9,18 @@ import (
 
 type SceneObjectFactory struct {
 	common.BasicComponents
-	scene   *Scene
-	generic genericFactory
-	shape   shapeFactory
-	image   imageFactory
-	label   labelFactory
-	camera  cameraFactory
+	scene    *Scene
+	generic  genericFactory
+	shape    shapeFactory
+	image    imageFactory
+	label    labelFactory
+	viewport viewportFactory
+	camera   cameraFactory
 }
 
 func (factory *SceneObjectFactory) update(dt time.Duration) {
 	factory.generic.update(factory.scene, dt)
+	factory.viewport.update(factory.scene, dt)
 	factory.camera.update(factory.scene, dt)
 	factory.shape.update(factory.scene, dt)
 	factory.label.update(factory.scene, dt)
@@ -27,6 +29,10 @@ func (factory *SceneObjectFactory) update(dt time.Duration) {
 
 func (factory *SceneObjectFactory) Label(str string, x, y, size int, fontName string, c color.Color) common.Entity {
 	return factory.label.New(factory.scene, str, x, y, size, fontName, c)
+}
+
+func (factory *SceneObjectFactory) Viewport(x, y, w, h int) common.Entity {
+	return factory.viewport.New(factory.scene, x, y, w, h)
 }
 
 func (factory *SceneObjectFactory) Camera(x, y, w, h int) common.Entity {

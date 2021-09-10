@@ -1,13 +1,13 @@
 package main
 
 import (
+	director "github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/easing"
 	"github.com/gravestench/director/pkg/systems/tween"
 	"math/rand"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
 	"github.com/gravestench/mathlib"
 
 	. "github.com/gravestench/director/pkg/common"
@@ -19,20 +19,16 @@ const (
 	imgUrl           = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
 )
 
+var _ director.Scene = &testScene{}
+
 type testScene struct {
 	scene.Scene
 	images  []Entity
 	elapsed time.Duration
 }
 
-func (scene *testScene) Init(_ *akara.World) {
-	img := scene.Add.Image(imgUrl, 0, 0)
-	scene.setRandomImagePosition(img)
-	scene.images = append(scene.images, img)
-}
-
-func (scene *testScene) IsInitialized() bool {
-	return true
+func (scene *testScene) Key() string {
+	return "test"
 }
 
 func (scene *testScene) Update(dt time.Duration) {

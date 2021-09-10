@@ -3,7 +3,6 @@ package components
 import (
 	"image/color"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 )
 
@@ -11,14 +10,13 @@ var _ akara.Component = &Viewport{}
 
 // Viewport represents a rendering viewport within a scene. This consists of a camera and background color.
 type Viewport struct {
-	rl.Camera2D
+	CameraEntity akara.EID
 	Background color.Color
 }
 
 // New creates a new viewport
 func (*Viewport) New() akara.Component {
 	return &Viewport{
-		Camera2D:   rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 1),
 		Background: color.Transparent,
 	}
 }
