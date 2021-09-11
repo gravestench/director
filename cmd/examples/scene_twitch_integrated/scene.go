@@ -280,10 +280,10 @@ func (scene *testScene) newMessage(name, msg string) {
 			scene.RemoveEntity(entity)
 		})
 
-		scene.Tweens.New(tb2)
+		scene.Systems.Tweens.New(tb2)
 	})
 
-	scene.Tweens.New(tb)
+	scene.Systems.Tweens.New(tb)
 }
 
 func (scene *testScene) resizeCameraWithWindow() {
