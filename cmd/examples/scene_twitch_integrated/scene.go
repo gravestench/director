@@ -99,6 +99,10 @@ func (scene *testScene) initBTTVEmotes() {
 		return
 	}
 
+	if userEmoteInfo.SharedEmotes== nil {
+		return
+	}
+
 	for _, emote := range userEmoteInfo.SharedEmotes {
 		emoteURL := fmt.Sprintf(fmtBTTVEmoteURL, emote.ID)
 		scene.emoteMap[emote.Code] = emoteURL
