@@ -18,17 +18,17 @@ func noop() bool {
 type Interactive struct {
 	Enabled bool
 	*Vector
-	CursorPosition *image.Rectangle
-	Callback       InputCallback
+	Hitbox   *image.Rectangle
+	Callback InputCallback
 }
 
 // New returns a Interactive component. By default, it contains a nil instance.
 func (*Interactive) New() akara.Component {
 	return &Interactive{
-		Enabled:        true,
-		Vector:         NewInputVector(),
-		CursorPosition: nil,
-		Callback:       noop,
+		Enabled:  true,
+		Vector:   NewInputVector(),
+		Hitbox:   nil,
+		Callback: noop,
 	}
 }
 

@@ -93,19 +93,19 @@ func (m *System) updateInputState() {
 
 	for _, key := range keysToCheck {
 		//truth := m.InputService.IsKeyJustPressed(d2enum.Key(key))
-		truth := rl.IsKeyReleased(key)
+		truth := rl.IsKeyPressed(key)
 		m.inputState.KeyVector.Set(int(key), truth)
 	}
 
 	for _, mod := range modifiersToCheck {
 		//truth := m.InputService.IsKeyJustPressed(d2enum.Key(mod))
-		truth := rl.IsKeyReleased(mod)
+		truth := rl.IsKeyPressed(mod)
 		m.inputState.ModifierVector.Set(int(mod), truth)
 	}
 
 	for _, btn := range buttonsToCheck {
 		//truth := m.InputService.IsMouseButtonJustPressed(d2enum.MouseButton(btn))
-		truth := rl.IsMouseButtonReleased(btn)
+		truth := rl.IsMouseButtonPressed(btn)
 		m.inputState.MouseButtonVector.Set(int(btn), truth)
 	}
 }
@@ -122,9 +122,9 @@ func (m *System) applyInputState(id akara.EID) (preventPropagation bool) {
 	}
 
 	// check if this Interactive specified a particular cursor position that the input must occur in
-	if i.CursorPosition != nil {
+	if i.Hitbox != nil {
 		p := rl.GetMousePosition()
-		if !contains(i.CursorPosition, int(p.X), int(p.Y)) {
+		if !contains(i.Hitbox, int(p.X), int(p.Y)) {
 			return false
 		}
 	}

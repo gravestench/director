@@ -82,6 +82,7 @@ func (iv *Vector) SetMouseButtons(buttons []MouseButton) *Vector {
 // Contains returns true if this input vector is a superset of the given input vector
 func (iv *Vector) Contains(other *Vector) bool {
 	keys := iv.KeyVector.ContainsAll(other.KeyVector)
+
 	buttons := iv.MouseButtonVector.ContainsAll(other.MouseButtonVector)
 
 	// We do Equals here, because we dont want CTRL+X and CTRL+ALT+X to fire at the same time

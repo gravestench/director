@@ -104,6 +104,7 @@ func (s *Scene) InitializeLua() {
 		luaRectangleTypeExporter,
 		luaCircleTypeExporter,
 		luaImageTypeExporter,
+		luaLabelTypeExporter,
 	}
 
 	for _, luaTypeExporter := range luaTypeExporters {
@@ -111,13 +112,22 @@ func (s *Scene) InitializeLua() {
 		common.RegisterLuaType(s.Lua, luaTypeExport)
 	}
 
+	s.initConstantsTable()
 	s.initComponentsTable()
+}
+
+func (s *Scene) initConstantsTable() {
+	componentsTable := s.Lua.NewTable()
+	s.Lua.SetGlobal("constants", componentsTable)
+
+	s.luaExportConstantsInput(componentsTable)
 }
 
 func (s *Scene) initComponentsTable() {
 	componentsTable := s.Lua.NewTable()
 	s.Lua.SetGlobal("components", componentsTable)
 
+	s.luaExportComponentInteractive(componentsTable)
 	s.luaExportComponentTransform(componentsTable)
 	s.luaExportComponentOrigin(componentsTable)
 }

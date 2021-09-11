@@ -67,9 +67,9 @@ func (s *Scene) luaTransformGet() lua.LGFunction {
 func (s *Scene) makeLuaTableComponentTransform(trs *components.Transform) *lua.LTable {
 	table := s.Lua.NewTable()
 
-	s.Lua.SetField(table, "translation", s.makeLuaTableVec3(trs.Translation))
-	s.Lua.SetField(table, "rotation", s.makeLuaTableVec3(trs.Rotation))
-	s.Lua.SetField(table, "scale", s.makeLuaTableVec3(trs.Scale))
+	s.Lua.SetField(table, "translation", s.makeLuaSetterGetterVec3(trs.Translation))
+	s.Lua.SetField(table, "rotation", s.makeLuaSetterGetterVec3(trs.Rotation))
+	s.Lua.SetField(table, "scale", s.makeLuaSetterGetterVec3(trs.Scale))
 
 	return table
 }

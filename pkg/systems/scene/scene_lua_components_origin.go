@@ -67,7 +67,7 @@ func (s *Scene) luaOriginGet() lua.LGFunction {
 func (s *Scene) makeLuaTableComponentOrigin(origin *components.Origin) *lua.LTable {
 	table := s.Lua.NewTable()
 
-	s.Lua.SetField(table, "xyz", s.makeLuaTableVec3(origin.Vector3))
+	s.Lua.SetField(table, "xyz", s.makeLuaSetterGetterVec3(origin.Vector3))
 
 	return table
 }

@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	textureBudget = 1000
+	textureBudget = 10000
 )
 
 type System struct {

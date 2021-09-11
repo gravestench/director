@@ -23,15 +23,17 @@ var luaImageTypeExporter = func(scene *Scene) common.LuaTypeExport {
 
 func (s *Scene) luaImageConstructor() lua.LGFunction {
 	return func(L *lua.LState) int {
-		// check argument count
+		// check argument count, this is coming from inside of lua
 		if L.GetTop() != 3 {
 			return 0
 		}
 
+		// pop the values that were passed into the function
 		uri := L.CheckString(1)
 		x := int(L.CheckNumber(2))
 		y := int(L.CheckNumber(3))
 
+		// use them with the object factory
 		e := s.Add.Image(uri, x, y)
 		v := &e
 
