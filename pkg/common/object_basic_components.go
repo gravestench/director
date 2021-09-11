@@ -22,6 +22,7 @@ type BasicComponents struct {
 	Opacity          components.OpacityFactory
 	Origin           components.OriginFactory
 	RenderTexture2D  components.RenderTexture2DFactory
+	RenderOrder      components.RenderOrderFactory
 	Size             components.SizeFactory
 	SceneGraphNode   components.SceneGraphNodeFactory
 	Text             components.TextFactory
@@ -47,6 +48,7 @@ func (bc *BasicComponents) Init(w *akara.World) {
 	injectComponent(w, &components.Font{}, &bc.Font.ComponentFactory)
 	injectComponent(w, &components.SceneGraphNode{}, &bc.SceneGraphNode.ComponentFactory)
 	injectComponent(w, &components.Text{}, &bc.Text.ComponentFactory)
+	injectComponent(w, &components.RenderOrder{}, &bc.RenderOrder.ComponentFactory)
 	injectComponent(w, &components.RenderTexture2D{}, &bc.RenderTexture2D.ComponentFactory)
 	injectComponent(w, &components.Size{}, &bc.Size.ComponentFactory)
 	injectComponent(w, &components.Texture2D{}, &bc.Texture2D.ComponentFactory)
@@ -71,6 +73,7 @@ func (bc *BasicComponents) IsInit() bool {
 		bc.Stroke.ComponentFactory == nil ||
 		bc.Font.ComponentFactory == nil ||
 		bc.Size.ComponentFactory == nil ||
+		bc.RenderOrder.ComponentFactory == nil ||
 		bc.Viewport.ComponentFactory == nil ||
 		bc.UUID.ComponentFactory == nil {
 		return false

@@ -9,6 +9,7 @@ import (
 	"github.com/gravestench/scenegraph"
 	lua "github.com/yuin/gopher-lua"
 	"math"
+	"sort"
 	"time"
 )
 
@@ -208,6 +209,18 @@ func (s *Scene) renderCameraForViewport(viewport common.Entity) {
 
 	r, g, b, a := vp.Background.RGBA()
 	rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+
+	sort.Slice(s.renderList, func(i, j int) bool {
+		a, b := s.renderList[i], s.renderList[j]
+		roA, foundA := s.Components.RenderOrder.Get(a)
+		roB, foundB := s.Components.RenderOrder.Get(b)
+
+		if !foundA || !foundB {
+			return a < b
+		}
+
+		return roA.Value < roB.Value
+	})
 
 	for _, entity := range s.renderList {
 		if entity == vp.CameraEntity || entity == viewport {

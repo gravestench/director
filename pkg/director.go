@@ -21,10 +21,12 @@ type Director struct {
 	Lua     *go_lua.LState
 	Events  *eventemitter.EventEmitter
 	Scenes  map[string]Scene
-	Load    *file_loader.System
-	Texture *texture_manager.System
-	Tweens  *tween.System
-	Input   *input.System
+	Systems struct {
+		Load    *file_loader.System
+		Texture *texture_manager.System
+		Tweens  *tween.System
+		Input   *input.System
+	}
 	Window  struct {
 		Width, Height int // pixels
 		Title         string
@@ -100,17 +102,17 @@ func (d *Director) renderScenes() {
 func (d *Director) initDirectorSystems() {
 	d.AddSystem(&screen_rendering.ScreenRenderingSystem{})
 
-	d.Tweens = &tween.System{}
-	d.AddSystem(d.Tweens)
+	d.Systems.Tweens = &tween.System{}
+	d.AddSystem(d.Systems.Tweens)
 
-	d.Input = &input.System{}
-	d.AddSystem(d.Input)
+	d.Systems.Input = &input.System{}
+	d.AddSystem(d.Systems.Input)
 
-	d.Load = &file_loader.System{}
-	d.AddSystem(d.Load)
+	d.Systems.Load = &file_loader.System{}
+	d.AddSystem(d.Systems.Load)
 
-	d.Texture = &texture_manager.System{}
-	d.AddSystem(d.Texture)
+	d.Systems.Texture = &texture_manager.System{}
+	d.AddSystem(d.Systems.Texture)
 
 	d.AddSystem(&animation.System{})
 }

@@ -37,6 +37,9 @@ func (factory *genericFactory) visibleEntity(s *Scene) common.Entity {
 	// a visible entity will always have an opacity
 	s.Components.Opacity.Add(e)
 
+	// a visible entity will always have a render order
+	s.Components.RenderOrder.Add(e)
+
 	// add this to the scene's render list
 	s.renderList = append(s.renderList, e)
 

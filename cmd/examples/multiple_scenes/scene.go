@@ -133,7 +133,7 @@ func (scene *testScene) fadeIn(e common.Entity) {
 		opacity.Value = progress
 	})
 
-	scene.Tweens.New(t)
+	scene.Systems.Tweens.New(t)
 }
 
 func (scene *testScene) updatePosition(e common.Entity) {
