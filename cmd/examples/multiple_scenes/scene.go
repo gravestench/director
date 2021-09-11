@@ -40,6 +40,7 @@ func (scene *testScene) Key() string {
 }
 
 func (scene *testScene) Init(_ *akara.World) {
+	rand.Seed(time.Now().UnixNano())
 	scene.stuff = append(scene.stuff, scene.Add.Circle(0, 0, 300, randColor(), nil))
 }
 

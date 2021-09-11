@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"image"
 	"image/color"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -86,6 +85,42 @@ func (scene *TestScene) makeLabel() {
 	scene.label = scene.Add.Label("", 400, 400, 24, "", red)
 }
 
+//func (scene *TestScene) bindInput() {
+//	i := scene.Components.Interactive.Add(scene.square)
+//
+//	i.Callback = func() (preventPropogation bool) {
+//		yellow := color.RGBA{R: 255, G: 255, A: 255}
+//
+//		scene.setSquareColor(yellow)
+//
+//		return false
+//	}
+//
+//	i.Vector = input.NewInputVector()
+//	i.Vector.SetMouseButton(input.MouseButtonLeft)
+//
+//	size, found := scene.Components.Size.Get(scene.square)
+//	if !found {
+//		return
+//	}
+//
+//	trs, found := scene.Components.Transform.Get(scene.square)
+//	if !found {
+//		return
+//	}
+//
+//	i.Hitbox = &image.Rectangle{
+//		Min: image.Point{
+//			X: int(trs.Translation.X) - size.Dx()/2,
+//			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
+//		},
+//		Max: image.Point{
+//			X: int(trs.Translation.X) + size.Dx()/2,
+//			Y: scene.Window.Height - (int(trs.Translation.Y) - size.Dy()/2),
+//		},
+//	}
+//}
+
 func (scene *TestScene) bindInput() {
 	i := scene.Components.Interactive.Add(scene.square)
 
@@ -98,28 +133,7 @@ func (scene *TestScene) bindInput() {
 	}
 
 	i.Vector = input.NewInputVector()
-	i.Vector.SetMouseButton(input.MouseButtonLeft)
-
-	size, found := scene.Components.Size.Get(scene.square)
-	if !found {
-		return
-	}
-
-	trs, found := scene.Components.Transform.Get(scene.square)
-	if !found {
-		return
-	}
-
-	i.CursorPosition = &image.Rectangle{
-		Min: image.Point{
-			X: int(trs.Translation.X) - size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
-		},
-		Max: image.Point{
-			X: int(trs.Translation.X) + size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) - size.Dy()/2),
-		},
-	}
+	i.Vector.SetMouseButton(input.KeyA)
 }
 
 func (scene *TestScene) IsInitialized() bool {

@@ -60,6 +60,7 @@ func (t *TweenTest) makeTween() {
 	builder.Time(time.Second * 4)
 	builder.Ease(easing.ElasticOut, []float64{0.5, 0.85, 0.5})
 	builder.Repeat(tween.RepeatForever)
+	builder.Delay(time.Second * 3)
 
 	trs, found := t.Components.Transform.Get(t.object)
 	if !found {

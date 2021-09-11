@@ -127,7 +127,7 @@ func (scene *GameScene) bindDebugInput() {
 		return
 	}
 
-	i.CursorPosition = &image.Rectangle{
+	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
 			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
@@ -230,7 +230,7 @@ func (scene *GameScene) bindClickingInput() {
 		return
 	}
 
-	i.CursorPosition = &image.Rectangle{
+	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
 			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
@@ -263,7 +263,7 @@ func (scene *GameScene) bindShopClickingInput() {
 		return
 	}
 
-	i.CursorPosition = &image.Rectangle{
+	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
 			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
@@ -293,7 +293,7 @@ func (scene *GameScene) bindShopClickingInput() {
 		return
 	}
 
-	i.CursorPosition = &image.Rectangle{
+	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
 			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
@@ -323,7 +323,7 @@ func (scene *GameScene) bindShopClickingInput() {
 		return
 	}
 
-	i.CursorPosition = &image.Rectangle{
+	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
 			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
@@ -353,7 +353,7 @@ func (scene *GameScene) bindShopClickingInput() {
 		return
 	}
 
-	i.CursorPosition = &image.Rectangle{
+	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
 			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),

@@ -118,7 +118,7 @@ func (scene *testScene) parseFlags() {
 
 func (scene *testScene) setupClients() {
 	if *scene.twitch.oauthKey == "" {
-		log.Panicln("need an oauth key")
+		log.Panicln("need an oauth key, https://twitchapps.com/tmi/")
 	}
 
 	if *scene.twitch.userName == "" {
@@ -190,7 +190,7 @@ func (scene *testScene) setupClients() {
 func (scene *testScene) getUserColor(name string) color.Color {
 	c, found := scene.userColors[name]
 	if !found {
-		c = randColor()
+		c = newUserColor()
 		scene.userColors[name] = c
 	}
 
@@ -207,7 +207,8 @@ func (scene *testScene) newMessage(name, msg string) {
 
 	var entity Entity
 
-	if emoteURL, found := scene.emoteMap[msg]; found {
+	emoteURL, emoteFound := scene.emoteMap[msg]
+	if emoteFound {
 		entity = scene.Add.Image(emoteURL, x, y)
 	} else {
 		entity = scene.Add.Label(msg, x, y, fontSize, "", c)
@@ -223,6 +224,10 @@ func (scene *testScene) newMessage(name, msg string) {
 	trs, found := scene.Components.Transform.Get(entity)
 	if !found {
 		return
+	}
+
+	if emoteFound {
+		trs.Scale.Set(3, 3, 3)
 	}
 
 	opacity, found := scene.Components.Opacity.Get(entity)
@@ -344,11 +349,36 @@ func (scene *testScene) randomStartEnd() (x1, y1, x2, y2 int) {
 	return x1, y1, x2, y2
 }
 
-func randColor() color.Color {
-	return &color.RGBA{
-		R: math.MaxUint8 - uint8(rand.Intn(math.MaxUint8/6)),
-		G: math.MaxUint8 - uint8(rand.Intn(math.MaxUint8/6)),
-		B: math.MaxUint8 - uint8(rand.Intn(math.MaxUint8/6)),
+func newUserColor() color.Color {
+	c := &color.RGBA{
+		R: math.MaxUint8,
+		G: math.MaxUint8,
+		B: math.MaxUint8,
 		A: math.MaxUint8,
 	}
+
+	componentBudget := 256
+
+	for componentBudget > 0 {
+		componentBudget--
+
+		which := rand.Intn(3)
+
+		switch which {
+		case 0:
+			if c.R > 0 {
+				c.R--
+			}
+		case 1:
+			if c.G > 0 {
+				c.G--
+			}
+		case 2:
+			if c.B > 0 {
+				c.B--
+			}
+		}
+	}
+
+	return c
 }
