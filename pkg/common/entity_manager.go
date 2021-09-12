@@ -1,8 +1,6 @@
 package common
 
-import "github.com/gravestench/akara"
-
-type entityMap map[akara.EID]akara.EID
+type entityMap map[Entity]Entity
 
 type EntityManager struct {
 	Entities     entityMap
@@ -18,7 +16,7 @@ func (em *EntityManager) Init() {
 	em.removalQueue = make(entityMap)
 }
 
-func (em *EntityManager) AddEntity(e akara.EID) {
+func (em *EntityManager) AddEntity(e Entity) {
 	if !em.IsInit() {
 		em.Init()
 	}
@@ -26,7 +24,7 @@ func (em *EntityManager) AddEntity(e akara.EID) {
 	em.Entities[e] = e
 }
 
-func (em *EntityManager) RemoveEntity(e akara.EID) {
+func (em *EntityManager) RemoveEntity(e Entity) {
 	em.removalQueue[e] = e
 }
 
