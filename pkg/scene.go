@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-type Scene interface {
+// SceneInterface represents what director considers to be a scene
+type SceneInterface interface {
 	akara.System
 	HasKey
 	initializesLua
