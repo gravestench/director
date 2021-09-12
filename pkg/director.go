@@ -7,20 +7,28 @@ import (
 
 	"github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
-	"github.com/gravestench/eventemitter"
-	go_lua "github.com/yuin/gopher-lua"
-
 	"github.com/gravestench/director/pkg/systems/file_loader"
 	"github.com/gravestench/director/pkg/systems/input"
 	"github.com/gravestench/director/pkg/systems/screen_rendering"
 	"github.com/gravestench/director/pkg/systems/tween"
+	"github.com/gravestench/eventemitter"
 )
 
+const (
+	defaultTitle       = "Director"
+	defaultWidth       = 1028
+	defaultHeight      = 768
+	defaultScaleFactor = 1.0
+)
+
+// Director provides a scene management abstraction, with
+// supporting systems. scenes are basically a superset of
+// the functionality provided by an akara.System, but with
+// a bunch of object creation facilities provided for free.
 type Director struct {
 	*akara.World
-	Lua     *go_lua.LState
 	Events  *eventemitter.EventEmitter
-	Scenes  map[string]Scene
+	scenes  map[string]Scene
 	Systems struct {
 		Load    *file_loader.System
 		Texture *texture_manager.System
@@ -35,12 +43,13 @@ type Director struct {
 	TargetFPS int
 }
 
+// New creates a new director instance, with default settings
 func New() *Director {
 	director := Director{}
 	director.World = akara.NewWorld(akara.NewWorldConfig())
 	director.Events = eventemitter.New()
 
-	director.Scenes = make(map[string]Scene)
+	director.scenes = make(map[string]Scene)
 
 	director.initDirectorSystems()
 
@@ -52,23 +61,29 @@ func New() *Director {
 	return &director
 }
 
+// AddScene adds a scene
 func (d *Director) AddScene(scene Scene) {
 	scene.GenericSceneInit(d, d.Window.Width, d.Window.Height)
 	scene.InitializeLua()
 
 	d.AddSystem(scene)
-	d.Scenes[scene.Key()] = scene
+	d.scenes[scene.Key()] = scene
 }
 
+// RemoveScene queues a scene for removal
 func (d *Director) RemoveScene(key string) *Director {
-	if ss, found := d.Scenes[key]; found {
+	if ss, found := d.scenes[key]; found {
 		d.RemoveSystem(ss)
-		delete(d.Scenes, key)
+		delete(d.scenes, key)
 	}
 
 	return d
 }
 
+// Update iterates over all of the scenes, updating and rendering each.
+// Because scenes are actually implementing the akara.System interface,
+// this only calls all of tghe generic update methods, and akara calls the
+// actual update methods at the end during world.Update
 func (d *Director) Update(dt time.Duration) (err error) {
 	d.updateState()
 
@@ -81,24 +96,33 @@ func (d *Director) Update(dt time.Duration) (err error) {
 	return d.World.Update(dt)
 }
 
+// updateState should be used to maintain any state info, like window resolution, so
+// that scenes can reference this data and use it.
 func (d *Director) updateState() {
 	w := rl.GetScreenWidth()
 	h := rl.GetScreenHeight()
 	d.Window.Width, d.Window.Height = w, h
 }
 
+// updateScenes calls the generic scene update method for each scene
 func (d *Director) updateScenes(dt time.Duration) {
-	for _, ss := range d.Scenes {
+	for _, ss := range d.scenes {
 		ss.GenericUpdate(dt)
 	}
 }
 
+// renderScenes calls the generic render method for each scene
 func (d *Director) renderScenes() {
-	for idx := range d.Scenes {
-		d.Scenes[idx].Render()
+	for idx := range d.scenes {
+		d.scenes[idx].Render()
 	}
 }
 
+// initDirectorSystems creates all of the systems that scenes will need.
+// These systems are set up to do specific things during the update loop.
+// For example, the tween system iterates over and processes all tweens, every update.
+// likewise, input, file loading, texture management, etc are all functions that
+// have been broken into their own systems.
 func (d *Director) initDirectorSystems() {
 	d.AddSystem(&screen_rendering.ScreenRenderingSystem{})
 
@@ -117,13 +141,7 @@ func (d *Director) initDirectorSystems() {
 	d.AddSystem(&animation.System{})
 }
 
-const (
-	defaultTitle       = "Director"
-	defaultWidth       = 1028
-	defaultHeight      = 768
-	defaultScaleFactor = 1.0
-)
-
+// Run the director game loop. this is a blocking operation.
 func (d *Director) Run() error {
 	now := time.Now()
 	last := now
