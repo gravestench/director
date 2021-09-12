@@ -14,6 +14,7 @@ type SceneObjectFactory struct {
 	shape    shapeFactory
 	image    imageFactory
 	label    labelFactory
+	layer    layerFactory
 	viewport viewportFactory
 	camera   cameraFactory
 }
@@ -24,6 +25,7 @@ func (factory *SceneObjectFactory) update(dt time.Duration) {
 	factory.camera.update(factory.scene, dt)
 	factory.shape.update(factory.scene, dt)
 	factory.label.update(factory.scene, dt)
+	factory.layer.update(factory.scene, dt)
 	factory.image.update(factory.scene, dt)
 }
 
@@ -49,4 +51,8 @@ func (factory *SceneObjectFactory) Circle(x, y, radius int, fill, stroke color.C
 
 func (factory *SceneObjectFactory) Image(uri string, x, y int) common.Entity {
 	return factory.image.New(factory.scene, uri, x, y)
+}
+
+func (factory *SceneObjectFactory) Layer(x, y int) common.Entity {
+	return factory.layer.New(factory.scene, x, y)
 }
