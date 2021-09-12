@@ -15,8 +15,8 @@ import (
 	"github.com/gravestench/akara"
 	"github.com/gravestench/mathlib"
 
-	// and the other was easy to use at the time i initially wrote this example
 	// using two twitch libraries because one of them provided a method for pulling emotes
+	// and the other was easy to use at the time i initially wrote this example
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/nicklaw5/helix"
 
