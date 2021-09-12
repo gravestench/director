@@ -6,6 +6,7 @@ import (
 	"github.com/gravestench/director/pkg/systems/input"
 )
 
+// BasicComponents represents components that every scene has available
 type BasicComponents struct {
 	Viewport         components.ViewportFactory
 	Camera           components.CameraFactory
@@ -15,6 +16,7 @@ type BasicComponents struct {
 	FileLoadResponse components.FileLoadResponseFactory
 	FileType         components.FileTypeFactory
 	Fill             components.FillFactory
+	HasChildren      components.HasChildrenFactory
 	Animation        components.AnimationFactory
 	Stroke           components.StrokeFactory
 	Font             components.FontFactory
@@ -31,6 +33,8 @@ type BasicComponents struct {
 	UUID             components.UUIDFactory
 }
 
+// Init initializes each component factory for the given world,
+// putting the generic component factory inside of the concrete component factory
 func (bc *BasicComponents) Init(w *akara.World) {
 	injectComponent(w, &components.Viewport{}, &bc.Viewport.ComponentFactory)
 	injectComponent(w, &components.Camera{}, &bc.Camera.ComponentFactory)
@@ -40,6 +44,7 @@ func (bc *BasicComponents) Init(w *akara.World) {
 	injectComponent(w, &components.FileLoadResponse{}, &bc.FileLoadResponse.ComponentFactory)
 	injectComponent(w, &components.FileType{}, &bc.FileType.ComponentFactory)
 	injectComponent(w, &components.Fill{}, &bc.Fill.ComponentFactory)
+	injectComponent(w, &components.HasChildren{}, &bc.HasChildren.ComponentFactory)
 	injectComponent(w, &components.Animation{}, &bc.Animation.ComponentFactory)
 	injectComponent(w, &components.Origin{}, &bc.Origin.ComponentFactory)
 	injectComponent(w, &input.Interactive{}, &bc.Interactive.ComponentFactory)
@@ -56,6 +61,7 @@ func (bc *BasicComponents) Init(w *akara.World) {
 	injectComponent(w, &components.UUID{}, &bc.UUID.ComponentFactory)
 }
 
+// IsInit returns whether or not all of the basic component factories have been initialized
 func (bc *BasicComponents) IsInit() bool {
 	if bc.Text.ComponentFactory == nil ||
 		bc.Texture2D.ComponentFactory == nil ||
@@ -72,6 +78,7 @@ func (bc *BasicComponents) IsInit() bool {
 		bc.Debug.ComponentFactory == nil ||
 		bc.Stroke.ComponentFactory == nil ||
 		bc.Font.ComponentFactory == nil ||
+		bc.HasChildren.ComponentFactory == nil ||
 		bc.Size.ComponentFactory == nil ||
 		bc.RenderOrder.ComponentFactory == nil ||
 		bc.Viewport.ComponentFactory == nil ||
@@ -82,6 +89,8 @@ func (bc *BasicComponents) IsInit() bool {
 	return true
 }
 
+// injectComponent uses a component to retrieve a singleton component factory for that
+// component type from the given world, assigning the generic factory to the given **ComponentFactory
 func injectComponent(w *akara.World, c akara.Component, cf **akara.ComponentFactory) {
 	cid := w.RegisterComponent(c)
 	*cf = w.GetComponentFactory(cid)
