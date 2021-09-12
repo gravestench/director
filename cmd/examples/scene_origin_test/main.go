@@ -83,7 +83,7 @@ func (scene *LabelTestScene) updateLabel() {
 		return
 	}
 
-	trs.Rotation.Y += 1
+	trs.Rotation.Y += 0.1
 
 	col, found := scene.Components.Color.Get(scene.singleLabel)
 	if !found {
