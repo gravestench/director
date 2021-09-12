@@ -57,14 +57,16 @@ func (scene *testScene) Init(_ *akara.World) {
 			return
 		}
 
+		rHeight := scene.Systems.Renderer.Window.Height
+
 		in.Hitbox = &image.Rectangle{
 			Min: image.Point{
 				X: int(trs.Translation.X) - size.Dx()/2,
-				Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
+				Y: rHeight - (int(trs.Translation.Y) + size.Dy()/2),
 			},
 			Max: image.Point{
 				X: int(trs.Translation.X) + size.Dx()/2,
-				Y: scene.Window.Height - (int(trs.Translation.Y) - size.Dy()/2),
+				Y: rHeight - (int(trs.Translation.Y) - size.Dy()/2),
 			},
 		}
 

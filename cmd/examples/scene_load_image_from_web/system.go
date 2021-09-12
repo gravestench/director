@@ -75,7 +75,7 @@ func (scene *testScene) fadeIn(e Entity) {
 		opacity.Value = progress
 	})
 
-	scene.Tweens.New(t)
+	scene.Systems.Tweens.New(t)
 }
 
 func (scene *testScene) updatePosition(e Entity) {
@@ -91,25 +91,31 @@ func (scene *testScene) updatePosition(e Entity) {
 
 	tw, th := tex.Width, tex.Height
 
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
 	trs.Translation.Add(mathlib.NewVector3(float64(rand.Intn(3)-1), float64(rand.Intn(3)-1), 0))
-	if trs.Translation.X > float64(scene.Window.Width+int(tw/2)) {
+	if trs.Translation.X > float64(rWidth+int(tw/2)) {
 		trs.Translation.X = float64(-tw / 2)
 	}
 
-	if trs.Translation.Y > float64(scene.Window.Height+int(th/2)) {
+	if trs.Translation.Y > float64(rHeight+int(th/2)) {
 		trs.Translation.Y = float64(-th / 2)
 	}
 }
 
 func (scene *testScene) resizeCameraWithWindow() {
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
 	for _, e := range scene.Viewports {
 		rt, found := scene.Components.RenderTexture2D.Get(e)
 		if !found {
 			continue
 		}
 
-		if int(rt.Texture.Width) != scene.Window.Width || int(rt.Texture.Height) != scene.Window.Height {
-			t := rl.LoadRenderTexture(int32(scene.Window.Width), int32(scene.Window.Height))
+		if int(rt.Texture.Width) != rWidth || int(rt.Texture.Height) != rHeight {
+			t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
 			rt.RenderTexture2D = &t
 
 			for _, e := range scene.images {
@@ -120,7 +126,10 @@ func (scene *testScene) resizeCameraWithWindow() {
 }
 
 func (scene *testScene) setRandomImagePosition(e Entity) {
-	x, y := rand.Intn(scene.Window.Width), rand.Intn(scene.Window.Height)
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
+	x, y := rand.Intn(rWidth), rand.Intn(rHeight)
 	trs, _ := scene.Components.Transform.Get(e)
 
 	trs.Translation.Set(float64(x), float64(y), 0)

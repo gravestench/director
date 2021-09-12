@@ -8,17 +8,12 @@ import (
 	"math/rand"
 	"time"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	director "github.com/gravestench/director/pkg"
 )
 
 func main() {
 	d := director.New()
-
-	d.Window.Width = 1024
-	d.Window.Height = 768
-	d.TargetFPS = 60
 
 	d.AddScene(&LabelTestScene{})
 
@@ -56,7 +51,6 @@ func (scene *LabelTestScene) makeLabels() {
 
 func (scene *LabelTestScene) Update(dt time.Duration) {
 	scene.updateLabel()
-	scene.resizeCameraWithWindow()
 }
 
 func (scene *LabelTestScene) updateLabel() {
@@ -88,20 +82,6 @@ func (scene *LabelTestScene) updateLabel() {
 		t.Hour(), t.Minute(), t.Second())
 
 	text.String = formatted
-}
-
-func (scene *LabelTestScene) resizeCameraWithWindow() {
-	for _, e := range scene.Viewports {
-		rt, found := scene.Components.RenderTexture2D.Get(e)
-		if !found {
-			continue
-		}
-
-		if int(rt.Texture.Width) != scene.Width || int(rt.Texture.Height) != scene.Height {
-			t := rl.LoadRenderTexture(int32(scene.Width), int32(scene.Height))
-			rt.RenderTexture2D = &t
-		}
-	}
 }
 
 func randColor() color.Color {

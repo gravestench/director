@@ -64,7 +64,10 @@ func (scene *GameScene) Update() {
 
 func (scene *GameScene) makeMainPanel() {
 	background := color.RGBA{R: 30, G: 31, B: 35, A: 255}
-	scene.toggleButton = scene.Add.Rectangle(scene.Window.Width/2, scene.Window.Height/2, scene.Window.Width, scene.Window.Height, background, nil)
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
+	scene.toggleButton = scene.Add.Rectangle(rWidth/2, rHeight/2, rWidth, rHeight, background, nil)
 }
 
 /****************************
@@ -72,7 +75,10 @@ func (scene *GameScene) makeMainPanel() {
 ****************************/
 func (scene *GameScene) makeToggleButton() {
 	purple := color.RGBA{R: 104, G: 70, B: 236, A: 255}
-	scene.toggleButton = scene.Add.Rectangle(scene.Window.Width-60, scene.Window.Height-15, 140, 30, purple, nil)
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
+	scene.toggleButton = scene.Add.Rectangle(rWidth-60, rHeight-15, 140, 30, purple, nil)
 }
 func (scene *GameScene) toggleDebug() {
 	if scene.isDebugEnabled == false {
@@ -90,15 +96,24 @@ func (scene *GameScene) clearDebugPanel() {
 }
 func (scene *GameScene) makeDebugPanel() {
 	background := color.RGBA{R: 21, G: 23, B: 24, A: 255}
-	scene.debugPanel = scene.Add.Rectangle(scene.Window.Width/2-132, scene.Window.Height-30, scene.Window.Width, 60, background, nil)
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
+	scene.debugPanel = scene.Add.Rectangle(rWidth/2-132, rHeight-30, rWidth, 60, background, nil)
 }
 func (scene *GameScene) makeToggleLabel() {
 	white := color.RGBA{R: 255, G: 255, B: 255, A: 255}
-	scene.toggleLabel = scene.Add.Label("Toggle Debug", scene.Window.Width-30, scene.Window.Height-15, 12, "", white)
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
+	scene.toggleLabel = scene.Add.Label("Toggle Debug", rWidth-30, rHeight-15, 12, "", white)
 }
 func (scene *GameScene) makeMouseDebugLabel() {
 	white := color.RGBA{R: 255, G: 255, B: 255, A: 255}
-	scene.mouseDebugLabel = scene.Add.Label("Mouse: ", scene.Window.Width-scene.Window.Width, scene.Window.Height-15, 12, "", white)
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
+	scene.mouseDebugLabel = scene.Add.Label("Mouse: ", rWidth-rWidth, rHeight-15, 12, "", white)
 	origin, found := scene.Components.Origin.Get(scene.mouseDebugLabel)
 	if !found {
 		return
@@ -127,14 +142,16 @@ func (scene *GameScene) bindDebugInput() {
 		return
 	}
 
+	rHeight := scene.Systems.Renderer.Window.Height
+
 	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) + size.Dy()/2),
 		},
 		Max: image.Point{
 			X: int(trs.Translation.X) + size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) - size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) - size.Dy()/2),
 		},
 	}
 
@@ -162,11 +179,14 @@ func (scene *GameScene) updateTestLabel() {
 func (scene *GameScene) makeInitialUI() {
 	gray := color.RGBA{R: 97, G: 98, B: 109, A: 255}
 
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
 	scene.makeMainPanel()
 	scene.makeToggleButton()
 	scene.makeToggleLabel()
 	scene.makeShopPanel()
-	scene.balanceLabel = scene.Add.Label("Balance: 0 Cubes", scene.Window.Width/2+40, scene.Window.Height/2+85, 24, "", gray)
+	scene.balanceLabel = scene.Add.Label("Balance: 0 Cubes", rWidth/2+40, rHeight/2+85, 24, "", gray)
 	// origin, found := scene.Components.Origin.Get(scene.balanceLabel)
 	// if !found {
 	// 	return
@@ -178,18 +198,24 @@ func (scene *GameScene) makeInitialUI() {
 
 func (scene *GameScene) makeClickButton() {
 	purple := color.RGBA{R: 104, G: 70, B: 236, A: 255}
-	scene.clickButton = scene.Add.Rectangle(scene.Window.Width/2, scene.Window.Height/2, 140, 140, purple, nil)
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
+	scene.clickButton = scene.Add.Rectangle(rWidth/2, rHeight/2, 140, 140, purple, nil)
 }
 
 func (scene *GameScene) makeShopPanel() {
 	dark := color.RGBA{R: 13, G: 12, B: 15, A: 255}
 	shopWidth := 150
-	scene.shopPanel = scene.Add.Rectangle(shopWidth/2, scene.Window.Height/2, shopWidth, scene.Window.Height, dark, nil)
+	rHeight := scene.Systems.Renderer.Window.Height
+
+	scene.shopPanel = scene.Add.Rectangle(shopWidth/2, rHeight/2, shopWidth, rHeight, dark, nil)
 	scene.makeShopUpgrades()
 }
 
 func (scene *GameScene) makeShopUpgrades() {
-	upgradeYLocation := scene.Window.Height - 20
+	rHeight := scene.Systems.Renderer.Window.Height
+	upgradeYLocation := rHeight - 20
 	upgradeSize := 30
 	shopWidth := 150
 	purple := color.RGBA{R: 104, G: 70, B: 236, A: 255}
@@ -230,14 +256,16 @@ func (scene *GameScene) bindClickingInput() {
 		return
 	}
 
+	rHeight := scene.Systems.Renderer.Window.Height
+
 	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) + size.Dy()/2),
 		},
 		Max: image.Point{
 			X: int(trs.Translation.X) + size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) - size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) - size.Dy()/2),
 		},
 	}
 }
@@ -263,14 +291,16 @@ func (scene *GameScene) bindShopClickingInput() {
 		return
 	}
 
+	rHeight := scene.Systems.Renderer.Window.Height
+
 	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) + size.Dy()/2),
 		},
 		Max: image.Point{
 			X: int(trs.Translation.X) + size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) - size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) - size.Dy()/2),
 		},
 	}
 
@@ -296,11 +326,11 @@ func (scene *GameScene) bindShopClickingInput() {
 	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) + size.Dy()/2),
 		},
 		Max: image.Point{
 			X: int(trs.Translation.X) + size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) - size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) - size.Dy()/2),
 		},
 	}
 
@@ -326,11 +356,11 @@ func (scene *GameScene) bindShopClickingInput() {
 	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) + size.Dy()/2),
 		},
 		Max: image.Point{
 			X: int(trs.Translation.X) + size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) - size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) - size.Dy()/2),
 		},
 	}
 
@@ -356,11 +386,11 @@ func (scene *GameScene) bindShopClickingInput() {
 	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
 			X: int(trs.Translation.X) - size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) + size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) + size.Dy()/2),
 		},
 		Max: image.Point{
 			X: int(trs.Translation.X) + size.Dx()/2,
-			Y: scene.Window.Height - (int(trs.Translation.Y) - size.Dy()/2),
+			Y: rHeight - (int(trs.Translation.Y) - size.Dy()/2),
 		},
 	}
 

@@ -16,11 +16,6 @@ import (
 func main() {
 	d := director.New()
 
-	d.Window.Width = 1024
-	d.Window.Height = 768
-	d.Window.Title = "lua test"
-	d.TargetFPS = 60
-
 	d.AddScene(&TweenTest{})
 
 	if err := d.Run(); err != nil {
@@ -74,5 +69,5 @@ func (t *TweenTest) makeTween() {
 
 	t.squareTween = builder.Build()
 
-	t.Tweens.New(t.squareTween)
+	t.Systems.Tweens.New(t.squareTween)
 }

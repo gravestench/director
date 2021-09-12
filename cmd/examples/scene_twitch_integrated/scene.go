@@ -206,8 +206,11 @@ func (scene *testScene) newMessage(name, msg string) {
 
 	c := scene.getUserColor(name)
 
-	x, y := scene.Window.Width/2, scene.Window.Height/2
-	fontSize := scene.Window.Height / 20
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
+	x, y := rWidth/2, rHeight/2
+	fontSize := rHeight / 20
 
 	var entity Entity
 
@@ -240,7 +243,7 @@ func (scene *testScene) newMessage(name, msg string) {
 	}
 
 	startX, startY, endX, endY := scene.randomStartEnd()
-	cx, cy := scene.Window.Width/2, scene.Window.Height/2
+	cx, cy := rWidth/2, rHeight/2
 
 	rcx, rcy := cx/2+rand.Intn(cx), cy/2+rand.Intn(cy)
 
@@ -291,6 +294,9 @@ func (scene *testScene) newMessage(name, msg string) {
 }
 
 func (scene *testScene) resizeCameraWithWindow() {
+	rWidth := scene.Systems.Renderer.Window.Width
+	rHeight := scene.Systems.Renderer.Window.Height
+
 	for _, e := range scene.Viewports {
 		vp, found := scene.Components.Viewport.Get(e)
 		if !found {
@@ -307,13 +313,13 @@ func (scene *testScene) resizeCameraWithWindow() {
 			continue
 		}
 
-		if int(vprt.Texture.Width) != scene.Window.Width || int(vprt.Texture.Height) != scene.Window.Height {
-			t := rl.LoadRenderTexture(int32(scene.Window.Width), int32(scene.Window.Height))
+		if int(vprt.Texture.Width) != rWidth || int(vprt.Texture.Height) != rHeight {
+			t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
 			vprt.RenderTexture2D = &t
 		}
 
-		if int(camrt.Texture.Width) != scene.Window.Width || int(camrt.Texture.Height) != scene.Window.Height {
-			t := rl.LoadRenderTexture(int32(scene.Window.Width), int32(scene.Window.Height))
+		if int(camrt.Texture.Width) != rWidth || int(camrt.Texture.Height) != rHeight {
+			t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
 			camrt.RenderTexture2D = &t
 		}
 	}
@@ -342,7 +348,8 @@ func (scene *testScene) randomStartEnd() (x1, y1, x2, y2 int) {
 	dStart := rand.Intn(maxDegree)
 	dEnd := (dStart + 180) % maxDegree
 
-	distance := 1.5 * float64(scene.Window.Width)
+	rWidth := scene.Systems.Renderer.Window.Width
+	distance := 1.5 * float64(rWidth)
 
 	x1 = int(math.Sin(float64(dStart)*mathlib.DegreesToRadians) * distance)
 	y1 = int(math.Cos(float64(dStart)*mathlib.DegreesToRadians) * distance)

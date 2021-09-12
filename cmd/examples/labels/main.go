@@ -7,10 +7,6 @@ import (
 func main() {
 	d := director.New()
 
-	d.Window.Width = 1024
-	d.Window.Height = 768
-	d.TargetFPS = 60
-
 	d.AddScene(&LabelScene{})
 
 	if err := d.Run(); err != nil {
