@@ -5,7 +5,7 @@ import (
 	"github.com/gravestench/akara"
 )
 
-// Camera represents a rendering viewport within a scene. This consists of a camera and background color.
+// Camera represents a camera used for rendering within a scene.
 type Camera struct {
 	rl.Camera2D
 }
