@@ -21,9 +21,9 @@ import (
 // a bunch of object creation facilities provided for free.
 type Director struct {
 	*akara.World
-	Events  *eventemitter.EventEmitter
 	scenes  map[string]SceneInterface
 	Systems struct {
+		Events  *eventemitter.EventEmitter
 		Load     *file_loader.System
 		Renderer *renderer.System
 		Texture  *texture_manager.System
@@ -36,7 +36,7 @@ type Director struct {
 func New() *Director {
 	director := Director{}
 	director.World = akara.NewWorld(akara.NewWorldConfig())
-	director.Events = eventemitter.New()
+	director.Systems.Events = eventemitter.New()
 
 	director.scenes = make(map[string]SceneInterface)
 
