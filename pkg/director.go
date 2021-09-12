@@ -22,14 +22,17 @@ import (
 type Director struct {
 	*akara.World
 	scenes map[string]SceneInterface
-	Sys    struct {
-		Events  *eventemitter.EventEmitter
-		Load     *file_loader.System
-		Renderer *renderer.System
-		Texture  *texture_manager.System
-		Tweens   *tween.System
-		Input    *input.System
-	}
+	Sys directorSystems
+}
+
+// contains the base systems that are available when a director instance is created
+type directorSystems struct {
+	Events  *eventemitter.EventEmitter
+	Load     *file_loader.System
+	Renderer *renderer.System
+	Texture  *texture_manager.System
+	Tweens   *tween.System
+	Input    *input.System
 }
 
 // New creates a new director instance, with default settings
