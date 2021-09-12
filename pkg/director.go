@@ -28,7 +28,7 @@ const (
 type Director struct {
 	*akara.World
 	Events  *eventemitter.EventEmitter
-	scenes  map[string]Scene
+	scenes  map[string]SceneInterface
 	Systems struct {
 		Load    *file_loader.System
 		Texture *texture_manager.System
@@ -49,7 +49,7 @@ func New() *Director {
 	director.World = akara.NewWorld(akara.NewWorldConfig())
 	director.Events = eventemitter.New()
 
-	director.scenes = make(map[string]Scene)
+	director.scenes = make(map[string]SceneInterface)
 
 	director.initDirectorSystems()
 
@@ -62,7 +62,7 @@ func New() *Director {
 }
 
 // AddScene adds a scene
-func (d *Director) AddScene(scene Scene) {
+func (d *Director) AddScene(scene SceneInterface) {
 	scene.GenericSceneInit(d, d.Window.Width, d.Window.Height)
 	scene.InitializeLua()
 

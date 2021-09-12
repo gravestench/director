@@ -19,7 +19,7 @@ const (
 	imgUrl           = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
 )
 
-var _ director.Scene = &testScene{}
+var _ director.SceneInterface = &testScene{}
 
 type testScene struct {
 	scene.Scene
