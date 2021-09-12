@@ -150,17 +150,17 @@ func (scene *testScene) updatePosition(e common.Entity) {
 	tw, th := tex.Width, tex.Height
 
 	trs.Translation.Add(mathlib.NewVector3(float64(rand.Intn(3)-1), float64(rand.Intn(3)-1), 0))
-	if trs.Translation.X > float64(scene.Window.Width+int(tw/2)) {
+	if trs.Translation.X > float64(scene.Systems.Renderer.Window.Width+int(tw/2)) {
 		trs.Translation.X = float64(-tw / 2)
 	}
 
-	if trs.Translation.Y > float64(scene.Window.Height+int(th/2)) {
+	if trs.Translation.Y > float64(scene.Systems.Renderer.Window.Height+int(th/2)) {
 		trs.Translation.Y = float64(-th / 2)
 	}
 }
 
 func (scene *testScene) setRandomImagePosition(e common.Entity) {
-	x, y := rand.Intn(scene.Window.Width), rand.Intn(scene.Window.Height)
+	x, y := rand.Intn(scene.Systems.Renderer.Window.Width), rand.Intn(scene.Systems.Renderer.Window.Height)
 	trs, _ := scene.Components.Transform.Get(e)
 
 	trs.Translation.Set(float64(x), float64(y), 0)

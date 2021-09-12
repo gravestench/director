@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"github.com/gravestench/director/pkg/systems/animation"
+	"github.com/gravestench/director/pkg/systems/renderer"
 	"github.com/gravestench/director/pkg/systems/texture_manager"
 	"time"
 
@@ -14,13 +15,6 @@ import (
 	"github.com/gravestench/eventemitter"
 )
 
-const (
-	defaultTitle       = "Director"
-	defaultWidth       = 1028
-	defaultHeight      = 768
-	defaultScaleFactor = 1.0
-)
-
 // Director provides a scene management abstraction, with
 // supporting systems. scenes are basically a superset of
 // the functionality provided by an akara.System, but with
@@ -30,17 +24,12 @@ type Director struct {
 	Events  *eventemitter.EventEmitter
 	scenes  map[string]SceneInterface
 	Systems struct {
-		Load    *file_loader.System
-		Texture *texture_manager.System
-		Tweens  *tween.System
-		Input   *input.System
+		Load     *file_loader.System
+		Renderer *renderer.System
+		Texture  *texture_manager.System
+		Tweens   *tween.System
+		Input    *input.System
 	}
-	Window  struct {
-		Width, Height int // pixels
-		Title         string
-		ScaleFactor   float64
-	}
-	TargetFPS int
 }
 
 // New creates a new director instance, with default settings
@@ -53,17 +42,12 @@ func New() *Director {
 
 	director.initDirectorSystems()
 
-	director.Window.Width = defaultWidth
-	director.Window.Height = defaultHeight
-	director.Window.ScaleFactor = defaultScaleFactor
-	director.Window.Title = defaultTitle
-
 	return &director
 }
 
 // AddScene adds a scene
 func (d *Director) AddScene(scene SceneInterface) {
-	scene.GenericSceneInit(d, d.Window.Width, d.Window.Height)
+	scene.GenericSceneInit(d, d.Systems.Renderer.Window.Width, d.Systems.Renderer.Window.Height)
 	scene.InitializeLua()
 
 	d.AddSystem(scene)
@@ -85,23 +69,9 @@ func (d *Director) RemoveScene(key string) *Director {
 // this only calls all of tghe generic update methods, and akara calls the
 // actual update methods at the end during world.Update
 func (d *Director) Update(dt time.Duration) (err error) {
-	d.updateState()
-
 	d.updateScenes(dt)
 
-	// this renders the scene objects to the scene's render texture
-	// however, this will not actually display anything, that is done by the render system
-	d.renderScenes()
-
 	return d.World.Update(dt)
-}
-
-// updateState should be used to maintain any state info, like window resolution, so
-// that scenes can reference this data and use it.
-func (d *Director) updateState() {
-	w := rl.GetScreenWidth()
-	h := rl.GetScreenHeight()
-	d.Window.Width, d.Window.Height = w, h
 }
 
 // updateScenes calls the generic scene update method for each scene
@@ -109,10 +79,9 @@ func (d *Director) updateScenes(dt time.Duration) {
 	for _, ss := range d.scenes {
 		ss.GenericUpdate(dt)
 	}
-}
 
-// renderScenes calls the generic render method for each scene
-func (d *Director) renderScenes() {
+	// this renders the scene objects to the scene's render texture
+	// however, this will not actually display anything, that is done by the render system
 	for idx := range d.scenes {
 		d.scenes[idx].Render()
 	}
@@ -128,6 +97,9 @@ func (d *Director) initDirectorSystems() {
 
 	d.Systems.Tweens = &tween.System{}
 	d.AddSystem(d.Systems.Tweens)
+
+	d.Systems.Renderer = &renderer.System{}
+	d.AddSystem(d.Systems.Renderer)
 
 	d.Systems.Input = &input.System{}
 	d.AddSystem(d.Systems.Input)
@@ -148,19 +120,9 @@ func (d *Director) Run() error {
 
 	var delta time.Duration
 
-	ww, wh := int32(d.Window.Width), int32(d.Window.Height)
+	ww, wh := int32(d.Systems.Renderer.Window.Width), int32(d.Systems.Renderer.Window.Height)
 
-	if ww <= 1 {
-		ww = defaultWidth
-	}
-
-	if wh <= 1 {
-		wh = defaultHeight
-	}
-
-	rl.SetTargetFPS(int32(d.TargetFPS))
-
-	rl.InitWindow(ww, wh, d.Window.Title)
+	rl.InitWindow(ww, wh, d.Systems.Renderer.Window.Title)
 	defer rl.CloseWindow()
 
 	for !rl.WindowShouldClose() {
