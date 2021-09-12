@@ -8,15 +8,15 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 
-	. "github.com/gravestench/director/pkg/common"
+	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/systems/input"
 	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 type TestScene struct {
 	scene.Scene
-	square Entity
-	label  Entity
+	square common.Entity
+	label  common.Entity
 }
 
 func (scene *TestScene) Key() string {

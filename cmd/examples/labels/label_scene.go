@@ -11,7 +11,6 @@ const sceneName = "Label Scene"
 
 type LabelScene struct {
 	scene.Scene
-	label akara.EID
 }
 
 func (scene *LabelScene) Key() string {

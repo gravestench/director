@@ -7,7 +7,7 @@ import (
 	"github.com/gravestench/akara"
 
 	director "github.com/gravestench/director/pkg"
-	. "github.com/gravestench/director/pkg/common"
+	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/easing"
 	"github.com/gravestench/director/pkg/systems/scene"
 	"github.com/gravestench/director/pkg/systems/tween"
@@ -25,7 +25,7 @@ func main() {
 
 type TweenTest struct {
 	scene.Scene
-	object      Entity
+	object      common.Entity
 	squareTween *tween.Tween
 }
 

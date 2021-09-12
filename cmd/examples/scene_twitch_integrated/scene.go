@@ -20,7 +20,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/nicklaw5/helix"
 
-	. "github.com/gravestench/director/pkg/common"
+	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/easing"
 	"github.com/gravestench/director/pkg/systems/scene"
 	"github.com/gravestench/director/pkg/systems/tween"
@@ -212,7 +212,7 @@ func (scene *testScene) newMessage(name, msg string) {
 	x, y := rWidth/2, rHeight/2
 	fontSize := rHeight / 20
 
-	var entity Entity
+	var entity common.Entity
 
 	emoteURL, emoteFound := scene.emoteMap[msg]
 	if emoteFound {

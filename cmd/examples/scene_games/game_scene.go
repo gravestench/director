@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	. "github.com/gravestench/director/pkg/common"
+	"github.com/gravestench/director/pkg/common"
 	"image"
 	"image/color"
 	"strconv"
@@ -17,34 +17,34 @@ import (
 type GameScene struct {
 	scene.Scene
 	upgrades        ShopUpgrades
-	toggleButton    Entity
-	toggleLabel     Entity
-	debugPanel      Entity
-	mainPanel       Entity
-	square          Entity
-	label           Entity
-	mouseDebugLabel Entity
-	balanceLabel    Entity
-	clickButton     Entity
-	shopPanel       Entity
+	toggleButton    common.Entity
+	toggleLabel     common.Entity
+	debugPanel      common.Entity
+	//mainPanel       common.Entity
+	//square          common.Entity
+	//label           common.Entity
+	mouseDebugLabel common.Entity
+	balanceLabel    common.Entity
+	clickButton     common.Entity
+	shopPanel       common.Entity
 	isDebugEnabled  bool
 	balanceValue    int
 	clickValue      int
 }
 
 type ShopUpgrades struct {
-	clickerUpgrade1      Entity
-	clickerUpgrade1Label Entity
-	clickerUpgrade2      Entity
-	clickerUpgrade2Label Entity
-	clickerUpgrade3      Entity
-	clickerUpgrade3Label Entity
-	clickerUpgrade4      Entity
-	clickerUpgrade4Label Entity
-	clickerUpgrade1Price int
-	clickerUpgrade2Price int
-	clickerUpgrade3Price int
-	clickerUpgrade4Price int
+	clickerUpgrade1      common.Entity
+	clickerUpgrade1Label common.Entity
+	clickerUpgrade2      common.Entity
+	clickerUpgrade2Label common.Entity
+	clickerUpgrade3      common.Entity
+	clickerUpgrade3Label common.Entity
+	clickerUpgrade4      common.Entity
+	clickerUpgrade4Label common.Entity
+	//clickerUpgrade1Price int
+	//clickerUpgrade2Price int
+	//clickerUpgrade3Price int
+	//clickerUpgrade4Price int
 }
 
 func (scene *GameScene) Key() string {
@@ -55,9 +55,7 @@ func (scene *GameScene) Key() string {
 func (scene *GameScene) Update() {
 
 	//scene.updateLabel()
-	if scene.isDebugEnabled == false {
-
-	} else {
+	if scene.isDebugEnabled {
 		scene.updateTestLabel()
 	}
 }
@@ -81,7 +79,7 @@ func (scene *GameScene) makeToggleButton() {
 	scene.toggleButton = scene.Add.Rectangle(rWidth-60, rHeight-15, 140, 30, purple, nil)
 }
 func (scene *GameScene) toggleDebug() {
-	if scene.isDebugEnabled == false {
+	if !scene.isDebugEnabled {
 		scene.isDebugEnabled = true
 		scene.makeDebugPanel()
 		scene.makeMouseDebugLabel()
@@ -113,7 +111,7 @@ func (scene *GameScene) makeMouseDebugLabel() {
 	rWidth := scene.Sys.Renderer.Window.Width
 	rHeight := scene.Sys.Renderer.Window.Height
 
-	scene.mouseDebugLabel = scene.Add.Label("Mouse: ", rWidth-rWidth, rHeight-15, 12, "", white)
+	scene.mouseDebugLabel = scene.Add.Label("Mouse: ", rWidth-30, rHeight-15, 12, "", white)
 	origin, found := scene.Components.Origin.Get(scene.mouseDebugLabel)
 	if !found {
 		return
@@ -121,10 +119,11 @@ func (scene *GameScene) makeMouseDebugLabel() {
 	origin.X = 0
 	origin.Y = 0
 }
+
 func (scene *GameScene) bindDebugInput() {
 	i := scene.Components.Interactive.Add(scene.toggleButton)
 
-	i.Callback = func() (preventPropogation bool) {
+	i.Callback = func() (preventPropagation bool) {
 		scene.toggleDebug()
 		return false
 	}
@@ -231,7 +230,6 @@ func (scene *GameScene) makeShopUpgrades() {
 	upgradeYLocation -= upgradeSize
 	scene.upgrades.clickerUpgrade4 = scene.Add.Rectangle(shopWidth/2, upgradeYLocation, shopWidth-10, upgradeSize-5, purple, nil)
 	scene.upgrades.clickerUpgrade4Label = scene.Add.Label("Upgrade 4", shopWidth/2, upgradeYLocation, 12, "", white)
-	upgradeYLocation -= upgradeSize
 }
 
 func (scene *GameScene) upgradeClicker(value int) {
@@ -240,7 +238,7 @@ func (scene *GameScene) upgradeClicker(value int) {
 
 func (scene *GameScene) bindClickingInput() {
 	i := scene.Components.Interactive.Add(scene.clickButton)
-	i.Callback = func() (preventPropogation bool) {
+	i.Callback = func() (preventPropagation bool) {
 		scene.updateBalance(scene.clickValue)
 		return false
 	}
@@ -272,7 +270,7 @@ func (scene *GameScene) bindClickingInput() {
 
 func (scene *GameScene) bindShopClickingInput() {
 	i := scene.Components.Interactive.Add(scene.upgrades.clickerUpgrade1)
-	i.Callback = func() (preventPropogation bool) {
+	i.Callback = func() (preventPropagation bool) {
 		fmt.Print(scene.clickValue)
 		scene.upgradeClicker(1)
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade1)
@@ -305,7 +303,7 @@ func (scene *GameScene) bindShopClickingInput() {
 	}
 
 	i = scene.Components.Interactive.Add(scene.upgrades.clickerUpgrade2)
-	i.Callback = func() (preventPropogation bool) {
+	i.Callback = func() (preventPropagation bool) {
 		scene.upgradeClicker(2)
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade2)
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade2Label)
@@ -335,7 +333,7 @@ func (scene *GameScene) bindShopClickingInput() {
 	}
 
 	i = scene.Components.Interactive.Add(scene.upgrades.clickerUpgrade3)
-	i.Callback = func() (preventPropogation bool) {
+	i.Callback = func() (preventPropagation bool) {
 		scene.upgradeClicker(4)
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade3)
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade3Label)
@@ -365,7 +363,7 @@ func (scene *GameScene) bindShopClickingInput() {
 	}
 
 	i = scene.Components.Interactive.Add(scene.upgrades.clickerUpgrade4)
-	i.Callback = func() (preventPropogation bool) {
+	i.Callback = func() (preventPropagation bool) {
 		scene.upgradeClicker(8)
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade4)
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade4Label)
@@ -416,10 +414,10 @@ func (scene *GameScene) Init(world *akara.World) {
 	scene.bindShopClickingInput()
 }
 
-func (scene *GameScene) makeSquare() {
-	blue := color.RGBA{B: 255, A: 255}
-	scene.square = scene.Add.Rectangle(100, 100, 30, 30, blue, nil)
-}
+//func (scene *GameScene) makeSquare() {
+//	blue := color.RGBA{B: 255, A: 255}
+//	scene.square = scene.Add.Rectangle(100, 100, 30, 30, blue, nil)
+//}
 
 func (scene *GameScene) IsInitialized() bool {
 	return scene.toggleButton != 0
