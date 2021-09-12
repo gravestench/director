@@ -69,5 +69,5 @@ func (t *TweenTest) makeTween() {
 
 	t.squareTween = builder.Build()
 
-	t.Systems.Tweens.New(t.squareTween)
+	t.Sys.Tweens.New(t.squareTween)
 }

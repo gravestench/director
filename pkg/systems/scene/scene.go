@@ -181,7 +181,7 @@ func (s *Scene) Render() {
 
 func (s *Scene) initViewport() {
 	s.Viewports = make([]common.Entity, 0)
-	s.Width, s.Height = s.Systems.Renderer.Window.Width, s.Systems.Renderer.Window.Height
+	s.Width, s.Height = s.Sys.Renderer.Window.Width, s.Sys.Renderer.Window.Height
 	s.Viewports = append(s.Viewports, s.Add.Viewport(0, 0, s.Width, s.Height))
 }
 

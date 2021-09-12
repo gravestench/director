@@ -133,7 +133,7 @@ func (scene *testScene) fadeIn(e common.Entity) {
 		opacity.Value = progress
 	})
 
-	scene.Systems.Tweens.New(t)
+	scene.Sys.Tweens.New(t)
 }
 
 func (scene *testScene) updatePosition(e common.Entity) {
@@ -149,8 +149,8 @@ func (scene *testScene) updatePosition(e common.Entity) {
 
 	tw, th := tex.Width, tex.Height
 
-	rWidth := scene.Systems.Renderer.Window.Width
-	rHeight := scene.Systems.Renderer.Window.Height
+	rWidth := scene.Sys.Renderer.Window.Width
+	rHeight := scene.Sys.Renderer.Window.Height
 
 	trs.Translation.Add(mathlib.NewVector3(float64(rand.Intn(3)-1), float64(rand.Intn(3)-1), 0))
 	if trs.Translation.X > float64(rWidth+int(tw/2)) {
@@ -163,8 +163,8 @@ func (scene *testScene) updatePosition(e common.Entity) {
 }
 
 func (scene *testScene) setRandomImagePosition(e common.Entity) {
-	rWidth := scene.Systems.Renderer.Window.Width
-	rHeight := scene.Systems.Renderer.Window.Height
+	rWidth := scene.Sys.Renderer.Window.Width
+	rHeight := scene.Sys.Renderer.Window.Height
 
 	x, y := rand.Intn(rWidth), rand.Intn(rHeight)
 	trs, _ := scene.Components.Transform.Get(e)

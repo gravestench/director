@@ -206,8 +206,8 @@ func (scene *testScene) newMessage(name, msg string) {
 
 	c := scene.getUserColor(name)
 
-	rWidth := scene.Systems.Renderer.Window.Width
-	rHeight := scene.Systems.Renderer.Window.Height
+	rWidth := scene.Sys.Renderer.Window.Width
+	rHeight := scene.Sys.Renderer.Window.Height
 
 	x, y := rWidth/2, rHeight/2
 	fontSize := rHeight / 20
@@ -287,15 +287,15 @@ func (scene *testScene) newMessage(name, msg string) {
 			scene.RemoveEntity(entity)
 		})
 
-		scene.Systems.Tweens.New(tb2)
+		scene.Sys.Tweens.New(tb2)
 	})
 
-	scene.Systems.Tweens.New(tb)
+	scene.Sys.Tweens.New(tb)
 }
 
 func (scene *testScene) resizeCameraWithWindow() {
-	rWidth := scene.Systems.Renderer.Window.Width
-	rHeight := scene.Systems.Renderer.Window.Height
+	rWidth := scene.Sys.Renderer.Window.Width
+	rHeight := scene.Sys.Renderer.Window.Height
 
 	for _, e := range scene.Viewports {
 		vp, found := scene.Components.Viewport.Get(e)
@@ -348,7 +348,7 @@ func (scene *testScene) randomStartEnd() (x1, y1, x2, y2 int) {
 	dStart := rand.Intn(maxDegree)
 	dEnd := (dStart + 180) % maxDegree
 
-	rWidth := scene.Systems.Renderer.Window.Width
+	rWidth := scene.Sys.Renderer.Window.Width
 	distance := 1.5 * float64(rWidth)
 
 	x1 = int(math.Sin(float64(dStart)*mathlib.DegreesToRadians) * distance)

@@ -164,8 +164,8 @@ func (scene *MovingLabelsScene) resizeCameraWithWindow() {
 			continue
 		}
 
-		rWidth := scene.Systems.Renderer.Window.Width
-		rHeight := scene.Systems.Renderer.Window.Height
+		rWidth := scene.Sys.Renderer.Window.Width
+		rHeight := scene.Sys.Renderer.Window.Height
 
 		if int(rt.Texture.Width) != rWidth || int(rt.Texture.Height) != rHeight {
 			t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))

@@ -21,8 +21,8 @@ import (
 // a bunch of object creation facilities provided for free.
 type Director struct {
 	*akara.World
-	scenes  map[string]SceneInterface
-	Systems struct {
+	scenes map[string]SceneInterface
+	Sys    struct {
 		Events  *eventemitter.EventEmitter
 		Load     *file_loader.System
 		Renderer *renderer.System
@@ -36,7 +36,7 @@ type Director struct {
 func New() *Director {
 	director := Director{}
 	director.World = akara.NewWorld(akara.NewWorldConfig())
-	director.Systems.Events = eventemitter.New()
+	director.Sys.Events = eventemitter.New()
 
 	director.scenes = make(map[string]SceneInterface)
 
@@ -47,7 +47,7 @@ func New() *Director {
 
 // AddScene adds a scene
 func (d *Director) AddScene(scene SceneInterface) {
-	scene.GenericSceneInit(d, d.Systems.Renderer.Window.Width, d.Systems.Renderer.Window.Height)
+	scene.GenericSceneInit(d, d.Sys.Renderer.Window.Width, d.Sys.Renderer.Window.Height)
 	scene.InitializeLua()
 
 	d.AddSystem(scene)
@@ -95,20 +95,20 @@ func (d *Director) updateScenes(dt time.Duration) {
 func (d *Director) initDirectorSystems() {
 	d.AddSystem(&screen_rendering.ScreenRenderingSystem{})
 
-	d.Systems.Tweens = &tween.System{}
-	d.AddSystem(d.Systems.Tweens)
+	d.Sys.Tweens = &tween.System{}
+	d.AddSystem(d.Sys.Tweens)
 
-	d.Systems.Renderer = &renderer.System{}
-	d.AddSystem(d.Systems.Renderer)
+	d.Sys.Renderer = &renderer.System{}
+	d.AddSystem(d.Sys.Renderer)
 
-	d.Systems.Input = &input.System{}
-	d.AddSystem(d.Systems.Input)
+	d.Sys.Input = &input.System{}
+	d.AddSystem(d.Sys.Input)
 
-	d.Systems.Load = &file_loader.System{}
-	d.AddSystem(d.Systems.Load)
+	d.Sys.Load = &file_loader.System{}
+	d.AddSystem(d.Sys.Load)
 
-	d.Systems.Texture = &texture_manager.System{}
-	d.AddSystem(d.Systems.Texture)
+	d.Sys.Texture = &texture_manager.System{}
+	d.AddSystem(d.Sys.Texture)
 
 	d.AddSystem(&animation.System{})
 }
@@ -120,9 +120,9 @@ func (d *Director) Run() error {
 
 	var delta time.Duration
 
-	ww, wh := int32(d.Systems.Renderer.Window.Width), int32(d.Systems.Renderer.Window.Height)
+	ww, wh := int32(d.Sys.Renderer.Window.Width), int32(d.Sys.Renderer.Window.Height)
 
-	rl.InitWindow(ww, wh, d.Systems.Renderer.Window.Title)
+	rl.InitWindow(ww, wh, d.Sys.Renderer.Window.Title)
 	defer rl.CloseWindow()
 
 	for !rl.WindowShouldClose() {

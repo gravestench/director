@@ -109,7 +109,7 @@ func (scene *TestScene) bindInput() {
 		return
 	}
 
-	rHeight := scene.Systems.Renderer.Window.Height
+	rHeight := scene.Sys.Renderer.Window.Height
 
 	i.Hitbox = &image.Rectangle{
 		Min: image.Point{
