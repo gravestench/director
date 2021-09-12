@@ -10,7 +10,8 @@ import (
 
 var _ akara.Component = &Animation{}
 
-// Animation is a component that contains normalized alpha transparency (0.0 ... 1.0)
+// Animation is a component that contains multiple images+textures,
+// as well as frame durations and the current frame index that is being displayed
 type Animation struct {
 	FrameImages    []image.Image
 	FrameTextures  []*rl.Texture2D
