@@ -15,6 +15,7 @@ func (s *Scene) luaExportComponentTransform(mt *lua.LTable) {
 
 	s.Lua.SetField(trsTable, "add", s.Lua.NewFunction(s.luaTransformAdd()))
 	s.Lua.SetField(trsTable, "get", s.Lua.NewFunction(s.luaTransformGet()))
+	s.Lua.SetField(trsTable, "remove", s.Lua.NewFunction(s.luaTransformRemove()))
 
 	s.Lua.SetField(mt, luaTransformComponentName, trsTable)
 }
@@ -61,6 +62,22 @@ func (s *Scene) luaTransformGet() lua.LGFunction {
 		L.Push(truthy)
 
 		return 2
+	}
+
+	return fn
+}
+
+func (s *Scene) luaTransformRemove() lua.LGFunction {
+	fn := func(L *lua.LState) int {
+		if L.GetTop() != 1 {
+			return 0
+		}
+
+		e := common.Entity(s.Lua.CheckNumber(1))
+
+		s.Components.Transform.Remove(e)
+
+		return 0
 	}
 
 	return fn

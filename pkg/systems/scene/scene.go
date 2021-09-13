@@ -13,6 +13,15 @@ import (
 	"time"
 )
 
+const (
+	luaSceneTable = "scene"
+	luaSceneSystemsTable = "sys" // scene.sys
+	luaSceneComponentsTable = "components" // scene.components
+	luaSceneObjectFactoryTable = "add" // scene.add
+
+	luaConstantsTable = "constants"
+)
+
 type Scene struct {
 	akara.BaseSystem
 	*director.Director
@@ -106,7 +115,7 @@ func (s *Scene) InitializeLua() {
 
 func (s *Scene) initLuaSceneTable() {
 	table := s.Lua.NewTable()
-	s.Lua.SetGlobal("scene", table)
+	s.Lua.SetGlobal(luaSceneTable, table)
 
 	s.initLuaSceneObjectFactories(table)
 	s.initLuaComponentsTable(table)
@@ -115,7 +124,7 @@ func (s *Scene) initLuaSceneTable() {
 
 func (s *Scene) initLuaConstantsTable() {
 	componentsTable := s.Lua.NewTable()
-	s.Lua.SetGlobal("constants", componentsTable)
+	s.Lua.SetGlobal(luaConstantsTable, componentsTable)
 
 	s.luaExportConstantsInput(componentsTable)
 	s.luaExportConstantsLogging(componentsTable)
@@ -123,16 +132,36 @@ func (s *Scene) initLuaConstantsTable() {
 
 func (s *Scene) initLuaComponentsTable(sceneTable *lua.LTable) {
 	componentsTable := s.Lua.NewTable()
-	s.Lua.SetField(sceneTable, "components", componentsTable)
+	s.Lua.SetField(sceneTable, luaSceneComponentsTable, componentsTable)
 
+	s.luaExportComponentAnimation(componentsTable)
+	s.luaExportComponentCamera(componentsTable)
+	s.luaExportComponentColor(componentsTable)
+	s.luaExportComponentDebug(componentsTable)
+	s.luaExportComponentFileLoadRequest(componentsTable)
+	s.luaExportComponentFileLoadResponse(componentsTable)
+	// s.luaExportComponentFileType(componentsTable)
+	s.luaExportComponentFill(componentsTable)
+	s.luaExportComponentFont(componentsTable)
+	s.luaExportComponentHasChildren(componentsTable)
 	s.luaExportComponentInteractive(componentsTable)
-	s.luaExportComponentTransform(componentsTable)
+	s.luaExportComponentOpacity(componentsTable)
 	s.luaExportComponentOrigin(componentsTable)
+	s.luaExportComponentRenderOrder(componentsTable)
+	// s.luaExportComponentRender_texture(componentsTable)
+	// s.luaExportComponentScene_graph_node(componentsTable)
+	s.luaExportComponentSize(componentsTable)
+	s.luaExportComponentStroke(componentsTable)
+	s.luaExportComponentText(componentsTable)
+	// s.luaExportComponentTexture(componentsTable)
+	s.luaExportComponentTransform(componentsTable)
+	s.luaExportComponentUUID(componentsTable)
+	// s.luaExportComponentViewport(componentsTable)
 }
 
 func (s *Scene) initLuaSystemsTable(sceneTable *lua.LTable) {
 	sysTable := s.Lua.NewTable()
-	s.Lua.SetField(sceneTable, "sys", sysTable)
+	s.Lua.SetField(sceneTable, luaSceneSystemsTable, sysTable)
 
 	s.luaExportSystemRenderer(sysTable)
 }
@@ -145,7 +174,7 @@ func (s *Scene) initLuaSceneObjectFactories(sceneTable *lua.LTable) {
 	s.luaBindSceneObjectFactoryLabel(objFactoryTable)
 	s.luaBindSceneObjectFactoryRectangle(objFactoryTable)
 
-	s.Lua.SetField(sceneTable, "add", objFactoryTable)
+	s.Lua.SetField(sceneTable, luaSceneObjectFactoryTable, objFactoryTable)
 }
 
 func (s *Scene) UninitializeLua() {

@@ -50,20 +50,33 @@ func (scene *MovingLabelsScene) Init(w *akara.World) {
 	scene.InjectComponent(&Velocity{}, &scene.Velocity.ComponentFactory)
 }
 
+var messages = []string {
+	"BRB",
+	"be",
+	"right",
+	"back",
+	"I'll be back in a moment",
+	"I'm just running to the store",
+	"please wait",
+	"getting booze",
+	"went to the store",
+	"enjoy the music",
+	"fork me on github!",
+}
+
 func (scene *MovingLabelsScene) makeLabels() {
-	ww, wh := scene.Width, scene.Height
+	ww, wh := scene.Sys.Renderer.Window.Width, scene.Sys.Renderer.Window.Height
 
 	fontSize := wh / 25
 
 	for idx := range scene.textObjects {
 		rx, ry := rand.Intn(ww), rand.Intn(wh)
-		scene.textObjects[idx] = scene.Add.Label("", rx, ry, fontSize, "", randColor())
+		ri := rand.Intn(len(messages))
+		scene.textObjects[idx] = scene.Add.Label(messages[ri], rx, ry, fontSize, "", randColor())
 	}
 }
 
 func (scene *MovingLabelsScene) Update(dt time.Duration) {
-	scene.updateString()
-
 	for _, eid := range scene.textObjects {
 		scene.updateVelocity(eid)
 		scene.updatePosition(eid, dt)
@@ -75,22 +88,6 @@ func (scene *MovingLabelsScene) Update(dt time.Duration) {
 	scene.lastMousePosition = mathlib.Vector2{
 		X: float64(mp.X),
 		Y: float64(mp.Y),
-	}
-}
-
-func (scene *MovingLabelsScene) updateString() {
-	for _, e := range scene.textObjects {
-		text, found := scene.Components.Text.Get(e)
-		if !found {
-			continue
-		}
-
-		uuid, found := scene.Components.UUID.Get(e)
-		if !found {
-			continue
-		}
-
-		text.String = uuid.String()[:4]
 	}
 }
 

@@ -6,6 +6,21 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
+/*
+example lua:
+	i = scene.components.interactive.add(eid)
+
+	-- set up a callack on mouse click
+	-- in rectangle at (10,10), with dimensions 40x40
+	i.setMouse(constants.input.MouseButtonLeft)
+	i.hitbox(10, 10, 40, 40)
+	i.callback("testCallback") -- notice that it is a string
+
+	function testCallback()
+		print("hello from lua")
+	end
+*/
+
 func (s *Scene) luaExportComponentInteractive(mt *lua.LTable) {
 	const name = "interactive"
 	
@@ -20,6 +35,18 @@ func (s *Scene) luaExportComponentInteractive(mt *lua.LTable) {
 
 		interactive := s.Components.Interactive.Add(e)
 		L.Push(s.makeLuaTableComponentInteractive(interactive))
+		return 1
+	}))
+
+	s.Lua.SetField(cTable, "remove", s.Lua.NewFunction(func(L *lua.LState) int {
+		if L.GetTop() != 1 {
+			return 0
+		}
+
+		e := common.Entity(s.Lua.CheckNumber(1))
+
+		s.Components.Interactive.Remove(e)
+
 		return 1
 	}))
 
