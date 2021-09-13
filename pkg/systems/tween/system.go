@@ -14,8 +14,9 @@ type System struct {
 // New creates a new tween, but does not add it for processing.
 func (s *System) New() *Tween {
 	t := &Tween{}
-	t.cfg = &config{}
+	t.config = &config{}
 
+	t.justStarted = true
 	t.Time(defaultDuration)
 	t.Ease(defaultEase)
 	t.OnStart(func() {})

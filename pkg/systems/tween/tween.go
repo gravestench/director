@@ -14,7 +14,7 @@ const (
 )
 
 type Tween struct {
-	cfg *config
+	*config
 	mode
 	elapsed time.Duration
 }
@@ -45,8 +45,8 @@ func (t *Tween) Pause() *Tween {
 	return t
 }
 
-func (t *Tween) Complete() float64 {
-	return float64((t.elapsed - t.cfg.delay).Milliseconds()) / float64(t.cfg.duration.Milliseconds())
+func (t *Tween) Progress() float64 {
+	return float64((t.elapsed - t.delay).Milliseconds()) / float64(t.duration.Milliseconds())
 }
 
 func (t *Tween) Update(dt time.Duration) *Tween {
@@ -54,32 +54,46 @@ func (t *Tween) Update(dt time.Duration) *Tween {
 		return t
 	}
 
+	if t.justStarted {
+		if t.onStart != nil {
+			t.onStart()
+		}
+
+		t.justStarted = false
+	}
+
 	t.elapsed += dt
 
-	if t.elapsed > t.cfg.duration {
-		t.elapsed %= t.cfg.duration
-		if t.cfg.repeatCount > 0 {
-			t.cfg.repeatCount--
+	total := (t.delay + t.duration)
+
+	if t.elapsed > total {
+		t.elapsed %= total
+		if t.repeatCount > 0 {
+			t.repeatCount--
+			t.justStarted = true
 		} else {
-			t.cfg.onComplete()
-			t.elapsed = t.cfg.delay + t.cfg.duration
+			if t.onComplete != nil {
+				t.onComplete()
+			}
+
+			t.elapsed = t.delay + t.duration
 			t.Stop()
 		}
 	}
 
-	if t.elapsed < t.cfg.delay {
+	if t.elapsed < t.delay {
 		return t
 	}
 
-	if t.elapsed < t.cfg.duration && t.cfg.onUpdate != nil {
-		t.cfg.onUpdate(t.cfg.ease(t.Complete()))
+	if t.elapsed < total && t.onUpdate != nil {
+		t.onUpdate(t.ease(t.Progress()))
 	}
 
 	return t
 }
 
 func (t *Tween) Time(dt time.Duration) *Tween {
-	t.cfg.duration = dt
+	t.duration = dt
 
 	return t
 }
@@ -97,43 +111,43 @@ func (t *Tween) Ease(args ...interface{}) *Tween {
 		easeFn = getEaseFn(defaultEase, nil)
 	}
 
-	t.cfg.ease = easeFn
+	t.ease = easeFn
 
 	return t
 }
 
 func (t *Tween) OnStart(fn func()) *Tween {
-	t.cfg.onStart = fn
+	t.onStart = fn
 
 	return t
 }
 
 func (t *Tween) OnComplete(fn func()) *Tween {
-	t.cfg.onComplete = fn
+	t.onComplete = fn
 
 	return t
 }
 
 func (t *Tween) OnRepeat(fn func()) *Tween {
-	t.cfg.onRepeat = fn
+	t.onRepeat = fn
 
 	return t
 }
 
 func (t *Tween) OnUpdate(fn func(float64)) *Tween {
-	t.cfg.onUpdate = fn
+	t.onUpdate = fn
 
 	return t
 }
 
 func (t *Tween) Delay(dt time.Duration) *Tween {
-	t.cfg.delay = dt
+	t.delay = dt
 
 	return t
 }
 
 func (t *Tween) Repeat(count int) *Tween {
-	t.cfg.repeatCount = count
+	t.repeatCount = count
 
 	return t
 }

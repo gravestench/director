@@ -15,6 +15,7 @@ const (
 type config struct {
 	duration    time.Duration
 	delay       time.Duration
+	justStarted bool
 	repeatCount int
 	ease        func(complete float64) float64
 	onStart     func()
