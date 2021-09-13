@@ -22,27 +22,28 @@ function randColor()
 end
 
 function makeObject()
-    x, y = 200, 200
+    rw, rh = scene.sys.renderer.window.size()
+    x, y = rw/2, rh/2
     w, h = 200, 200
 
     fill = "#FF0000"
     stroke = randColor()
 
-    theSquare = rectangle.new(x, y, w, h, fill, stroke)
-    label.new("Press A", 300, 500, 32, "", fill)
+    theSquare = scene.add.rectangle(x, y, w, h, fill, stroke)
+    scene.add.label("Press A", 300, 500, 32, "", fill)
 
     return theSquare
 end
 
 function setupInput(e)
-    v = components.interactive.add(e)
+    v = scene.components.interactive.add(e)
 
     v.setKey(constants.input.KeyA)
     v.callback("testCallback")
 end
 
 function testCallback()
-    trs, found = components.transform.get(theSquare:id())
+    trs, found = scene.components.transform.get(theSquare)
     if not found then
         return
     end

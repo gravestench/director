@@ -25,7 +25,9 @@ func (s *Scene) luaOriginAdd() lua.LGFunction {
 			return 0
 		}
 
-		origin := s.Components.Origin.Add(*s.luaCheckEID())
+		e := common.Entity(s.Lua.CheckNumber(1))
+
+		origin := s.Components.Origin.Add(e)
 		L.Push(s.makeLuaTableComponentOrigin(origin))
 		return 1
 	}

@@ -6,35 +6,24 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-const (
-	luaInteractiveComponentName = "interactive"
-)
-
 func (s *Scene) luaExportComponentInteractive(mt *lua.LTable) {
-	interactiveTable := s.Lua.NewTypeMetatable(luaInteractiveComponentName)
+	const name = "interactive"
+	
+	cTable := s.Lua.NewTable()
 
-	s.Lua.SetField(interactiveTable, "add", s.Lua.NewFunction(s.luaInteractiveAdd()))
-	s.Lua.SetField(interactiveTable, "get", s.Lua.NewFunction(s.luaInteractiveGet()))
-
-	s.Lua.SetField(mt, luaInteractiveComponentName, interactiveTable)
-}
-
-func (s *Scene) luaInteractiveAdd() lua.LGFunction {
-	fn := func(L *lua.LState) int {
+	s.Lua.SetField(cTable, "add", s.Lua.NewFunction(func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
 		}
 
-		interactive := s.Components.Interactive.Add(*s.luaCheckEID())
+		e := common.Entity(s.Lua.CheckNumber(1))
+
+		interactive := s.Components.Interactive.Add(e)
 		L.Push(s.makeLuaTableComponentInteractive(interactive))
 		return 1
-	}
+	}))
 
-	return fn
-}
-
-func (s *Scene) luaInteractiveGet() lua.LGFunction {
-	fn := func(L *lua.LState) int {
+	s.Lua.SetField(cTable, "get", s.Lua.NewFunction(func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
 		}
@@ -53,15 +42,15 @@ func (s *Scene) luaInteractiveGet() lua.LGFunction {
 
 		table := s.makeLuaTableComponentInteractive(interactive)
 
-		L.SetMetatable(table, L.GetTypeMetatable(luaInteractiveComponentName))
+		L.SetMetatable(table, L.GetTypeMetatable(name))
 
 		L.Push(table)
 		L.Push(truthy)
 
 		return 2
-	}
+	}))
 
-	return fn
+	s.Lua.SetField(mt, name, cTable)
 }
 
 func (s *Scene) makeLuaTableComponentInteractive(in *input.Interactive) *lua.LTable {

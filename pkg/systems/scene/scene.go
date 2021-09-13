@@ -23,8 +23,6 @@ type Scene struct {
 	Add        SceneObjectFactory
 	renderList []common.Entity
 	Viewports  []common.Entity
-	Width      int
-	Height     int
 }
 
 var tmpVect mathlib.Vector3
@@ -86,10 +84,8 @@ func (s *Scene) renderEntity(e common.Entity) {
 	rl.DrawTextureEx(*t, position, rotation, scale, tint)
 }
 
-func (s *Scene) GenericSceneInit(d *director.Director, width, height int) {
+func (s *Scene) GenericSceneInit(d *director.Director) {
 	s.Add.scene = s
-	s.Width = width
-	s.Height = height
 	s.Director = d
 	s.Components.Init(s.Director.World)
 }
@@ -100,37 +96,56 @@ func (s *Scene) InitializeLua() {
 	}
 
 	s.Lua = lua.NewState()
-
-	var luaTypeExporters = []func(*Scene) common.LuaTypeExport{
-		luaRectangleTypeExporter,
-		luaCircleTypeExporter,
-		luaImageTypeExporter,
-		luaLabelTypeExporter,
+	if err := s.Lua.DoString(common.LuaLibSTD); err != nil {
+		panic(err)
 	}
 
-	for _, luaTypeExporter := range luaTypeExporters {
-		luaTypeExport := luaTypeExporter(s)
-		common.RegisterLuaType(s.Lua, luaTypeExport)
-	}
-
-	s.initConstantsTable()
-	s.initComponentsTable()
+	s.initLuaConstantsTable()
+	s.initLuaSceneTable()
 }
 
-func (s *Scene) initConstantsTable() {
+func (s *Scene) initLuaSceneTable() {
+	table := s.Lua.NewTable()
+	s.Lua.SetGlobal("scene", table)
+
+	s.initLuaSceneObjectFactories(table)
+	s.initLuaComponentsTable(table)
+	s.initLuaSystemsTable(table)
+}
+
+func (s *Scene) initLuaConstantsTable() {
 	componentsTable := s.Lua.NewTable()
 	s.Lua.SetGlobal("constants", componentsTable)
 
 	s.luaExportConstantsInput(componentsTable)
+	s.luaExportConstantsLogging(componentsTable)
 }
 
-func (s *Scene) initComponentsTable() {
+func (s *Scene) initLuaComponentsTable(sceneTable *lua.LTable) {
 	componentsTable := s.Lua.NewTable()
-	s.Lua.SetGlobal("components", componentsTable)
+	s.Lua.SetField(sceneTable, "components", componentsTable)
 
 	s.luaExportComponentInteractive(componentsTable)
 	s.luaExportComponentTransform(componentsTable)
 	s.luaExportComponentOrigin(componentsTable)
+}
+
+func (s *Scene) initLuaSystemsTable(sceneTable *lua.LTable) {
+	sysTable := s.Lua.NewTable()
+	s.Lua.SetField(sceneTable, "sys", sysTable)
+
+	s.luaExportSystemRenderer(sysTable)
+}
+
+func (s *Scene) initLuaSceneObjectFactories(sceneTable *lua.LTable) {
+	objFactoryTable := s.Lua.NewTable()
+
+	s.luaBindSceneObjectFactoryCircle(objFactoryTable)
+	s.luaBindSceneObjectFactoryImage(objFactoryTable)
+	s.luaBindSceneObjectFactoryLabel(objFactoryTable)
+	s.luaBindSceneObjectFactoryRectangle(objFactoryTable)
+
+	s.Lua.SetField(sceneTable, "add", objFactoryTable)
 }
 
 func (s *Scene) UninitializeLua() {
@@ -181,8 +196,8 @@ func (s *Scene) Render() {
 
 func (s *Scene) initViewport() {
 	s.Viewports = make([]common.Entity, 0)
-	s.Width, s.Height = s.Sys.Renderer.Window.Width, s.Sys.Renderer.Window.Height
-	s.Viewports = append(s.Viewports, s.Add.Viewport(0, 0, s.Width, s.Height))
+	rw, rh := s.Sys.Renderer.Window.Width, s.Sys.Renderer.Window.Height
+	s.Viewports = append(s.Viewports, s.Add.Viewport(0, 0, rw, rh))
 }
 
 func (s *Scene) renderCameraForViewport(viewport common.Entity) {

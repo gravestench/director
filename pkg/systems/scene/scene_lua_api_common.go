@@ -2,22 +2,12 @@ package scene
 
 import (
 	"fmt"
-	"github.com/gravestench/director/pkg/common"
+	"image"
+
 	"github.com/gravestench/director/pkg/systems/input"
 	"github.com/gravestench/mathlib"
 	lua "github.com/yuin/gopher-lua"
-	"image"
 )
-
-func (s *Scene) luaCheckEID() *common.Entity {
-	ud := s.Lua.CheckUserData(1)
-	if v, ok := ud.Value.(*common.Entity); ok {
-		return v
-	}
-
-	s.Lua.ArgError(1, "EID expected")
-	return nil
-}
 
 func (s *Scene) makeLuaSetterGetterVec3(vec3 *mathlib.Vector3) *lua.LFunction {
 	setGetXYZ := func(L *lua.LState) int {

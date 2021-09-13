@@ -6,21 +6,22 @@ elapsed = 0
 function init()
     for i = 0,100,1
     do
-        shapes[i] = randObject()
+        e = randObject()
+        shapes[i] = e
     end
 end
 
 function update(timeDelta)
     elapsed = elapsed + timeDelta
     for _, entity in ipairs(shapes) do
-        updatePosition(entity:id())
-        updateRotation(entity:id())
-        --updateOrigin(entity:id())
+        updatePosition(entity)
+        updateRotation(entity)
+        updateOrigin(entity)
     end
 end
 
 function updatePosition(eid)
-    trs, found = components.transform.get(eid)
+    trs, found = scene.components.transform.get(eid)
     if not found then
         return
     end
@@ -28,11 +29,13 @@ function updatePosition(eid)
     tx, ty, tz = trs.translation()
     tx, ty, tz = tx + 1, ty + 1, tz
 
-    if tx > 1124 then
+    rw, rh = scene.sys.renderer.window.size()
+
+    if tx > rw + 150 then
         tx = -150
     end
 
-    if ty > 868 then
+    if ty > rh + 150 then
         ty = -150
     end
 
@@ -40,7 +43,7 @@ function updatePosition(eid)
 end
 
 function updateRotation(eid)
-    trs, found = components.transform.get(eid)
+    trs, found = scene.components.transform.get(eid)
     if not found then
         return
     end
@@ -52,13 +55,15 @@ function updateRotation(eid)
     trs.rotation(rx, ry, rz)
 end
 
+local second = 1000000000
+
 function updateOrigin(eid)
-    origin, found = components.origin.get(eid)
+    origin, found = scene.components.origin.get(eid)
     if not found then
         return
     end
 
-    n = elapsed / 1000000000
+    n = elapsed / second
 
     ox, oy, oz = origin.xyz()
     ox = math.cos(n)
@@ -94,12 +99,12 @@ function randObject()
     randNumber = math.random() * 3
 
     if randNumber > 2 then
-        e = rectangle.new(x, y, w, h, fill, stroke)
+        e = scene.add.rectangle(x, y, w, h, fill, stroke)
     elseif randNumber > 1 then
-        e = circle.new(x, y, w/2, fill, stroke)
+        e = scene.add.circle(x, y, w/2, fill, stroke)
     else
         KEKW = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
-        e = image.new(KEKW, x, y)
+        e = scene.add.image(KEKW, x, y)
     end
 
     return e

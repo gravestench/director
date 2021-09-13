@@ -25,7 +25,9 @@ func (s *Scene) luaTransformAdd() lua.LGFunction {
 			return 0
 		}
 
-		trs := s.Components.Transform.Add(*s.luaCheckEID())
+		e := common.Entity(s.Lua.CheckNumber(1))
+
+		trs := s.Components.Transform.Add(e)
 		L.Push(s.makeLuaTableComponentTransform(trs))
 		return 1
 	}

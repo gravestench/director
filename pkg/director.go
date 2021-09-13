@@ -50,7 +50,7 @@ func New() *Director {
 
 // AddScene adds a scene
 func (d *Director) AddScene(scene SceneInterface) {
-	scene.GenericSceneInit(d, d.Sys.Renderer.Window.Width, d.Sys.Renderer.Window.Height)
+	scene.GenericSceneInit(d)
 	scene.InitializeLua()
 
 	d.AddSystem(scene)
@@ -125,6 +125,7 @@ func (d *Director) Run() error {
 
 	ww, wh := int32(d.Sys.Renderer.Window.Width), int32(d.Sys.Renderer.Window.Height)
 
+	rl.SetTraceLog(rl.LogNone)
 	rl.InitWindow(ww, wh, d.Sys.Renderer.Window.Title)
 	defer rl.CloseWindow()
 
