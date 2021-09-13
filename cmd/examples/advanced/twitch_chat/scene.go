@@ -17,7 +17,7 @@ import (
 
 	// using two twitch libraries because one of them provided a method for pulling emotes
 	// and the other was easy to use at the time i initially wrote this example
-	"github.com/gempir/go-twitch-irc/v2"
+	twitch "github.com/gempir/go-twitch-irc/v2"
 	"github.com/nicklaw5/helix"
 
 	rl "github.com/gen2brain/raylib-go/raylib"

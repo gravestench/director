@@ -16,10 +16,10 @@ import (
 
 type GameScene struct {
 	scene.Scene
-	upgrades        ShopUpgrades
-	toggleButton    common.Entity
-	toggleLabel     common.Entity
-	debugPanel      common.Entity
+	upgrades     ShopUpgrades
+	toggleButton common.Entity
+	toggleLabel  common.Entity
+	debugPanel   common.Entity
 	//mainPanel       common.Entity
 	//square          common.Entity
 	//label           common.Entity
