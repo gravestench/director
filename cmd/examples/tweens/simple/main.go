@@ -39,7 +39,7 @@ func (scene *TweenTest) Update() {
 func (scene *TweenTest) Init(_ *akara.World) {
 	red := color.RGBA{R: 255, A: 255}
 
-	scene.object = scene.Add.Label("LOLWUT", 1024/2, 768/2, 100, "", red)
+	scene.object = scene.Add.Label("Director", 1024/2, 768/2, 100, "", red)
 
 	scene.makeTween()
 }
@@ -51,7 +51,7 @@ func (scene *TweenTest) IsInitialized() bool {
 func (scene *TweenTest) makeTween() {
 	t := scene.Sys.Tweens.New()
 
-	t.Time(time.Second * 10)
+	t.Time(time.Second * 5)
 	t.Ease(easing.ElasticOut, []float64{0.5, 0.85, 0.5})
 	t.Repeat(tween.RepeatForever)
 
