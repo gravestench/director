@@ -46,7 +46,7 @@ func (scene *LabelTestScene) Init(w *akara.World) {
 }
 
 func (scene *LabelTestScene) makeLabels() {
-	ww, wh := scene.Width, scene.Height
+	ww, wh := scene.Sys.Renderer.Window.Width, scene.Sys.Renderer.Window.Height
 	fontSize := wh / 10
 
 	red := color.RGBA{R: 255, A: 255}
@@ -63,7 +63,7 @@ func (scene *LabelTestScene) Update(dt time.Duration) {
 }
 
 func (scene *LabelTestScene) updateLabel() {
-	ww, wh := scene.Width, scene.Height
+	ww, wh := scene.Sys.Renderer.Window.Width, scene.Sys.Renderer.Window.Height
 
 	o, found := scene.Components.Origin.Get(scene.singleLabel)
 	if !found {
@@ -112,14 +112,16 @@ func (scene *LabelTestScene) updateLabel() {
 }
 
 func (scene *LabelTestScene) resizeCameraWithWindow() {
+	ww, wh := scene.Sys.Renderer.Window.Width, scene.Sys.Renderer.Window.Height
+
 	for _, e := range scene.Viewports {
 		rt, found := scene.Components.RenderTexture2D.Get(e)
 		if !found {
 			continue
 		}
 
-		if int(rt.Texture.Width) != scene.Width || int(rt.Texture.Height) != scene.Height {
-			t := rl.LoadRenderTexture(int32(scene.Width), int32(scene.Height))
+		if int(rt.Texture.Width) != ww || int(rt.Texture.Height) != wh {
+			t := rl.LoadRenderTexture(int32(ww), int32(wh))
 			rt.RenderTexture2D = &t
 		}
 	}

@@ -3,7 +3,6 @@ package main
 import (
 	director "github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/easing"
-	"github.com/gravestench/director/pkg/systems/tween"
 	"math/rand"
 	"time"
 
@@ -58,7 +57,7 @@ func (scene *testScene) handleNewImage() {
 }
 
 func (scene *testScene) fadeIn(e common.Entity) {
-	t := tween.NewBuilder()
+	t := scene.Sys.Tweens.New()
 	t.Time(time.Second)
 	t.Ease(easing.Sine)
 
@@ -75,7 +74,7 @@ func (scene *testScene) fadeIn(e common.Entity) {
 		opacity.Value = progress
 	})
 
-	scene.Sys.Tweens.New(t)
+	scene.Sys.Tweens.Add(t)
 }
 
 func (scene *testScene) updatePosition(e common.Entity) {

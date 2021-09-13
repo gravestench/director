@@ -26,48 +26,44 @@ func main() {
 type TweenTest struct {
 	scene.Scene
 	object      common.Entity
-	squareTween *tween.Tween
 }
 
-func (t *TweenTest) Key() string {
+func (scene *TweenTest) Key() string {
 	return "tween test"
 }
 
-func (t *TweenTest) Update() {
+func (scene *TweenTest) Update() {
 	// noop
 }
 
-func (t *TweenTest) Init(_ *akara.World) {
+func (scene *TweenTest) Init(_ *akara.World) {
 	red := color.RGBA{R: 255, A: 255}
 
-	t.object = t.Add.Label("LOLWUT", 1024/2, 768/2, 100, "", red)
+	scene.object = scene.Add.Label("LOLWUT", 1024/2, 768/2, 100, "", red)
 
-	t.makeTween()
+	scene.makeTween()
 }
 
-func (t *TweenTest) IsInitialized() bool {
-	return t.object != 0
+func (scene *TweenTest) IsInitialized() bool {
+	return scene.object != 0
 }
 
-func (t *TweenTest) makeTween() {
-	builder := tween.NewBuilder()
+func (scene *TweenTest) makeTween() {
+	t := scene.Sys.Tweens.New()
 
-	builder.Time(time.Second * 4)
-	builder.Ease(easing.ElasticOut, []float64{0.5, 0.85, 0.5})
-	builder.Repeat(tween.RepeatForever)
-	builder.Delay(time.Second * 3)
+	t.Time(time.Second * 10)
+	t.Ease(easing.ElasticOut, []float64{0.5, 0.85, 0.5})
+	t.Repeat(tween.RepeatForever)
 
-	trs, found := t.Components.Transform.Get(t.object)
+	trs, found := scene.Components.Transform.Get(scene.object)
 	if !found {
 		return
 	}
 
-	builder.OnUpdate(func(complete float64) {
+	t.OnUpdate(func(complete float64) {
 		trs.Rotation.Y = complete * 360
 		trs.Scale.Set(complete, complete, complete)
 	})
 
-	t.squareTween = builder.Build()
-
-	t.Sys.Tweens.New(t.squareTween)
+	scene.Sys.Tweens.Add(t)
 }

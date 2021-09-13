@@ -44,9 +44,10 @@ func (scene *LabelTestScene) Init(w *akara.World) {
 }
 
 func (scene *LabelTestScene) makeLabels() {
-	fontSize := scene.Height / 10
+	ww, wh := scene.Sys.Renderer.Window.Width, scene.Sys.Renderer.Window.Height
+	fontSize := wh / 10
 
-	scene.singleLabel = scene.Add.Label("", scene.Width/2, scene.Height/2, fontSize, "", randColor())
+	scene.singleLabel = scene.Add.Label("", ww/2, wh/2, fontSize, "", randColor())
 }
 
 func (scene *LabelTestScene) Update(dt time.Duration) {
@@ -54,7 +55,7 @@ func (scene *LabelTestScene) Update(dt time.Duration) {
 }
 
 func (scene *LabelTestScene) updateLabel() {
-	ww, wh := scene.Width, scene.Height
+	ww, wh := scene.Sys.Renderer.Window.Width, scene.Sys.Renderer.Window.Height
 
 	trs, found := scene.Components.Transform.Get(scene.singleLabel)
 	if !found {

@@ -16,20 +16,20 @@ type ShapeTestScene struct {
 	scene.Scene
 }
 
-func (s *ShapeTestScene) Init(_ *akara.World) {
+func (scene *ShapeTestScene) Init(_ *akara.World) {
 	yellow := color.RGBA{R: 255, G: 255, A: 255}
 	pink := color.RGBA{R: 255, B: 255, A: 255}
 
-	ww, wh := s.Width, s.Height
+	ww, wh := scene.Sys.Renderer.Window.Width, scene.Sys.Renderer.Window.Height
 
-	s.Add.Rectangle(ww/2, wh/2, 100, 100, yellow, pink)
-	s.Add.Circle(ww/4, wh*3/4, ww/8, nil, pink)
+	scene.Add.Rectangle(ww/2, wh/2, 100, 100, yellow, pink)
+	scene.Add.Circle(ww/4, wh*3/4, ww/8, nil, pink)
 }
 
-func (s *ShapeTestScene) IsInitialized() bool {
+func (scene *ShapeTestScene) IsInitialized() bool {
 	return true
 }
 
-func (s *ShapeTestScene) Key() string {
+func (scene *ShapeTestScene) Key() string {
 	return sceneName
 }

@@ -20,12 +20,10 @@ import (
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/nicklaw5/helix"
 
+	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/easing"
 	"github.com/gravestench/director/pkg/systems/scene"
-	"github.com/gravestench/director/pkg/systems/tween"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 const (
@@ -247,7 +245,7 @@ func (scene *testScene) newMessage(name, msg string) {
 
 	rcx, rcy := cx/2+rand.Intn(cx), cy/2+rand.Intn(cy)
 
-	tb := tween.NewBuilder()
+	tb := scene.Sys.Tweens.New()
 
 	tb.Time(time.Second * 6)
 	tb.Ease(easing.ElasticOut, []float64{0.5, 0.85, 0.5})
@@ -266,7 +264,7 @@ func (scene *testScene) newMessage(name, msg string) {
 	})
 
 	tb.OnComplete(func() {
-		tb2 := tween.NewBuilder()
+		tb2 := scene.Sys.Tweens.New()
 
 		tb2.Time(time.Second * 6)
 		tb2.Ease(easing.ElasticOut, []float64{0.5, 0.85, 0.5})
@@ -287,10 +285,10 @@ func (scene *testScene) newMessage(name, msg string) {
 			scene.RemoveEntity(entity)
 		})
 
-		scene.Sys.Tweens.New(tb2)
+		scene.Sys.Tweens.Add(tb2)
 	})
 
-	scene.Sys.Tweens.New(tb)
+	scene.Sys.Tweens.Add(tb)
 }
 
 func (scene *testScene) resizeCameraWithWindow() {

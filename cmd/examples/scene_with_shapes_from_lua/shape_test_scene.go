@@ -21,16 +21,16 @@ type shapeTestFromLua struct {
 	numRectangles int
 }
 
-func (s *shapeTestFromLua) Key() string {
+func (scene *shapeTestFromLua) Key() string {
 	return sceneName
 }
 
-func (s *shapeTestFromLua) Update(_ time.Duration) {
-	if s.numRectangles >= maxRectangles {
+func (scene *shapeTestFromLua) Update(_ time.Duration) {
+	if scene.numRectangles >= maxRectangles {
 		return
 	}
 
-	ww, wh := s.Width, s.Height
+	ww, wh := scene.Sys.Renderer.Window.Width, scene.Sys.Renderer.Window.Height
 	rx, ry := randRange(0, ww), randRange(0, wh)
 	rw, rh := randRange(minWidth, maxWidth), randRange(minHeight, maxHeight)
 
@@ -38,10 +38,10 @@ func (s *shapeTestFromLua) Update(_ time.Duration) {
 		v = rectangle.new(%v, %v, %v, %v, "#7f00f7", "#ffffff")
 	`
 
-	if err := s.Lua.DoString(fmt.Sprintf(script, rx, ry, rw, rh)); err != nil {
+	if err := scene.Lua.DoString(fmt.Sprintf(script, rx, ry, rw, rh)); err != nil {
 		fmt.Print(err)
 	} else {
-		s.numRectangles++
+		scene.numRectangles++
 	}
 }
 
