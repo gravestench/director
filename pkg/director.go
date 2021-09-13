@@ -22,12 +22,12 @@ import (
 type Director struct {
 	*akara.World
 	scenes map[string]SceneInterface
-	Sys directorSystems
+	Sys    DirectorSystems
 }
 
 // contains the base systems that are available when a director instance is created
-type directorSystems struct {
-	Events  *eventemitter.EventEmitter
+type DirectorSystems struct {
+	Events   *eventemitter.EventEmitter
 	Load     *file_loader.System
 	Renderer *renderer.System
 	Texture  *texture_manager.System
