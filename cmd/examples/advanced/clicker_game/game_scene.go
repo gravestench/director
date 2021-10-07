@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/faiface/mainthread"
 	"github.com/gravestench/director/pkg/common"
 	"image"
 	"image/color"
@@ -162,7 +163,10 @@ func (scene *GameScene) updateTestLabel() {
 		return
 	}
 
-	mp := rl.GetMousePosition()
+	var mp rl.Vector2
+	mainthread.Call(func() {
+		mp = rl.GetMousePosition()
+	})
 
 	const (
 		fmtMouse = "Mouse: (%v, %v)"

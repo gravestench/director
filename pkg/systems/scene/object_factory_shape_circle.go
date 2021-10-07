@@ -1,6 +1,7 @@
 package scene
 
 import (
+	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/common"
 	"image/color"
@@ -136,32 +137,36 @@ func (factory *circleFactory) generateNewTexture(s *Scene, e common.Entity) {
 	rt, rtFound := s.Components.RenderTexture2D.Get(e)
 	if !rtFound {
 		rt = s.Components.RenderTexture2D.Add(e)
-		newRT := rl.LoadRenderTexture(w, h)
-		rt.RenderTexture2D = &newRT
+		mainthread.Call(func() {
+			newRT := rl.LoadRenderTexture(w, h)
+			rt.RenderTexture2D = &newRT
+		})
 	}
 
-	rl.BeginTextureMode(*rt.RenderTexture2D)
-	rl.ClearBackground(rl.Blank)
+	mainthread.Call(func() {
+		rl.BeginTextureMode(*rt.RenderTexture2D)
+		rl.ClearBackground(rl.Blank)
 
-	if fillFound {
-		fc = fill
-		r, g, b, a := fill.RGBA()
-		rl.DrawCircle(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
-	}
+		if fillFound {
+			fc = fill
+			r, g, b, a := fill.RGBA()
+			rl.DrawCircle(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+		}
 
-	if !fillFound && colorFound {
-		fc = col
-		r, g, b, a := col.RGBA()
-		rl.DrawCircle(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
-	}
+		if !fillFound && colorFound {
+			fc = col
+			r, g, b, a := col.RGBA()
+			rl.DrawCircle(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+		}
 
-	if strokeFound {
-		sc = stroke
-		r, g, b, a := stroke.RGBA()
-		rl.DrawCircleLines(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
-	}
+		if strokeFound {
+			sc = stroke
+			r, g, b, a := stroke.RGBA()
+			rl.DrawCircleLines(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+		}
 
-	rl.EndTextureMode()
+		rl.EndTextureMode()
+	})
 
 	factory.putInCache(e, int(w), int(h), fc, sc)
 }

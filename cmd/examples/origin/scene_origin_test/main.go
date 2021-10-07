@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/faiface/mainthread"
 	"github.com/gravestench/director/pkg/systems/scene"
 	"image/color"
 	"math"
@@ -57,7 +58,7 @@ func (scene *LabelTestScene) makeLabels() {
 	scene.Components.Debug.Add(scene.singleLabel)
 }
 
-func (scene *LabelTestScene) Update(dt time.Duration) {
+func (scene *LabelTestScene) Update() {
 	scene.updateLabel()
 	scene.resizeCameraWithWindow()
 }
@@ -121,8 +122,10 @@ func (scene *LabelTestScene) resizeCameraWithWindow() {
 		}
 
 		if int(rt.Texture.Width) != ww || int(rt.Texture.Height) != wh {
-			t := rl.LoadRenderTexture(int32(ww), int32(wh))
-			rt.RenderTexture2D = &t
+			mainthread.Call(func() {
+				t := rl.LoadRenderTexture(int32(ww), int32(wh))
+				rt.RenderTexture2D = &t
+			})
 		}
 	}
 }

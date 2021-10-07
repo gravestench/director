@@ -39,9 +39,9 @@ func (sys *System) IsInitialized() bool {
 	return sys.animations != nil
 }
 
-func (sys *System) Update(dt time.Duration) {
+func (sys *System) Update() {
 	for _, e := range sys.animations.GetEntities() {
-		sys.updateAnimation(e, dt)
+		sys.updateAnimation(e, sys.TimeDelta)
 	}
 }
 

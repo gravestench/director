@@ -1,6 +1,8 @@
 package pkg
 
 import (
+	"fmt"
+	"github.com/faiface/mainthread"
 	"github.com/gravestench/director/pkg/systems/animation"
 	"github.com/gravestench/director/pkg/systems/renderer"
 	"github.com/gravestench/director/pkg/systems/texture_manager"
@@ -25,7 +27,7 @@ type Director struct {
 	Sys    DirectorSystems
 }
 
-// contains the base systems that are available when a director instance is created
+// DirectorSystems contains the base systems that are available when a director instance is created
 type DirectorSystems struct {
 	Events   *eventemitter.EventEmitter
 	Load     *file_loader.System
@@ -67,27 +69,9 @@ func (d *Director) RemoveScene(key string) *Director {
 	return d
 }
 
-// Update iterates over all of the scenes, updating and rendering each.
-// Because scenes are actually implementing the akara.System interface,
-// this only calls all of tghe generic update methods, and akara calls the
-// actual update methods at the end during world.Update
+// Update calls World.Update()
 func (d *Director) Update(dt time.Duration) (err error) {
-	d.updateScenes(dt)
-
 	return d.World.Update(dt)
-}
-
-// updateScenes calls the generic scene update method for each scene
-func (d *Director) updateScenes(dt time.Duration) {
-	for _, ss := range d.scenes {
-		ss.GenericUpdate(dt)
-	}
-
-	// this renders the scene objects to the scene's render texture
-	// however, this will not actually display anything, that is done by the render system
-	for idx := range d.scenes {
-		d.scenes[idx].Render()
-	}
 }
 
 // initDirectorSystems creates all of the systems that scenes will need.
@@ -116,8 +100,14 @@ func (d *Director) initDirectorSystems() {
 	d.AddSystem(&animation.System{})
 }
 
-// Run the director game loop. this is a blocking operation.
 func (d *Director) Run() error {
+	mainthread.Run(d.run)
+
+	return nil
+}
+
+// run the director game loop. this is a blocking operation.
+func (d *Director) run() {
 	now := time.Now()
 	last := now
 
@@ -125,19 +115,32 @@ func (d *Director) Run() error {
 
 	ww, wh := int32(d.Sys.Renderer.Window.Width), int32(d.Sys.Renderer.Window.Height)
 
-	rl.SetTraceLog(rl.LogNone)
-	rl.InitWindow(ww, wh, d.Sys.Renderer.Window.Title)
-	defer rl.CloseWindow()
+	mainthread.Call(func() {
+		rl.SetTraceLog(rl.LogNone)
+		rl.InitWindow(ww, wh, d.Sys.Renderer.Window.Title)
+	})
 
+	defer mainthread.Call(func() {
+		rl.CloseWindow()
+	})
+
+	var counter time.Duration
+	var frames uint
 	for !rl.WindowShouldClose() {
 		now = time.Now()
 		delta = now.Sub(last)
 		last = now
+		counter = counter + delta
+		frames += 1
 
 		if err := d.Update(delta); err != nil {
-			return err
+			panic(err)
+		}
+
+		if counter.Seconds() >= 1 {
+			fmt.Println(frames)
+			counter = 0
+			frames = 0
 		}
 	}
-
-	return nil
 }

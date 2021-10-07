@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/faiface/mainthread"
 	"image/color"
 	"io"
 	"log"
@@ -312,13 +313,17 @@ func (scene *testScene) resizeCameraWithWindow() {
 		}
 
 		if int(vprt.Texture.Width) != rWidth || int(vprt.Texture.Height) != rHeight {
-			t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
-			vprt.RenderTexture2D = &t
+			mainthread.Call(func() {
+				t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
+				vprt.RenderTexture2D = &t
+			})
 		}
 
 		if int(camrt.Texture.Width) != rWidth || int(camrt.Texture.Height) != rHeight {
-			t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
-			camrt.RenderTexture2D = &t
+			mainthread.Call(func() {
+				t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
+				camrt.RenderTexture2D = &t
+			})
 		}
 	}
 }

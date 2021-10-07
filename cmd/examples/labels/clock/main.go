@@ -50,7 +50,7 @@ func (scene *LabelTestScene) makeLabels() {
 	scene.singleLabel = scene.Add.Label("", ww/2, wh/2, fontSize, "", randColor())
 }
 
-func (scene *LabelTestScene) Update(dt time.Duration) {
+func (scene *LabelTestScene) Update() {
 	scene.updateLabel()
 }
 

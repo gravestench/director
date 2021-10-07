@@ -3,6 +3,7 @@ module github.com/gravestench/director
 go 1.16
 
 require (
+	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3 // indirect
 	github.com/gempir/go-twitch-irc/v2 v2.6.0
 	github.com/gen2brain/raylib-go/raylib v0.0.0-20210905161606-6acb55e3e6d3
 	github.com/google/uuid v1.3.0
@@ -14,3 +15,5 @@ require (
 	github.com/nicklaw5/helix v1.25.0
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9
 )
+
+replace github.com/gravestench/akara => /Users/iling/github/akara

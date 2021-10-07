@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/faiface/mainthread"
 	"github.com/gravestench/director/pkg/systems/scene"
 	"github.com/gravestench/mathlib"
 	"image/color"
@@ -76,15 +77,18 @@ func (scene *MovingLabelsScene) makeLabels() {
 	}
 }
 
-func (scene *MovingLabelsScene) Update(dt time.Duration) {
+func (scene *MovingLabelsScene) Update() {
 	for _, eid := range scene.textObjects {
 		scene.updateVelocity(eid)
-		scene.updatePosition(eid, dt)
+		scene.updatePosition(eid, scene.Director.TimeDelta)
 	}
 
 	scene.resizeCameraWithWindow()
 
-	mp := rl.GetMousePosition()
+	var mp rl.Vector2
+	mainthread.Call(func() {
+		mp = rl.GetMousePosition()
+	})
 	scene.lastMousePosition = mathlib.Vector2{
 		X: float64(mp.X),
 		Y: float64(mp.Y),
@@ -114,7 +118,10 @@ func (scene *MovingLabelsScene) updatePosition(eid common.Entity, dt time.Durati
 	position.X += float64(velocity.X) * scalar
 	position.Y += float64(velocity.Y) * scalar
 
-	ww, wh := float32(rl.GetScreenWidth()), float32(rl.GetScreenHeight())
+	var ww, wh float32
+	mainthread.Call(func() {
+		ww, wh = float32(rl.GetScreenWidth()), float32(rl.GetScreenHeight())
+	})
 
 	var tw, th int32
 
@@ -136,7 +143,10 @@ func (scene *MovingLabelsScene) updateVelocity(eid common.Entity) {
 		velocity = scene.Velocity.Add(eid)
 	}
 
-	mp := rl.GetMousePosition()
+	var mp rl.Vector2
+	mainthread.Call(func() {
+		mp = rl.GetMousePosition()
+	})
 	mp2 := &mathlib.Vector2{
 		X: float64(mp.X),
 		Y: float64(mp.Y),
@@ -161,8 +171,10 @@ func (scene *MovingLabelsScene) resizeCameraWithWindow() {
 		rHeight := scene.Sys.Renderer.Window.Height
 
 		if int(rt.Texture.Width) != rWidth || int(rt.Texture.Height) != rHeight {
-			t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
-			rt.RenderTexture2D = &t
+			mainthread.Call(func() {
+				t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
+				rt.RenderTexture2D = &t
+			})
 		}
 	}
 }

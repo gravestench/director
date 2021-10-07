@@ -96,6 +96,9 @@ func (s *Scene) GenericSceneInit(d *director.Director) {
 	s.Add.scene = s
 	s.Director = d
 	s.Components.Init(s.Director.World)
+	s.BaseSystem.SetPreTickFunc(func() {
+		s.GenericUpdate()
+	})
 }
 
 func (s *Scene) InitializeLua() {
@@ -142,9 +145,13 @@ func (s *Scene) updateSceneObjects(dt time.Duration) {
 	s.Add.update(dt)
 }
 
-func (s *Scene) GenericUpdate(dt time.Duration) {
+func (s *Scene) GenericUpdate() {
 	s.updateSceneGraph()
-	s.updateSceneObjects(dt)
+	s.updateSceneObjects(s.Director.TimeDelta)
+
+	// this renders the scene objects to the scene's render texture
+	// however, this will not actually display anything, that is done by the render system
+	s.Render()
 }
 
 func (s *Scene) Render() {

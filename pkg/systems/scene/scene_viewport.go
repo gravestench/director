@@ -1,6 +1,7 @@
 package scene
 
 import (
+	"github.com/faiface/mainthread"
 	"sort"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -29,34 +30,36 @@ func (s *Scene) renderCameraForViewport(viewport common.Entity) {
 		return
 	}
 
-	rl.BeginTextureMode(*camrt.RenderTexture2D)
-	defer rl.EndTextureMode()
+	mainthread.Call(func() {
+		rl.BeginTextureMode(*camrt.RenderTexture2D)
+		defer rl.EndTextureMode()
 
-	rl.BeginMode2D(cam.Camera2D)
-	defer rl.EndMode2D()
+		rl.BeginMode2D(cam.Camera2D)
+		defer rl.EndMode2D()
 
-	r, g, b, a := vp.Background.RGBA()
-	rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+		r, g, b, a := vp.Background.RGBA()
+		rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
 
-	sort.Slice(s.renderList, func(i, j int) bool {
-		a, b := s.renderList[i], s.renderList[j]
-		roA, foundA := s.Components.RenderOrder.Get(a)
-		roB, foundB := s.Components.RenderOrder.Get(b)
+		sort.Slice(s.renderList, func(i, j int) bool {
+			a, b := s.renderList[i], s.renderList[j]
+			roA, foundA := s.Components.RenderOrder.Get(a)
+			roB, foundB := s.Components.RenderOrder.Get(b)
 
-		if !foundA || !foundB {
-			return a < b
+			if !foundA || !foundB {
+				return a < b
+			}
+
+			return roA.Value < roB.Value
+		})
+
+		for _, entity := range s.renderList {
+			if entity == vp.CameraEntity || entity == viewport {
+				continue
+			}
+
+			s.renderEntity(entity)
 		}
-
-		return roA.Value < roB.Value
 	})
-
-	for _, entity := range s.renderList {
-		if entity == vp.CameraEntity || entity == viewport {
-			continue
-		}
-
-		s.renderEntity(entity)
-	}
 }
 
 func (s *Scene) renderCameraToViewport(viewport common.Entity) {
@@ -75,24 +78,26 @@ func (s *Scene) renderCameraToViewport(viewport common.Entity) {
 		return
 	}
 
-	rl.BeginTextureMode(*vprt.RenderTexture2D)
-	defer rl.EndTextureMode()
+	mainthread.Call(func() {
+		rl.BeginTextureMode(*vprt.RenderTexture2D)
+		defer rl.EndTextureMode()
 
-	rl.ClearBackground(rl.Blank)
+		rl.ClearBackground(rl.Blank)
 
-	src := rl.Rectangle{
-		X:      0,
-		Y:      float32(camrt.Texture.Height),
-		Width:  float32(camrt.Texture.Width),
-		Height: -float32(camrt.Texture.Height),
-	}
+		src := rl.Rectangle{
+			X:      0,
+			Y:      float32(camrt.Texture.Height),
+			Width:  float32(camrt.Texture.Width),
+			Height: -float32(camrt.Texture.Height),
+		}
 
-	dst := rl.Rectangle{
-		X:      0,
-		Y:      0,
-		Width:  float32(vprt.Texture.Width),
-		Height: float32(vprt.Texture.Height),
-	}
+		dst := rl.Rectangle{
+			X:      0,
+			Y:      0,
+			Width:  float32(vprt.Texture.Width),
+			Height: float32(vprt.Texture.Height),
+		}
 
-	rl.DrawTexturePro(camrt.Texture, src, dst, rl.Vector2{}, 0, rl.White)
+		rl.DrawTexturePro(camrt.Texture, src, dst, rl.Vector2{}, 0, rl.White)
+	})
 }

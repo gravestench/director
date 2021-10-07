@@ -1,6 +1,7 @@
 package screen_rendering
 
 import (
+	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
@@ -16,8 +17,6 @@ type ScreenRenderingSystem struct {
 }
 
 func (sys *ScreenRenderingSystem) Init(world *akara.World) {
-	sys.World = world
-
 	sys.components.Init(world)
 	sys.initViewportSubscription()
 }
@@ -47,17 +46,19 @@ func (sys *ScreenRenderingSystem) initViewportSubscription() {
 }
 
 func (sys *ScreenRenderingSystem) Update() {
-	rl.BeginDrawing()
+	mainthread.Call(func() {
+		rl.BeginDrawing()
 
-	rl.ClearBackground(rl.Blank)
-	rl.BeginBlendMode(rl.BlendAlpha)
+		rl.ClearBackground(rl.Blank)
+		rl.BeginBlendMode(rl.BlendAlpha)
 
-	for _, e := range sys.sceneViewports.GetEntities() {
-		sys.renderViewport(e)
-	}
+		for _, e := range sys.sceneViewports.GetEntities() {
+			sys.renderViewport(e)
+		}
 
-	rl.EndBlendMode()
-	rl.EndDrawing()
+		rl.EndBlendMode()
+		rl.EndDrawing()
+	})
 }
 
 func (sys *ScreenRenderingSystem) renderViewport(e common.Entity) {

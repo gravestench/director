@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/faiface/mainthread"
 	director "github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/easing"
 	"math/rand"
@@ -30,8 +31,8 @@ func (scene *testScene) Key() string {
 	return "test"
 }
 
-func (scene *testScene) Update(dt time.Duration) {
-	scene.elapsed += dt
+func (scene *testScene) Update() {
+	scene.elapsed += scene.TimeDelta
 
 	scene.handleNewImage()
 	scene.resizeCameraWithWindow()
@@ -114,8 +115,10 @@ func (scene *testScene) resizeCameraWithWindow() {
 		}
 
 		if int(rt.Texture.Width) != rWidth || int(rt.Texture.Height) != rHeight {
-			t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
-			rt.RenderTexture2D = &t
+			mainthread.Call(func() {
+				t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
+				rt.RenderTexture2D = &t
+			})
 
 			for _, e := range scene.images {
 				scene.setRandomImagePosition(e)

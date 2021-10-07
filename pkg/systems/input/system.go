@@ -1,6 +1,7 @@
 package input
 
 import (
+	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"image"
@@ -91,23 +92,25 @@ func (m *System) updateInputState() {
 		MouseButtonLeft, MouseButtonMiddle, MouseButtonRight,
 	}
 
-	for _, key := range keysToCheck {
-		//truth := m.InputService.IsKeyJustPressed(d2enum.Key(key))
-		truth := rl.IsKeyPressed(key)
-		m.inputState.KeyVector.Set(int(key), truth)
-	}
+	mainthread.Call(func() {
+		for _, key := range keysToCheck {
+			// truth := m.InputService.IsKeyJustPressed(d2enum.Key(key))
+			truth := rl.IsKeyPressed(key)
+			m.inputState.KeyVector.Set(int(key), truth)
+		}
 
-	for _, mod := range modifiersToCheck {
-		//truth := m.InputService.IsKeyJustPressed(d2enum.Key(mod))
-		truth := rl.IsKeyPressed(mod)
-		m.inputState.ModifierVector.Set(int(mod), truth)
-	}
+		for _, mod := range modifiersToCheck {
+			// truth := m.InputService.IsKeyJustPressed(d2enum.Key(mod))
+			truth := rl.IsKeyPressed(mod)
+			m.inputState.ModifierVector.Set(int(mod), truth)
+		}
 
-	for _, btn := range buttonsToCheck {
-		//truth := m.InputService.IsMouseButtonJustPressed(d2enum.MouseButton(btn))
-		truth := rl.IsMouseButtonPressed(btn)
-		m.inputState.MouseButtonVector.Set(int(btn), truth)
-	}
+		for _, btn := range buttonsToCheck {
+			// truth := m.InputService.IsMouseButtonJustPressed(d2enum.MouseButton(btn))
+			truth := rl.IsMouseButtonPressed(btn)
+			m.inputState.MouseButtonVector.Set(int(btn), truth)
+		}
+	})
 }
 
 func (m *System) applyInputState(id akara.EID) (preventPropagation bool) {
@@ -123,7 +126,10 @@ func (m *System) applyInputState(id akara.EID) (preventPropagation bool) {
 
 	// check if this Interactive specified a particular cursor position that the input must occur in
 	if i.Hitbox != nil {
-		p := rl.GetMousePosition()
+		var p rl.Vector2
+		mainthread.Call(func() {
+			p = rl.GetMousePosition()
+		})
 		if !contains(i.Hitbox, int(p.X), int(p.Y)) {
 			return false
 		}

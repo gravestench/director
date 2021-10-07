@@ -2,6 +2,7 @@ package texture_manager
 
 import (
 	"fmt"
+	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
@@ -138,11 +139,14 @@ func (sys *System) createTexture(e common.Entity) {
 	}
 
 	t := sys.components.texture2d.Add(e)
-	texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: img}))
 
-	_ = sys.Cache.Insert(req.Path, &texture, 1)
+	mainthread.Call(func() {
+		texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: img}))
 
-	t.Texture2D = &texture
+		_ = sys.Cache.Insert(req.Path, &texture, 1)
+
+		t.Texture2D = &texture
+	})
 }
 
 func (sys *System) createGifAnimation(e common.Entity, gifImg *gif.GIF) {
@@ -155,24 +159,25 @@ func (sys *System) createGifAnimation(e common.Entity, gifImg *gif.GIF) {
 
 	t := sys.components.texture2d.Add(e)
 
-	for idx := range gifImg.Image {
+	mainthread.Call(func() {
+		for idx := range gifImg.Image {
+			anim.FrameImages = append(anim.FrameImages, gifImg.Image[idx])
+			cacheKey := fmt.Sprintf("%s::frame%v", req.Path, idx)
 
-		anim.FrameImages = append(anim.FrameImages, gifImg.Image[idx])
-		cacheKey := fmt.Sprintf("%s::frame%v", req.Path, idx)
+			delay := time.Second / 100 * time.Duration(gifImg.Delay[idx])
+			anim.FrameDurations = append(anim.FrameDurations, delay)
 
-		delay := time.Second / 100 * time.Duration(gifImg.Delay[idx])
-		anim.FrameDurations = append(anim.FrameDurations, delay)
+			if t, found := sys.Cache.Retrieve(cacheKey); found {
+				anim.FrameTextures = append(anim.FrameTextures, t.(*rl.Texture2D))
+				continue
+			}
 
-		if t, found := sys.Cache.Retrieve(cacheKey); found {
-			anim.FrameTextures = append(anim.FrameTextures, t.(*rl.Texture2D))
-			continue
+			texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: anim.FrameImages[idx]}))
+			anim.FrameTextures = append(anim.FrameTextures, &texture)
+
+			_ = sys.Cache.Insert(cacheKey, &texture, 1)
 		}
-
-		texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: anim.FrameImages[idx]}))
-		anim.FrameTextures = append(anim.FrameTextures, &texture)
-
-		_ = sys.Cache.Insert(cacheKey, &texture, 1)
-	}
+	})
 
 	anim.UntilNextFrame = anim.FrameDurations[0]
 
