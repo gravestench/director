@@ -101,6 +101,7 @@ func (d *Director) initDirectorSystems() {
 }
 
 func (d *Director) Run() error {
+	// mainthread.CallQueueCap = 16
 	mainthread.Run(d.run)
 
 	return nil
