@@ -5,12 +5,14 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/common"
 	"image/color"
+	"sync"
 	"time"
 )
 
 type rectangleFactory struct {
-	entityManager common.EntityManager
+	common.EntityManager
 	cache         map[common.Entity]*rectangleParameters
+	cacheMutex sync.Mutex
 }
 
 func (factory *rectangleFactory) New(s *Scene, x, y, w, h int, fill, stroke color.Color) common.Entity {
@@ -30,29 +32,31 @@ func (factory *rectangleFactory) New(s *Scene, x, y, w, h int, fill, stroke colo
 		s.Components.Stroke.Add(e).Color = stroke
 	}
 
-	factory.entityManager.AddEntity(e)
+	factory.EntityManager.AddEntity(e)
 
 	return e
 }
 
 func (factory *rectangleFactory) update(s *Scene, dt time.Duration) {
-	if !factory.entityManager.IsInit() {
-		factory.entityManager.Init()
+	if !factory.EntityManager.IsInit() {
+		factory.EntityManager.Init()
 	}
 
 	if factory.cache == nil {
 		factory.cache = make(map[common.Entity]*rectangleParameters)
 	}
 
-	for e := range factory.entityManager.Entities {
+	factory.EntitiesMutex.Lock()
+	for e := range factory.Entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			return
 		}
 
 		factory.generateNewTexture(s, e)
 	}
+	factory.EntitiesMutex.Unlock()
 
-	factory.entityManager.ProcessRemovalQueue()
+	factory.EntityManager.ProcessRemovalQueue()
 }
 
 func colorsEqual(a, b color.Color) bool {
@@ -67,7 +71,9 @@ func colorsEqual(a, b color.Color) bool {
 }
 
 func (factory *rectangleFactory) needsToGenerateTexture(s *Scene, e common.Entity) bool {
+	factory.cacheMutex.Lock()
 	entry, found := factory.cache[e]
+	factory.cacheMutex.Unlock()
 	if !found {
 		return true
 	}
@@ -176,5 +182,7 @@ func (factory *rectangleFactory) putInCache(e common.Entity, width, height int, 
 		stroke: stroke,
 	}
 
+	factory.cacheMutex.Lock()
 	factory.cache[e] = entry
+	factory.cacheMutex.Unlock()
 }

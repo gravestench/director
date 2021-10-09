@@ -28,6 +28,7 @@ type MovingLabelsScene struct {
 	textObjects       [numTextObjects]common.Entity
 	Velocity          VelocityFactory
 	lastMousePosition mathlib.Vector2
+	currentMousePosition mathlib.Vector2
 }
 
 func (scene *MovingLabelsScene) Key() string {
@@ -43,10 +44,9 @@ func (scene *MovingLabelsScene) Init(w *akara.World) {
 
 	rand.Seed(time.Now().UnixNano())
 
-	scene.makeLabels()
+	go scene.makeLabels()
 
-	// TODO: how do we do this now
-	//scene.Director.Window.Title = scene.Key()
+	scene.Sys.Renderer.Window.Title = scene.Key()
 
 	scene.InjectComponent(&Velocity{}, &scene.Velocity.ComponentFactory)
 }
@@ -78,21 +78,22 @@ func (scene *MovingLabelsScene) makeLabels() {
 }
 
 func (scene *MovingLabelsScene) Update() {
+	scene.lastMousePosition = scene.currentMousePosition
+	var mp rl.Vector2
+	mainthread.Call(func() {
+		mp = rl.GetMousePosition()
+	})
+	scene.currentMousePosition = mathlib.Vector2{
+		X: float64(mp.X),
+		Y: float64(mp.Y),
+	}
+
 	for _, eid := range scene.textObjects {
 		scene.updateVelocity(eid)
 		scene.updatePosition(eid, scene.Director.TimeDelta)
 	}
 
 	scene.resizeCameraWithWindow()
-
-	var mp rl.Vector2
-	mainthread.Call(func() {
-		mp = rl.GetMousePosition()
-	})
-	scene.lastMousePosition = mathlib.Vector2{
-		X: float64(mp.X),
-		Y: float64(mp.Y),
-	}
 }
 
 func (scene *MovingLabelsScene) updatePosition(eid common.Entity, dt time.Duration) {
@@ -118,10 +119,7 @@ func (scene *MovingLabelsScene) updatePosition(eid common.Entity, dt time.Durati
 	position.X += float64(velocity.X) * scalar
 	position.Y += float64(velocity.Y) * scalar
 
-	var ww, wh float32
-	mainthread.Call(func() {
-		ww, wh = float32(rl.GetScreenWidth()), float32(rl.GetScreenHeight())
-	})
+	ww, wh := float32(scene.Director.Sys.Renderer.Window.Width), float32(scene.Director.Sys.Renderer.Window.Width)
 
 	var tw, th int32
 
@@ -143,19 +141,13 @@ func (scene *MovingLabelsScene) updateVelocity(eid common.Entity) {
 		velocity = scene.Velocity.Add(eid)
 	}
 
-	var mp rl.Vector2
-	mainthread.Call(func() {
-		mp = rl.GetMousePosition()
-	})
-	mp2 := &mathlib.Vector2{
-		X: float64(mp.X),
-		Y: float64(mp.Y),
-	}
-
 	velocity.X += (rand.Float32() * maxVelocityDelta * 2) - maxVelocityDelta
 	velocity.Y += (rand.Float32() * maxVelocityDelta * 2) - maxVelocityDelta
 
-	mv := mp2.Subtract(&scene.lastMousePosition)
+	// copy these vectors because Subtract() mutates them
+	currentMousePos := scene.currentMousePosition
+	lastMousePos := scene.lastMousePosition
+	mv := currentMousePos.Subtract(&lastMousePos)
 	velocity.X += float32(mv.X) / 2
 	velocity.Y -= float32(mv.Y) / 2
 }

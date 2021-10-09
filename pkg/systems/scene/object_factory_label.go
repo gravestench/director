@@ -7,6 +7,7 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
+	"sync"
 	"time"
 )
 
@@ -14,6 +15,7 @@ type labelFactory struct {
 	common.EntityManager
 	*common.BasicComponents
 	cache map[common.Entity]*labelParameters
+	cacheMutex sync.Mutex
 }
 
 type labelParameters struct {
@@ -62,6 +64,7 @@ func (factory *labelFactory) update(s *Scene, _ time.Duration) {
 		factory.cache = make(map[common.Entity]*labelParameters)
 	}
 
+	factory.EntitiesMutex.Lock()
 	for e := range factory.Entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			continue
@@ -69,6 +72,7 @@ func (factory *labelFactory) update(s *Scene, _ time.Duration) {
 
 		factory.generateNewTexture(s, e)
 	}
+	factory.EntitiesMutex.Unlock()
 
 	factory.EntityManager.ProcessRemovalQueue()
 }
@@ -88,11 +92,15 @@ func (factory *labelFactory) putInCache(_ *Scene, e common.Entity, str, font str
 		},
 	}
 
+	factory.cacheMutex.Lock()
 	factory.cache[e] = entry
+	factory.cacheMutex.Unlock()
 }
 
 func (factory *labelFactory) needsToGenerateTexture(s *Scene, e common.Entity) bool {
+	factory.cacheMutex.Lock()
 	entry, found := factory.cache[e]
+	factory.cacheMutex.Unlock()
 	if !found || entry == nil {
 		return true
 	}

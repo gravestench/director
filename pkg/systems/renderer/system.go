@@ -35,18 +35,17 @@ func (s *System) New(args ...interface{}) {
 func (s *System) Update() {
 	mainthread.Call(func() {
 		s.Window.Width, s.Window.Height = rl.GetScreenWidth(), rl.GetScreenHeight()
-
-		if s.Window.Width <= 1 {
-			s.Window.Width = defaultWidth
-		}
-
-		if s.Window.Height <= 1 {
-			s.Window.Height = defaultHeight
-		}
-
 		// rl.SetTargetFPS(int32(s.TargetFPS))
-		rl.SetTraceLog(rl.LogNone)
+		// rl.SetTargetFPS(int32(1))
 	})
+
+	if s.Window.Width <= 1 {
+		s.Window.Width = defaultWidth
+	}
+
+	if s.Window.Height <= 1 {
+		s.Window.Height = defaultHeight
+	}
 }
 
 func (s *System) Init(_ *akara.World) {

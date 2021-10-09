@@ -1,9 +1,13 @@
 package common
 
+import "sync"
+
 type entityMap map[Entity]Entity
 
 type EntityManager struct {
+	EntitiesMutex sync.Mutex
 	Entities     entityMap
+	removalQueueMutex sync.Mutex
 	removalQueue entityMap
 }
 
@@ -21,16 +25,26 @@ func (em *EntityManager) AddEntity(e Entity) {
 		em.Init()
 	}
 
+	em.EntitiesMutex.Lock()
 	em.Entities[e] = e
+	em.EntitiesMutex.Unlock()
 }
 
 func (em *EntityManager) RemoveEntity(e Entity) {
+	em.removalQueueMutex.Lock()
 	em.removalQueue[e] = e
+	em.removalQueueMutex.Unlock()
 }
 
 func (em *EntityManager) ProcessRemovalQueue() {
+	em.EntitiesMutex.Lock()
+	em.removalQueueMutex.Lock()
+
 	for e := range em.removalQueue {
 		delete(em.removalQueue, e)
 		delete(em.Entities, e)
 	}
+
+	em.EntitiesMutex.Unlock()
+	em.removalQueueMutex.Unlock()
 }

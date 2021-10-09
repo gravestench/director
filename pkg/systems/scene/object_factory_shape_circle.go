@@ -5,12 +5,14 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/common"
 	"image/color"
+	"sync"
 	"time"
 )
 
 type circleFactory struct {
 	common.EntityManager
 	cache map[common.Entity]*circleParameters
+	cacheMutex sync.Mutex
 }
 
 type circleParameters struct {
@@ -26,7 +28,9 @@ func (factory *circleFactory) putInCache(e common.Entity, width, height int, fil
 		stroke: stroke,
 	}
 
+	factory.cacheMutex.Lock()
 	factory.cache[e] = entry
+	factory.cacheMutex.Unlock()
 }
 
 func (factory *circleFactory) New(s *Scene, x, y, radius int, fill, stroke color.Color) common.Entity {
@@ -60,6 +64,7 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 		factory.cache = make(map[common.Entity]*circleParameters)
 	}
 
+	factory.EntitiesMutex.Lock()
 	for e := range factory.EntityManager.Entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			return
@@ -67,12 +72,15 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 
 		factory.generateNewTexture(s, e)
 	}
+	factory.EntitiesMutex.Unlock()
 
 	factory.EntityManager.ProcessRemovalQueue()
 }
 
 func (factory *circleFactory) needsToGenerateTexture(s *Scene, e common.Entity) bool {
+	factory.cacheMutex.Lock()
 	entry, found := factory.cache[e]
+	factory.cacheMutex.Unlock()
 	if !found {
 		return true
 	}
