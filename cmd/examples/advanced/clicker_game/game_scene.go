@@ -2,13 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/faiface/mainthread"
 	"github.com/gravestench/director/pkg/common"
 	"image"
 	"image/color"
 	"strconv"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/systems/input"
 
@@ -54,7 +52,6 @@ func (scene *GameScene) Key() string {
 
 // Game Loop
 func (scene *GameScene) Update() {
-
 	//scene.updateLabel()
 	if scene.isDebugEnabled {
 		scene.updateTestLabel()
@@ -163,16 +160,11 @@ func (scene *GameScene) updateTestLabel() {
 		return
 	}
 
-	var mp rl.Vector2
-	mainthread.Call(func() {
-		mp = rl.GetMousePosition()
-	})
-
 	const (
 		fmtMouse = "Mouse: (%v, %v)"
 	)
 
-	text.String = fmt.Sprintf(fmtMouse, mp.X, mp.Y)
+	text.String = fmt.Sprintf(fmtMouse, scene.Sys.Input.MousePosition.X, scene.Sys.Input.MousePosition.Y)
 }
 
 /****************************
@@ -190,12 +182,6 @@ func (scene *GameScene) makeInitialUI() {
 	scene.makeToggleLabel()
 	scene.makeShopPanel()
 	scene.balanceLabel = scene.Add.Label("Balance: 0 Cubes", rWidth/2+40, rHeight/2+85, 24, "", gray)
-	// origin, found := scene.Components.Origin.Get(scene.balanceLabel)
-	// if !found {
-	// 	return
-	// }
-	// origin.X = 0
-	// origin.Y = 0
 	scene.makeClickButton()
 }
 
@@ -248,16 +234,8 @@ func (scene *GameScene) bindClickingInput() {
 	}
 	i.Vector = input.NewInputVector()
 	i.Vector.SetMouseButton(input.MouseButtonLeft)
-	size, found := scene.Components.Size.Get(scene.clickButton)
-	if !found {
-		return
-	}
-
-	trs, found := scene.Components.Transform.Get(scene.clickButton)
-	if !found {
-		return
-	}
-
+	size, _ := scene.Components.Size.Get(scene.clickButton)
+	trs, _ := scene.Components.Transform.Get(scene.clickButton)
 	rHeight := scene.Sys.Renderer.Window.Height
 
 	i.Hitbox = &image.Rectangle{
@@ -401,11 +379,7 @@ func (scene *GameScene) bindShopClickingInput() {
 func (scene *GameScene) updateBalance(amount int) {
 	scene.balanceValue += amount
 
-	balValue, found := scene.Components.Text.Get(scene.balanceLabel)
-	if !found {
-		return
-	}
-
+	balValue, _ := scene.Components.Text.Get(scene.balanceLabel)
 	balValue.String = fmt.Sprintf("Balance: " + strconv.Itoa(scene.balanceValue) + " Cubes")
 }
 
@@ -417,11 +391,6 @@ func (scene *GameScene) Init(world *akara.World) {
 	scene.bindClickingInput()
 	scene.bindShopClickingInput()
 }
-
-//func (scene *GameScene) makeSquare() {
-//	blue := color.RGBA{B: 255, A: 255}
-//	scene.square = scene.Add.Rectangle(100, 100, 30, 30, blue, nil)
-//}
 
 func (scene *GameScene) IsInitialized() bool {
 	return scene.toggleButton != 0

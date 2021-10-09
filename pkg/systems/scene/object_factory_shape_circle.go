@@ -143,15 +143,13 @@ func (factory *circleFactory) generateNewTexture(s *Scene, e common.Entity) {
 	var fc, sc color.Color
 
 	rt, rtFound := s.Components.RenderTexture2D.Get(e)
-	if !rtFound {
-		rt = s.Components.RenderTexture2D.Add(e)
-		mainthread.Call(func() {
+	mainthread.Call(func() {
+		if !rtFound {
+			rt = s.Components.RenderTexture2D.Add(e)
 			newRT := rl.LoadRenderTexture(w, h)
 			rt.RenderTexture2D = &newRT
-		})
-	}
+		}
 
-	mainthread.Call(func() {
 		rl.BeginTextureMode(*rt.RenderTexture2D)
 		rl.ClearBackground(rl.Blank)
 

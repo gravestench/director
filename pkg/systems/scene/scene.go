@@ -101,8 +101,7 @@ func (s *Scene) Render() {
 	}
 
 	for _, e := range s.Viewports {
-		s.renderCameraForViewport(e)
-		s.renderCameraToViewport(e)
+		s.drawEntitiesAndRender(e)
 	}
 }
 

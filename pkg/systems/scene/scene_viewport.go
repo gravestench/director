@@ -37,11 +37,9 @@ func (s *Scene) generateEntityRenderBatch(entities []common.Entity) []entityRend
 	entityRenderRequests := make([]entityRenderRequest, 0, len(entities))
 
 	for _, e := range entities {
-		// TODO: get the camera and viewport out of the render list
-
 		texture, textureFound := s.Components.Texture2D.Get(e)
 		rt, rtFound := s.Components.RenderTexture2D.Get(e)
-		if !textureFound && !rtFound {
+		if !textureFound && !rtFound || (textureFound && texture.Texture2D == nil) {
 			continue
 		}
 
@@ -104,8 +102,13 @@ func (s *Scene) generateEntityRenderBatch(entities []common.Entity) []entityRend
 	return entityRenderRequests
 }
 
-func (s *Scene) renderCameraForViewport(viewport common.Entity) {
+func (s *Scene) drawEntitiesAndRender(viewport common.Entity) {
 	vp, found := s.Components.Viewport.Get(viewport)
+	if !found {
+		return
+	}
+
+	vprt, found := s.Components.RenderTexture2D.Get(viewport)
 	if !found {
 		return
 	}
@@ -136,11 +139,9 @@ func (s *Scene) renderCameraForViewport(viewport common.Entity) {
 	renderBatch := s.generateEntityRenderBatch(s.renderList)
 
 	mainthread.Call(func() {
+		// render all the entities to the camera's render texture
 		rl.BeginTextureMode(*camrt.RenderTexture2D)
-		defer rl.EndTextureMode()
-
 		rl.BeginMode2D(cam.Camera2D)
-		defer rl.EndMode2D()
 
 		r, g, b, a := vp.Background.RGBA()
 		rl.ClearBackground(rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
@@ -148,28 +149,12 @@ func (s *Scene) renderCameraForViewport(viewport common.Entity) {
 		for _, e := range renderBatch {
 			rl.DrawTextureEx(e.Texture, e.Position, e.Rotation, e.Scale, e.Tint)
 		}
-	})
-}
 
-func (s *Scene) renderCameraToViewport(viewport common.Entity) {
-	vp, found := s.Components.Viewport.Get(viewport)
-	if !found {
-		return
-	}
+		rl.EndMode2D()
+		rl.EndTextureMode()
 
-	vprt, found := s.Components.RenderTexture2D.Get(viewport)
-	if !found {
-		return
-	}
-
-	camrt, found := s.Components.RenderTexture2D.Get(vp.CameraEntity)
-	if !found {
-		return
-	}
-
-	mainthread.Call(func() {
+		// render the camera
 		rl.BeginTextureMode(*vprt.RenderTexture2D)
-		defer rl.EndTextureMode()
 
 		rl.ClearBackground(rl.Blank)
 
@@ -188,5 +173,7 @@ func (s *Scene) renderCameraToViewport(viewport common.Entity) {
 		}
 
 		rl.DrawTexturePro(camrt.Texture, src, dst, rl.Vector2{}, 0, rl.White)
+
+		rl.EndTextureMode()
 	})
 }

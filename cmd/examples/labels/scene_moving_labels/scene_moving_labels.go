@@ -18,7 +18,7 @@ import (
 
 const (
 	key              = "Director Example - Moving Text"
-	numTextObjects   = 1000
+	numTextObjects   = 10
 	maxVelocity      = 150
 	maxVelocityDelta = maxVelocity / 10
 )
@@ -79,14 +79,7 @@ func (scene *MovingLabelsScene) makeLabels() {
 
 func (scene *MovingLabelsScene) Update() {
 	scene.lastMousePosition = scene.currentMousePosition
-	var mp rl.Vector2
-	mainthread.Call(func() {
-		mp = rl.GetMousePosition()
-	})
-	scene.currentMousePosition = mathlib.Vector2{
-		X: float64(mp.X),
-		Y: float64(mp.Y),
-	}
+	scene.currentMousePosition = scene.Sys.Input.MousePosition
 
 	for _, eid := range scene.textObjects {
 		scene.updateVelocity(eid)

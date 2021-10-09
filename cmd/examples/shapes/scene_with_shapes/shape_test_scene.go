@@ -33,3 +33,7 @@ func (scene *ShapeTestScene) IsInitialized() bool {
 func (scene *ShapeTestScene) Key() string {
 	return sceneName
 }
+
+func (scene *ShapeTestScene) Update() {
+
+}

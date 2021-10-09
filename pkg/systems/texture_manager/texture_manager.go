@@ -138,13 +138,13 @@ func (sys *System) createTexture(e common.Entity) {
 		return
 	}
 
-	t := sys.components.texture2d.Add(e)
 
 	mainthread.Call(func() {
 		texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: img}))
 
 		_ = sys.Cache.Insert(req.Path, &texture, 1)
 
+		t := sys.components.texture2d.Add(e)
 		t.Texture2D = &texture
 	})
 }
@@ -156,8 +156,6 @@ func (sys *System) createGifAnimation(e common.Entity, gifImg *gif.GIF) {
 	}
 
 	anim := sys.components.animations.Add(e)
-
-	t := sys.components.texture2d.Add(e)
 
 	mainthread.Call(func() {
 		for idx := range gifImg.Image {
@@ -177,9 +175,11 @@ func (sys *System) createGifAnimation(e common.Entity, gifImg *gif.GIF) {
 
 			_ = sys.Cache.Insert(cacheKey, &texture, 1)
 		}
+
+		anim.UntilNextFrame = anim.FrameDurations[0]
+
+		t := sys.components.texture2d.Add(e)
+		t.Texture2D = anim.FrameTextures[0]
 	})
 
-	anim.UntilNextFrame = anim.FrameDurations[0]
-
-	t.Texture2D = anim.FrameTextures[0]
 }

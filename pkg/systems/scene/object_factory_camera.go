@@ -16,19 +16,17 @@ func (*cameraFactory) New(s *Scene, x, y, w, h int) common.Entity {
 	ce := s.Add.generic.visibleEntity(s)
 
 	cam := s.Components.Camera.Add(ce)
-	mainthread.Call(func() {
-		cam.Camera2D = rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 1)
-	})
-
-	trs, _ := s.Components.Transform.Get(ce) // this is a component all visible entities have
-	rt := s.Components.RenderTexture2D.Add(ce)
-
 	var newRT rl.RenderTexture2D
 	mainthread.Call(func() {
+		cam.Camera2D = rl.NewCamera2D(rl.Vector2{}, rl.Vector2{}, 0, 1)
+
 		newRT = rl.LoadRenderTexture(int32(w), int32(h))
 	})
+
+	rt := s.Components.RenderTexture2D.Add(ce)
 	rt.RenderTexture2D = &newRT
 
+	trs, _ := s.Components.Transform.Get(ce) // this is a component all visible entities have
 	trs.Translation.Set(float64(x), float64(y), trs.Translation.Z)
 
 	return ce
