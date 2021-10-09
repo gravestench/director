@@ -84,7 +84,7 @@ func (sys *ScreenRenderingSystem) renderViewport(e common.Entity) {
 			opacity.Value = 0
 		}
 
-		alpha = uint8(opacity.Value*255)
+		alpha = uint8(opacity.Value * 255)
 	}
 
 	position := rl.Vector2{

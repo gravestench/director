@@ -25,9 +25,9 @@ const (
 
 type MovingLabelsScene struct {
 	scene.Scene
-	textObjects       [numTextObjects]common.Entity
-	Velocity          VelocityFactory
-	lastMousePosition mathlib.Vector2
+	textObjects          [numTextObjects]common.Entity
+	Velocity             VelocityFactory
+	lastMousePosition    mathlib.Vector2
 	currentMousePosition mathlib.Vector2
 }
 
@@ -51,7 +51,7 @@ func (scene *MovingLabelsScene) Init(w *akara.World) {
 	scene.InjectComponent(&Velocity{}, &scene.Velocity.ComponentFactory)
 }
 
-var messages = []string {
+var messages = []string{
 	"BRB",
 	"be",
 	"right",

@@ -5,10 +5,10 @@ import "sync"
 type entityMap map[Entity]Entity
 
 type EntityManager struct {
-	EntitiesMutex sync.Mutex
-	Entities     entityMap
+	EntitiesMutex     sync.Mutex
+	Entities          entityMap
 	removalQueueMutex sync.Mutex
-	removalQueue entityMap
+	removalQueue      entityMap
 }
 
 func (em *EntityManager) IsInit() bool {

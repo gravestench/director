@@ -14,7 +14,7 @@ import (
 type labelFactory struct {
 	common.EntityManager
 	*common.BasicComponents
-	cache map[common.Entity]*labelParameters
+	cache      map[common.Entity]*labelParameters
 	cacheMutex sync.Mutex
 }
 

@@ -85,7 +85,7 @@ func (s *Scene) makeLuaInteractiveCallbackSetGet(in *input.Interactive) *lua.LFu
 
 		switch L.GetTop() {
 		case 0: // we are retrieving the function
-			L.Push(s.Lua.NewFunction(func (L *lua.LState) int {
+			L.Push(s.Lua.NewFunction(func(L *lua.LState) int {
 				in.Callback()
 
 				return 0
@@ -94,7 +94,7 @@ func (s *Scene) makeLuaInteractiveCallbackSetGet(in *input.Interactive) *lua.LFu
 			returnCount = 1
 		case 1: // we are setting the function
 			fnName := L.CheckString(1)
-			in.Callback = func () bool {
+			in.Callback = func() bool {
 				err := s.Lua.CallByParam(lua.P{
 					Fn:      s.Lua.GetGlobal(fnName),
 					NRet:    0,

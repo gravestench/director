@@ -8,8 +8,10 @@ import (
 	"runtime/pprof"
 	"runtime/trace"
 )
+
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 var traceit = flag.String("trace", "", "write cpu profile to file")
+
 func main() {
 	flag.Parse()
 	if *traceit != "" {

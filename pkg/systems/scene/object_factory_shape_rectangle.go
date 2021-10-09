@@ -11,7 +11,7 @@ import (
 
 type rectangleFactory struct {
 	common.EntityManager
-	cache         map[common.Entity]*rectangleParameters
+	cache      map[common.Entity]*rectangleParameters
 	cacheMutex sync.Mutex
 }
 

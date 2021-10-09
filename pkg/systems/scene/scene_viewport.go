@@ -26,11 +26,11 @@ func (s *Scene) initViewport() {
 }
 
 type entityRenderRequest struct {
-	Texture rl.Texture2D
+	Texture  rl.Texture2D
 	Position rl.Vector2
 	Rotation float32
-	Scale float32
-	Tint rl.Color
+	Scale    float32
+	Tint     rl.Color
 }
 
 func (s *Scene) generateEntityRenderBatch(entities []common.Entity) []entityRenderRequest {

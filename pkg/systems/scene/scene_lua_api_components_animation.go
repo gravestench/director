@@ -90,7 +90,6 @@ func (s *Scene) luaAnimationRemove() lua.LGFunction {
 	return fn
 }
 
-
 func (s *Scene) makeLuaTableComponentAnimation(animation *components.Animation) *lua.LTable {
 	table := s.Lua.NewTable()
 

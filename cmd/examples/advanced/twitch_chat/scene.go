@@ -98,7 +98,7 @@ func (scene *testScene) initBTTVEmotes() {
 		return
 	}
 
-	if userEmoteInfo.SharedEmotes== nil {
+	if userEmoteInfo.SharedEmotes == nil {
 		return
 	}
 

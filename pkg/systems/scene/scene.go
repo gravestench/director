@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	luaSceneTable = "scene"
-	luaSceneSystemsTable = "sys" // scene.sys
-	luaSceneComponentsTable = "components" // scene.components
-	luaSceneObjectFactoryTable = "add" // scene.add
+	luaSceneTable              = "scene"
+	luaSceneSystemsTable       = "sys"        // scene.sys
+	luaSceneComponentsTable    = "components" // scene.components
+	luaSceneObjectFactoryTable = "add"        // scene.add
 
 	luaConstantsTable = "constants"
 )
@@ -135,14 +135,12 @@ func (s *Scene) RemoveEntity(e common.Entity) {
 		factories[idx].Remove(e)
 	}
 
-
 	for idx := range s.renderList {
 		if s.renderList[idx] == e {
 			s.renderList = append(s.renderList[:idx], s.renderList[idx+1:]...)
 			break
 		}
 	}
-
 
 	s.Director.RemoveEntity(e)
 }

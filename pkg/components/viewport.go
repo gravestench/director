@@ -11,7 +11,7 @@ var _ akara.Component = &Viewport{}
 // Viewport represents a rendering viewport within a scene. This consists of a camera and background color.
 type Viewport struct {
 	CameraEntity akara.EID
-	Background color.Color
+	Background   color.Color
 }
 
 // New creates a new viewport

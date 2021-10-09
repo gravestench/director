@@ -11,7 +11,7 @@ import (
 
 type circleFactory struct {
 	common.EntityManager
-	cache map[common.Entity]*circleParameters
+	cache      map[common.Entity]*circleParameters
 	cacheMutex sync.Mutex
 }
 
