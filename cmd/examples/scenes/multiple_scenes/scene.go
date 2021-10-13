@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/faiface/mainthread"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/easing"
@@ -43,13 +44,13 @@ func (scene *testScene) Init(_ *akara.World) {
 	scene.stuff = append(scene.stuff, scene.Add.Circle(0, 0, 300, randColor(), nil))
 }
 
-func (scene *testScene) Update(dt time.Duration) {
+func (scene *testScene) Update() {
 	if scene.bgColor == nil {
 		scene.bgColor = randColor()
 	}
 
 	scene.resizeViewport()
-	scene.updateImages(dt)
+	scene.updateImages(scene.TimeDelta)
 }
 
 func (scene *testScene) resizeViewport() {
@@ -75,8 +76,10 @@ func (scene *testScene) resizeViewport() {
 	}
 
 	if int(rt.Texture.Width) != scene.w || int(rt.Texture.Height) != scene.h {
-		t := rl.LoadRenderTexture(int32(scene.w), int32(scene.h))
-		rt.RenderTexture2D = &t
+		mainthread.Call(func() {
+			t := rl.LoadRenderTexture(int32(scene.w), int32(scene.h))
+			rt.RenderTexture2D = &t
+		})
 	}
 
 	x, y := trs.Translation.XY()

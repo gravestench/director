@@ -3,6 +3,7 @@ package input
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/mathlib"
 	"image"
 )
 
@@ -12,15 +13,20 @@ var _ akara.System = &System{}
 // System is responsible for handling interactive entities
 type System struct {
 	akara.BaseSystem
-	interactives *akara.Subscription
-	inputState   *Vector
-	Components   struct {
+	interactives  *akara.Subscription
+	InputState    *Vector
+	MousePosition mathlib.Vector2
+	Components    struct {
 		Interactive InteractiveFactory
 	}
 }
 
+func (m *System) Name() string {
+	return "Input"
+}
+
 func (m *System) IsInitialized() bool {
-	return m.inputState != nil
+	return m.InputState != nil
 }
 
 // Init initializes the system with the given world, injecting the necessary components
@@ -28,7 +34,7 @@ func (m *System) Init(_ *akara.World) {
 	m.setupFactories()
 	m.setupSubscriptions()
 
-	m.inputState = NewInputVector()
+	m.InputState = NewInputVector()
 }
 
 func (m *System) setupFactories() {
@@ -56,7 +62,7 @@ func (m *System) Update() {
 }
 
 func (m *System) updateInputState() {
-	m.inputState.Clear()
+	m.InputState.Clear()
 
 	var keysToCheck = []Key{
 		Key0, Key1, Key2, Key3, Key4, Key5, Key6,
@@ -92,41 +98,52 @@ func (m *System) updateInputState() {
 	}
 
 	for _, key := range keysToCheck {
-		//truth := m.InputService.IsKeyJustPressed(d2enum.Key(key))
-		truth := rl.IsKeyPressed(key)
-		m.inputState.KeyVector.Set(int(key), truth)
+		truth := rl.IsKeyDown(key)
+		m.InputState.KeyVector.Set(int(key), truth)
 	}
 
 	for _, mod := range modifiersToCheck {
-		//truth := m.InputService.IsKeyJustPressed(d2enum.Key(mod))
-		truth := rl.IsKeyPressed(mod)
-		m.inputState.ModifierVector.Set(int(mod), truth)
+		truth := rl.IsKeyDown(mod)
+		m.InputState.ModifierVector.Set(int(mod), truth)
 	}
 
 	for _, btn := range buttonsToCheck {
-		//truth := m.InputService.IsMouseButtonJustPressed(d2enum.MouseButton(btn))
-		truth := rl.IsMouseButtonPressed(btn)
-		m.inputState.MouseButtonVector.Set(int(btn), truth)
+		truth := rl.IsMouseButtonDown(btn)
+		m.InputState.MouseButtonVector.Set(int(btn), truth)
 	}
+
+	mousePos := rl.GetMousePosition()
+	m.MousePosition.Set(float64(mousePos.X), float64(mousePos.Y))
 }
 
 func (m *System) applyInputState(id akara.EID) (preventPropagation bool) {
-	i, found := m.Components.Interactive.Get(id)
-	if !found {
-		return false
-	}
-
-	// verify that the current inputState matches the state specified in the Vector
-	if !i.Enabled || !m.inputState.Contains(i.Vector) {
-		return false
-	}
+	i, _ := m.Components.Interactive.Get(id)
 
 	// check if this Interactive specified a particular cursor position that the input must occur in
 	if i.Hitbox != nil {
-		p := rl.GetMousePosition()
-		if !contains(i.Hitbox, int(p.X), int(p.Y)) {
+		if !contains(i.Hitbox, int(m.MousePosition.X), int(m.MousePosition.Y)) {
+			i.UsedRecently = false
 			return false
 		}
+	}
+
+	// verify that the current InputState matches the state specified in the Vector
+	if !i.Enabled || !m.InputState.Contains(i.Vector) {
+		i.UsedRecently = false
+		return false
+	}
+
+	// if this Interactive component is in rapid fire mode, we don't need this debouncing logic
+	if !i.RapidFire {
+		// if the input state hasn't changed since the last time we ran the callback, don't run it again.
+		// This resets when the input state changes.
+		if i.UsedRecently {
+			return false
+		}
+
+		// we've verified that the current input state matches the vector.
+		// mark the callback as having been run so we don't run it again until the input state changes.
+		i.UsedRecently = true
 	}
 
 	return i.Callback()

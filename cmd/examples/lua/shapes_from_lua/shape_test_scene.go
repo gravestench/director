@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gravestench/director/pkg/systems/scene"
 	"math/rand"
-	"time"
 )
 
 const (
@@ -25,7 +24,7 @@ func (scene *shapeTestFromLua) Key() string {
 	return sceneName
 }
 
-func (scene *shapeTestFromLua) Update(_ time.Duration) {
+func (scene *shapeTestFromLua) Update() {
 	if scene.numRectangles >= maxRectangles {
 		return
 	}

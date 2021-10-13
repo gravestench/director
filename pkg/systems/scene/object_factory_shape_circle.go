@@ -1,15 +1,18 @@
 package scene
 
 import (
+	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/common"
 	"image/color"
+	"sync"
 	"time"
 )
 
 type circleFactory struct {
 	common.EntityManager
-	cache map[common.Entity]*circleParameters
+	cache      map[common.Entity]*circleParameters
+	cacheMutex sync.Mutex
 }
 
 type circleParameters struct {
@@ -25,7 +28,9 @@ func (factory *circleFactory) putInCache(e common.Entity, width, height int, fil
 		stroke: stroke,
 	}
 
+	factory.cacheMutex.Lock()
 	factory.cache[e] = entry
+	factory.cacheMutex.Unlock()
 }
 
 func (factory *circleFactory) New(s *Scene, x, y, radius int, fill, stroke color.Color) common.Entity {
@@ -59,6 +64,7 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 		factory.cache = make(map[common.Entity]*circleParameters)
 	}
 
+	factory.EntitiesMutex.Lock()
 	for e := range factory.EntityManager.Entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			return
@@ -66,12 +72,15 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 
 		factory.generateNewTexture(s, e)
 	}
+	factory.EntitiesMutex.Unlock()
 
 	factory.EntityManager.ProcessRemovalQueue()
 }
 
 func (factory *circleFactory) needsToGenerateTexture(s *Scene, e common.Entity) bool {
+	factory.cacheMutex.Lock()
 	entry, found := factory.cache[e]
+	factory.cacheMutex.Unlock()
 	if !found {
 		return true
 	}
@@ -134,34 +143,36 @@ func (factory *circleFactory) generateNewTexture(s *Scene, e common.Entity) {
 	var fc, sc color.Color
 
 	rt, rtFound := s.Components.RenderTexture2D.Get(e)
-	if !rtFound {
-		rt = s.Components.RenderTexture2D.Add(e)
-		newRT := rl.LoadRenderTexture(w, h)
-		rt.RenderTexture2D = &newRT
-	}
+	mainthread.Call(func() {
+		if !rtFound {
+			rt = s.Components.RenderTexture2D.Add(e)
+			newRT := rl.LoadRenderTexture(w, h)
+			rt.RenderTexture2D = &newRT
+		}
 
-	rl.BeginTextureMode(*rt.RenderTexture2D)
-	rl.ClearBackground(rl.Blank)
+		rl.BeginTextureMode(*rt.RenderTexture2D)
+		rl.ClearBackground(rl.Blank)
 
-	if fillFound {
-		fc = fill
-		r, g, b, a := fill.RGBA()
-		rl.DrawCircle(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
-	}
+		if fillFound {
+			fc = fill
+			r, g, b, a := fill.RGBA()
+			rl.DrawCircle(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+		}
 
-	if !fillFound && colorFound {
-		fc = col
-		r, g, b, a := col.RGBA()
-		rl.DrawCircle(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
-	}
+		if !fillFound && colorFound {
+			fc = col
+			r, g, b, a := col.RGBA()
+			rl.DrawCircle(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+		}
 
-	if strokeFound {
-		sc = stroke
-		r, g, b, a := stroke.RGBA()
-		rl.DrawCircleLines(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
-	}
+		if strokeFound {
+			sc = stroke
+			r, g, b, a := stroke.RGBA()
+			rl.DrawCircleLines(w/2, h/2, float32(w/2), rl.NewColor(uint8(r), uint8(g), uint8(b), uint8(a)))
+		}
 
-	rl.EndTextureMode()
+		rl.EndTextureMode()
+	})
 
 	factory.putInCache(e, int(w), int(h), fc, sc)
 }

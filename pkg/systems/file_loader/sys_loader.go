@@ -31,6 +31,10 @@ type System struct {
 	}
 }
 
+func (sys *System) Name() string {
+	return "FileLoader"
+}
+
 func (sys *System) Init(world *akara.World) {
 	sys.World = world
 

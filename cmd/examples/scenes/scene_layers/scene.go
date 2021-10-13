@@ -35,9 +35,9 @@ func (scene *layerTest) Init(_ *akara.World) {
 		return
 	}
 
-	r1 := scene.Add.Rectangle(10, 10, 20, 20, color.RGBA{R:255, A:255}, nil)
-	r2 := scene.Add.Rectangle(15, 15, 20, 20, color.RGBA{G:255, A:255}, nil)
-	r3 := scene.Add.Rectangle(30, 20, 20, 20, color.RGBA{B:255, A:255}, nil)
+	r1 := scene.Add.Rectangle(10, 10, 20, 20, color.RGBA{R: 255, A: 255}, nil)
+	r2 := scene.Add.Rectangle(15, 15, 20, 20, color.RGBA{G: 255, A: 255}, nil)
+	r3 := scene.Add.Rectangle(30, 20, 20, 20, color.RGBA{B: 255, A: 255}, nil)
 
 	scene.Components.Debug.Add(r1)
 

@@ -2,6 +2,7 @@ package texture_manager
 
 import (
 	"fmt"
+	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
@@ -32,6 +33,10 @@ type System struct {
 	subscriptions struct {
 		needsTexture *akara.Subscription
 	}
+}
+
+func (sys *System) Name() string {
+	return "TextureManager"
 }
 
 func (sys *System) Init(world *akara.World) {
@@ -137,12 +142,15 @@ func (sys *System) createTexture(e common.Entity) {
 		return
 	}
 
-	t := sys.components.texture2d.Add(e)
-	texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: img}))
 
-	_ = sys.Cache.Insert(req.Path, &texture, 1)
+	mainthread.Call(func() {
+		texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: img}))
 
-	t.Texture2D = &texture
+		_ = sys.Cache.Insert(req.Path, &texture, 1)
+
+		t := sys.components.texture2d.Add(e)
+		t.Texture2D = &texture
+	})
 }
 
 func (sys *System) createGifAnimation(e common.Entity, gifImg *gif.GIF) {
@@ -153,28 +161,29 @@ func (sys *System) createGifAnimation(e common.Entity, gifImg *gif.GIF) {
 
 	anim := sys.components.animations.Add(e)
 
-	t := sys.components.texture2d.Add(e)
+	mainthread.Call(func() {
+		for idx := range gifImg.Image {
+			anim.FrameImages = append(anim.FrameImages, gifImg.Image[idx])
+			cacheKey := fmt.Sprintf("%s::frame%v", req.Path, idx)
 
-	for idx := range gifImg.Image {
+			delay := time.Second / 100 * time.Duration(gifImg.Delay[idx])
+			anim.FrameDurations = append(anim.FrameDurations, delay)
 
-		anim.FrameImages = append(anim.FrameImages, gifImg.Image[idx])
-		cacheKey := fmt.Sprintf("%s::frame%v", req.Path, idx)
+			if t, found := sys.Cache.Retrieve(cacheKey); found {
+				anim.FrameTextures = append(anim.FrameTextures, t.(*rl.Texture2D))
+				continue
+			}
 
-		delay := time.Second / 100 * time.Duration(gifImg.Delay[idx])
-		anim.FrameDurations = append(anim.FrameDurations, delay)
+			texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: anim.FrameImages[idx]}))
+			anim.FrameTextures = append(anim.FrameTextures, &texture)
 
-		if t, found := sys.Cache.Retrieve(cacheKey); found {
-			anim.FrameTextures = append(anim.FrameTextures, t.(*rl.Texture2D))
-			continue
+			_ = sys.Cache.Insert(cacheKey, &texture, 1)
 		}
 
-		texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: anim.FrameImages[idx]}))
-		anim.FrameTextures = append(anim.FrameTextures, &texture)
+		anim.UntilNextFrame = anim.FrameDurations[0]
 
-		_ = sys.Cache.Insert(cacheKey, &texture, 1)
-	}
+		t := sys.components.texture2d.Add(e)
+		t.Texture2D = anim.FrameTextures[0]
+	})
 
-	anim.UntilNextFrame = anim.FrameDurations[0]
-
-	t.Texture2D = anim.FrameTextures[0]
 }

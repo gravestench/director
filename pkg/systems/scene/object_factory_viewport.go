@@ -1,6 +1,7 @@
 package scene
 
 import (
+	"github.com/faiface/mainthread"
 	"time"
 
 	"github.com/gravestench/director/pkg/common"
@@ -22,8 +23,10 @@ func (*viewportFactory) New(s *Scene, x, y, w, h int) common.Entity {
 	trs, _ := s.Components.Transform.Get(e)
 	rt := s.Components.RenderTexture2D.Add(e)
 
-	newRT := rl.LoadRenderTexture(int32(w), int32(h))
-	rt.RenderTexture2D = &newRT
+	mainthread.Call(func() {
+		newRT := rl.LoadRenderTexture(int32(w), int32(h))
+		rt.RenderTexture2D = &newRT
+	})
 
 	trs.Translation.Set(float64(x), float64(y), trs.Translation.Z)
 

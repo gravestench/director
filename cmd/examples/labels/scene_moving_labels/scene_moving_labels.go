@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/faiface/mainthread"
 	"github.com/gravestench/director/pkg/systems/scene"
 	"github.com/gravestench/mathlib"
 	"image/color"
@@ -24,33 +25,30 @@ const (
 
 type MovingLabelsScene struct {
 	scene.Scene
-	textObjects       [numTextObjects]common.Entity
-	Velocity          VelocityFactory
-	lastMousePosition mathlib.Vector2
+	textObjects          [numTextObjects]common.Entity
+	Velocity             VelocityFactory
+	lastMousePosition    mathlib.Vector2
+	currentMousePosition mathlib.Vector2
 }
 
 func (scene *MovingLabelsScene) Key() string {
 	return key
 }
 
-func (scene *MovingLabelsScene) IsInitialized() bool {
-	return scene.Director.World != nil
-}
 
 func (scene *MovingLabelsScene) Init(w *akara.World) {
 	fmt.Println("moving text scene init")
 
 	rand.Seed(time.Now().UnixNano())
 
-	scene.makeLabels()
+	go scene.makeLabels()
 
-	// TODO: how do we do this now
-	//scene.Director.Window.Title = scene.Key()
+	scene.Sys.Renderer.Window.Title = scene.Key()
 
 	scene.InjectComponent(&Velocity{}, &scene.Velocity.ComponentFactory)
 }
 
-var messages = []string {
+var messages = []string{
 	"BRB",
 	"be",
 	"right",
@@ -76,19 +74,16 @@ func (scene *MovingLabelsScene) makeLabels() {
 	}
 }
 
-func (scene *MovingLabelsScene) Update(dt time.Duration) {
+func (scene *MovingLabelsScene) Update() {
+	scene.lastMousePosition = scene.currentMousePosition
+	scene.currentMousePosition = scene.Sys.Input.MousePosition
+
 	for _, eid := range scene.textObjects {
 		scene.updateVelocity(eid)
-		scene.updatePosition(eid, dt)
+		scene.updatePosition(eid, scene.TimeDelta)
 	}
 
 	scene.resizeCameraWithWindow()
-
-	mp := rl.GetMousePosition()
-	scene.lastMousePosition = mathlib.Vector2{
-		X: float64(mp.X),
-		Y: float64(mp.Y),
-	}
 }
 
 func (scene *MovingLabelsScene) updatePosition(eid common.Entity, dt time.Duration) {
@@ -114,7 +109,7 @@ func (scene *MovingLabelsScene) updatePosition(eid common.Entity, dt time.Durati
 	position.X += float64(velocity.X) * scalar
 	position.Y += float64(velocity.Y) * scalar
 
-	ww, wh := float32(rl.GetScreenWidth()), float32(rl.GetScreenHeight())
+	ww, wh := float32(scene.Director.Sys.Renderer.Window.Width), float32(scene.Director.Sys.Renderer.Window.Width)
 
 	var tw, th int32
 
@@ -136,16 +131,12 @@ func (scene *MovingLabelsScene) updateVelocity(eid common.Entity) {
 		velocity = scene.Velocity.Add(eid)
 	}
 
-	mp := rl.GetMousePosition()
-	mp2 := &mathlib.Vector2{
-		X: float64(mp.X),
-		Y: float64(mp.Y),
-	}
-
 	velocity.X += (rand.Float32() * maxVelocityDelta * 2) - maxVelocityDelta
 	velocity.Y += (rand.Float32() * maxVelocityDelta * 2) - maxVelocityDelta
 
-	mv := mp2.Subtract(&scene.lastMousePosition)
+	// copy this vector because Subtract() mutates it
+	currentMousePos := scene.currentMousePosition
+	mv := currentMousePos.Subtract(&scene.lastMousePosition)
 	velocity.X += float32(mv.X) / 2
 	velocity.Y -= float32(mv.Y) / 2
 }
@@ -161,8 +152,10 @@ func (scene *MovingLabelsScene) resizeCameraWithWindow() {
 		rHeight := scene.Sys.Renderer.Window.Height
 
 		if int(rt.Texture.Width) != rWidth || int(rt.Texture.Height) != rHeight {
-			t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
-			rt.RenderTexture2D = &t
+			mainthread.Call(func() {
+				t := rl.LoadRenderTexture(int32(rWidth), int32(rHeight))
+				rt.RenderTexture2D = &t
+			})
 		}
 	}
 }

@@ -1,18 +1,21 @@
 package scene
 
 import (
+	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/common"
 	"image/color"
 	"math"
 	"math/rand"
+	"sync"
 	"time"
 )
 
 type labelFactory struct {
 	common.EntityManager
 	*common.BasicComponents
-	cache map[common.Entity]*labelParameters
+	cache      map[common.Entity]*labelParameters
+	cacheMutex sync.Mutex
 }
 
 type labelParameters struct {
@@ -61,6 +64,7 @@ func (factory *labelFactory) update(s *Scene, _ time.Duration) {
 		factory.cache = make(map[common.Entity]*labelParameters)
 	}
 
+	factory.EntitiesMutex.Lock()
 	for e := range factory.Entities {
 		if !factory.needsToGenerateTexture(s, e) {
 			continue
@@ -68,6 +72,7 @@ func (factory *labelFactory) update(s *Scene, _ time.Duration) {
 
 		factory.generateNewTexture(s, e)
 	}
+	factory.EntitiesMutex.Unlock()
 
 	factory.EntityManager.ProcessRemovalQueue()
 }
@@ -87,11 +92,15 @@ func (factory *labelFactory) putInCache(_ *Scene, e common.Entity, str, font str
 		},
 	}
 
+	factory.cacheMutex.Lock()
 	factory.cache[e] = entry
+	factory.cacheMutex.Unlock()
 }
 
 func (factory *labelFactory) needsToGenerateTexture(s *Scene, e common.Entity) bool {
+	factory.cacheMutex.Lock()
 	entry, found := factory.cache[e]
+	factory.cacheMutex.Unlock()
 	if !found || entry == nil {
 		return true
 	}
@@ -155,12 +164,6 @@ func (factory *labelFactory) generateNewTexture(s *Scene, e common.Entity) {
 		rt = s.Components.RenderTexture2D.Add(e)
 	}
 
-	w, h := factory.getTextureSize(text.String, font.Face, font.Size)
-	if rt.RenderTexture2D == nil || rt.Texture.Width != int32(w) || rt.Texture.Height != int32(h) {
-		newRT := rl.LoadRenderTexture(int32(w), int32(h))
-		rt.RenderTexture2D = &newRT
-	}
-
 	cr, cg, cb, ca := c.RGBA()
 	rlc := rl.Color{
 		R: uint8(cr),
@@ -173,15 +176,23 @@ func (factory *labelFactory) generateNewTexture(s *Scene, e common.Entity) {
 
 	_, debugFound := s.Components.Debug.Get(e)
 
-	rl.BeginTextureMode(*rt.RenderTexture2D)
-	rl.ClearBackground(rl.Blank)
-	rl.DrawText(str, 0, 0, int32(font.Size), rlc)
+	mainthread.Call(func() {
+		w, h := factory.getTextureSize(text.String, font.Face, font.Size)
+		if rt.RenderTexture2D == nil || rt.Texture.Width != int32(w) || rt.Texture.Height != int32(h) {
+			newRT := rl.LoadRenderTexture(int32(w), int32(h))
+			rt.RenderTexture2D = &newRT
+		}
 
-	if debugFound {
-		rl.DrawRectangleLines(0, 0, int32(w), int32(h), rl.NewColor(randRGBA()))
-	}
+		rl.BeginTextureMode(*rt.RenderTexture2D)
+		rl.ClearBackground(rl.Blank)
+		rl.DrawText(str, 0, 0, int32(font.Size), rlc)
 
-	rl.EndTextureMode()
+		if debugFound {
+			rl.DrawRectangleLines(0, 0, int32(w), int32(h), rl.NewColor(randRGBA()))
+		}
+
+		rl.EndTextureMode()
+	})
 
 	factory.putInCache(s, e, str, "", font.Size, c)
 }

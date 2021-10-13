@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"github.com/gravestench/akara"
-	"time"
 )
 
 // SceneInterface represents what director considers to be a scene
@@ -10,17 +9,9 @@ type SceneInterface interface {
 	akara.System
 	HasKey
 	initializesLua
-	GenericUpdate(duration time.Duration)
+	GenericUpdate()
 	GenericSceneInit(d *Director)
 	Render()
-}
-
-type Updater interface {
-	Update()
-}
-
-type UpdaterTimed interface {
-	Update(duration time.Duration)
 }
 
 type HasKey interface {

@@ -1,15 +1,14 @@
 package renderer
 
 import (
+	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"time"
-
 	"github.com/gravestench/akara"
 )
 
 const (
 	defaultTitle       = "Director"
-	defaultWidth       = 1028
+	defaultWidth       = 1024
 	defaultHeight      = 768
 	defaultFPS         = 768
 	defaultScaleFactor = 1.0
@@ -22,19 +21,23 @@ type System struct {
 		Width, Height int // pixels
 		Title         string
 		ScaleFactor   float64
+		IsOpen		  bool
 	}
 	Logging   int
 	TargetFPS int
 }
 
-func (s *System) New(args ...interface{}) {
-	if !s.IsInitialized() {
-		s.Init(nil)
-	}
+func (s *System) Name() string {
+	return "Renderer"
 }
 
-func (s *System) Update(_ time.Duration) {
-	s.Window.Width, s.Window.Height = rl.GetScreenWidth(), rl.GetScreenHeight()
+func (s *System) Update() {
+	mainthread.Call(func() {
+		s.Window.Width, s.Window.Height = rl.GetScreenWidth(), rl.GetScreenHeight()
+		s.Window.IsOpen = !rl.WindowShouldClose()
+		// rl.SetTargetFPS(int32(s.TargetFPS))
+		// rl.SetTargetFPS(int32(1))
+	})
 
 	if s.Window.Width <= 1 {
 		s.Window.Width = defaultWidth
@@ -44,8 +47,13 @@ func (s *System) Update(_ time.Duration) {
 		s.Window.Height = defaultHeight
 	}
 
-	rl.SetTargetFPS(int32(s.TargetFPS))
-	rl.SetTraceLog(rl.LogNone)
+	if !s.Window.IsOpen {
+		mainthread.Call(func() {
+			rl.CloseWindow()
+		})
+
+		s.Deactivate()
+	}
 }
 
 func (s *System) Init(_ *akara.World) {
@@ -53,6 +61,7 @@ func (s *System) Init(_ *akara.World) {
 	s.Window.Height = defaultHeight
 	s.Window.ScaleFactor = defaultScaleFactor
 	s.Window.Title = defaultTitle
+	s.Window.IsOpen = true
 	s.TargetFPS = defaultFPS
 	s.Logging = defaultLogging
 }

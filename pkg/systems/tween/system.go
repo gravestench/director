@@ -1,14 +1,16 @@
 package tween
 
 import (
-	"time"
-
 	"github.com/gravestench/akara"
 )
 
 type System struct {
 	akara.BaseSystem
 	queue []*Tween
+}
+
+func (s *System) Name() string {
+	return "Tween"
 }
 
 // New creates a new tween, but does not add it for processing.
@@ -44,9 +46,9 @@ func (s *System) Remove(t *Tween) {
 	}
 }
 
-func (s *System) Update(duration time.Duration) {
+func (s *System) Update() {
 	for idx := range s.queue {
-		s.queue[idx].Update(duration)
+		s.queue[idx].Update(s.TimeDelta)
 	}
 }
 

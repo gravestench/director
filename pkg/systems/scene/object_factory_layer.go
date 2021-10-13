@@ -28,6 +28,7 @@ func (factory *layerFactory) update(s *Scene, _ time.Duration) {
 		factory.EntityManager.Init()
 	}
 
+	factory.EntitiesMutex.Lock()
 	for e := range factory.Entities {
 		hc, found := s.Components.HasChildren.Get(e)
 		if !found {
@@ -48,6 +49,7 @@ func (factory *layerFactory) update(s *Scene, _ time.Duration) {
 			childNode.SetParent(parentNode.Node)
 		}
 	}
+	factory.EntitiesMutex.Unlock()
 
 	factory.EntityManager.ProcessRemovalQueue()
 }

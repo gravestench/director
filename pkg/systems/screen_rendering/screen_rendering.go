@@ -1,6 +1,7 @@
 package screen_rendering
 
 import (
+	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/common"
@@ -8,16 +9,18 @@ import (
 )
 
 type ScreenRenderingSystem struct {
-	akara.BaseSubscriberSystem
+	akara.BaseSystem
 	components struct {
 		common.BasicComponents
 	}
 	sceneViewports *akara.Subscription
 }
 
-func (sys *ScreenRenderingSystem) Init(world *akara.World) {
-	sys.World = world
+func (sys *ScreenRenderingSystem) Name() string {
+	return "ScreenRendering"
+}
 
+func (sys *ScreenRenderingSystem) Init(world *akara.World) {
 	sys.components.Init(world)
 	sys.initViewportSubscription()
 }
@@ -35,29 +38,29 @@ func (sys *ScreenRenderingSystem) IsInitialized() bool {
 }
 
 func (sys *ScreenRenderingSystem) initViewportSubscription() {
-	filter := sys.World.NewComponentFilter()
-
-	filter.Require(
+	filter := sys.World.NewComponentFilter().Require(
 		&components.Viewport{},
 		&components.Transform{},
 		&components.RenderTexture2D{},
-	)
+	).Build()
 
-	sys.sceneViewports = sys.World.AddSubscription(filter.Build())
+	sys.sceneViewports = sys.World.AddSubscription(filter)
 }
 
 func (sys *ScreenRenderingSystem) Update() {
-	rl.BeginDrawing()
+	mainthread.Call(func() {
+		rl.BeginDrawing()
 
-	rl.ClearBackground(rl.Blank)
-	rl.BeginBlendMode(rl.BlendAlpha)
+		rl.ClearBackground(rl.Blank)
+		rl.BeginBlendMode(rl.BlendAlpha)
 
-	for _, e := range sys.sceneViewports.GetEntities() {
-		sys.renderViewport(e)
-	}
+		for _, e := range sys.sceneViewports.GetEntities() {
+			sys.renderViewport(e)
+		}
 
-	rl.EndBlendMode()
-	rl.EndDrawing()
+		rl.EndBlendMode()
+		rl.EndDrawing()
+	})
 }
 
 func (sys *ScreenRenderingSystem) renderViewport(e common.Entity) {
@@ -69,7 +72,7 @@ func (sys *ScreenRenderingSystem) renderViewport(e common.Entity) {
 	}
 
 	rt, found := sys.components.RenderTexture2D.Get(e)
-	if !found {
+	if !found || rt.RenderTexture2D == nil {
 		return
 	}
 
@@ -83,7 +86,7 @@ func (sys *ScreenRenderingSystem) renderViewport(e common.Entity) {
 			opacity.Value = 0
 		}
 
-		alpha = uint8(opacity.Value*255)
+		alpha = uint8(opacity.Value * 255)
 	}
 
 	position := rl.Vector2{

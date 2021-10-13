@@ -23,7 +23,7 @@ example lua:
 
 func (s *Scene) luaExportComponentInteractive(mt *lua.LTable) {
 	const name = "interactive"
-	
+
 	cTable := s.Lua.NewTable()
 
 	s.Lua.SetField(cTable, "add", s.Lua.NewFunction(func(L *lua.LState) int {

@@ -36,8 +36,8 @@ func (scene *testScene) Init(_ *akara.World) {
 		y := startY + (idx * step)
 
 		c.R -= uint8(step)
-		c.G += uint8(step*2)
-		c.B = uint8(step*16)
+		c.G += uint8(step * 2)
+		c.B = uint8(step * 16)
 		e := scene.Add.Rectangle(x, y, w, h, c, white)
 
 		ro, found := scene.Components.RenderOrder.Get(e)

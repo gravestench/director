@@ -21,6 +21,10 @@ func (sys *System) Init(_ *akara.World) {
 	sys.initSubscriptions()
 }
 
+func (sys *System) Name() string {
+	return "Animation"
+}
+
 func (sys *System) initComponents() {
 	sys.InjectComponent(&components.Texture2D{}, &sys.components.textures.ComponentFactory)
 	sys.InjectComponent(&components.Animation{}, &sys.components.animations.ComponentFactory)
@@ -39,9 +43,9 @@ func (sys *System) IsInitialized() bool {
 	return sys.animations != nil
 }
 
-func (sys *System) Update(dt time.Duration) {
+func (sys *System) Update() {
 	for _, e := range sys.animations.GetEntities() {
-		sys.updateAnimation(e, dt)
+		sys.updateAnimation(e, sys.TimeDelta)
 	}
 }
 

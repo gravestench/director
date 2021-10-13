@@ -1,12 +1,16 @@
 package pkg
 
 import (
+	"fmt"
+	"github.com/faiface/mainthread"
+	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/systems/animation"
 	"github.com/gravestench/director/pkg/systems/renderer"
 	"github.com/gravestench/director/pkg/systems/texture_manager"
+	"os"
+	"text/tabwriter"
 	"time"
 
-	"github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/systems/file_loader"
 	"github.com/gravestench/director/pkg/systems/input"
@@ -23,9 +27,10 @@ type Director struct {
 	*akara.World
 	scenes map[string]SceneInterface
 	Sys    DirectorSystems
+	debug bool
 }
 
-// contains the base systems that are available when a director instance is created
+// DirectorSystems contains the base systems that are available when a director instance is created
 type DirectorSystems struct {
 	Events   *eventemitter.EventEmitter
 	Load     *file_loader.System
@@ -48,12 +53,16 @@ func New() *Director {
 	return &director
 }
 
+func (d *Director) SetDebug(debug bool) {
+	d.debug = debug
+}
+
 // AddScene adds a scene
 func (d *Director) AddScene(scene SceneInterface) {
 	scene.GenericSceneInit(d)
 	scene.InitializeLua()
 
-	d.AddSystem(scene)
+	d.AddSystem(scene, true)
 	d.scenes[scene.Key()] = scene
 }
 
@@ -67,27 +76,9 @@ func (d *Director) RemoveScene(key string) *Director {
 	return d
 }
 
-// Update iterates over all of the scenes, updating and rendering each.
-// Because scenes are actually implementing the akara.System interface,
-// this only calls all of tghe generic update methods, and akara calls the
-// actual update methods at the end during world.Update
+// Update calls World.Update()
 func (d *Director) Update(dt time.Duration) (err error) {
-	d.updateScenes(dt)
-
 	return d.World.Update(dt)
-}
-
-// updateScenes calls the generic scene update method for each scene
-func (d *Director) updateScenes(dt time.Duration) {
-	for _, ss := range d.scenes {
-		ss.GenericUpdate(dt)
-	}
-
-	// this renders the scene objects to the scene's render texture
-	// however, this will not actually display anything, that is done by the render system
-	for idx := range d.scenes {
-		d.scenes[idx].Render()
-	}
 }
 
 // initDirectorSystems creates all of the systems that scenes will need.
@@ -96,48 +87,97 @@ func (d *Director) updateScenes(dt time.Duration) {
 // likewise, input, file loading, texture management, etc are all functions that
 // have been broken into their own systems.
 func (d *Director) initDirectorSystems() {
-	d.AddSystem(&screen_rendering.ScreenRenderingSystem{})
+	screenRendering := &screen_rendering.ScreenRenderingSystem{}
+	d.AddSystem(screenRendering, true)
+	screenRendering.SetTickFrequency(0) // unlimited FPS. TODO: set this from somewhere?
 
 	d.Sys.Tweens = &tween.System{}
-	d.AddSystem(d.Sys.Tweens)
+	d.AddSystem(d.Sys.Tweens, true)
 
 	d.Sys.Renderer = &renderer.System{}
-	d.AddSystem(d.Sys.Renderer)
+	d.AddSystem(d.Sys.Renderer, true)
 
 	d.Sys.Input = &input.System{}
-	d.AddSystem(d.Sys.Input)
+	d.AddSystem(d.Sys.Input, true)
+	d.Sys.Input.SetTickFrequency(1000)
 
 	d.Sys.Load = &file_loader.System{}
-	d.AddSystem(d.Sys.Load)
+	d.AddSystem(d.Sys.Load, true)
 
 	d.Sys.Texture = &texture_manager.System{}
-	d.AddSystem(d.Sys.Texture)
+	d.AddSystem(d.Sys.Texture, true)
 
-	d.AddSystem(&animation.System{})
+	d.AddSystem(&animation.System{}, true)
 }
 
-// Run the director game loop. this is a blocking operation.
 func (d *Director) Run() error {
+	// mainthread.CallQueueCap = 16
+	mainthread.Run(d.run)
+
+	return nil
+}
+
+// run the director game loop. this is a blocking operation.
+func (d *Director) run() {
+	defer d.Stop()
+
+	// open the raylib window. It'd be nice to have this in the renderer system, but not currently possible due to the
+	// order that things are Init'd in.
+	ww, wh := int32(d.Sys.Renderer.Window.Width), int32(d.Sys.Renderer.Window.Height)
+	mainthread.Call(func() {
+		rl.SetTraceLog(rl.LogNone)
+		rl.InitWindow(ww, wh, d.Sys.Renderer.Window.Title)
+	})
+
 	now := time.Now()
 	last := now
-
 	var delta time.Duration
+	var timeSinceLastDebugMessage time.Duration
 
-	ww, wh := int32(d.Sys.Renderer.Window.Width), int32(d.Sys.Renderer.Window.Height)
+	ticker := time.NewTicker(time.Millisecond)
+	defer ticker.Stop()
+	for now = range ticker.C {
+		if !d.Sys.Renderer.Window.IsOpen {
+			break
+		}
 
-	rl.SetTraceLog(rl.LogNone)
-	rl.InitWindow(ww, wh, d.Sys.Renderer.Window.Title)
-	defer rl.CloseWindow()
-
-	for !rl.WindowShouldClose() {
-		now = time.Now()
 		delta = now.Sub(last)
 		last = now
 
 		if err := d.Update(delta); err != nil {
-			return err
+			panic(err)
+		}
+
+		if d.debug {
+			timeSinceLastDebugMessage += delta
+			if timeSinceLastDebugMessage.Seconds() > 5 {
+				d.PrintDebugMessage()
+				timeSinceLastDebugMessage = 0
+			}
 		}
 	}
+}
 
-	return nil
+// Stop deactivates all the Director's systems
+func (d *Director) Stop() {
+	for _, system := range d.Systems {
+		system.Deactivate()
+	}
+}
+
+// PrintDebugMessage prints a debug message to stdout containing information about the running systems, including their
+// target tick rates and their average tick rates.
+func (d *Director) PrintDebugMessage() {
+	writer := tabwriter.NewWriter(os.Stdout, 0, 8, 1, '\t', tabwriter.AlignRight)
+	fmt.Fprintln(writer, "System\tActive?\tTarget Tick Freq\tActual Tick Freq")
+
+	for _, system := range d.Systems {
+		fmt.Fprintln(writer, fmt.Sprintf("%s\t%v\t%.2f\t%.2f",
+			system.Name(),
+			system.Active(),
+			system.TickFrequency(),
+			float64(system.TickCount()) / system.Uptime().Seconds()))
+	}
+
+	writer.Flush()
 }

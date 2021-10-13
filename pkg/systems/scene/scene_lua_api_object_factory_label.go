@@ -23,7 +23,7 @@ func (s *Scene) luaBindSceneObjectFactoryLabel(objFactoryTable *lua.LTable) {
 		fontName := L.CheckString(5)
 		c, err := util.ParseHexColor(L.CheckString(6))
 		if err != nil {
-			c = color.RGBA{R: 255, B:255, A: 196}
+			c = color.RGBA{R: 255, B: 255, A: 196}
 		}
 
 		// use them with the object factory

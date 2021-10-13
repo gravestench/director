@@ -25,7 +25,7 @@ func main() {
 
 type TweenTest struct {
 	scene.Scene
-	object      common.Entity
+	object common.Entity
 }
 
 func (scene *TweenTest) Key() string {
