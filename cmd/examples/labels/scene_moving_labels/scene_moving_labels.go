@@ -18,7 +18,7 @@ import (
 
 const (
 	key              = "Director Example - Moving Text"
-	numTextObjects   = 3000
+	numTextObjects   = 1000
 	maxVelocity      = 150
 	maxVelocityDelta = maxVelocity / 10
 )

@@ -33,6 +33,10 @@ type Scene struct {
 
 var tmpVect mathlib.Vector3
 
+func (s *Scene) Name() string {
+	return "BaseScene"
+}
+
 func (s *Scene) GenericSceneInit(d *director.Director) {
 	s.Add.scene = s
 	s.Director = d

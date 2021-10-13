@@ -9,6 +9,10 @@ type System struct {
 	queue []*Tween
 }
 
+func (s *System) Name() string {
+	return "Tween"
+}
+
 // New creates a new tween, but does not add it for processing.
 func (s *System) New() *Tween {
 	t := &Tween{}

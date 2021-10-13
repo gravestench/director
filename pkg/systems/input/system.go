@@ -21,6 +21,10 @@ type System struct {
 	}
 }
 
+func (m *System) Name() string {
+	return "Input"
+}
+
 func (m *System) IsInitialized() bool {
 	return m.InputState != nil
 }

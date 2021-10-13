@@ -35,6 +35,10 @@ type System struct {
 	}
 }
 
+func (sys *System) Name() string {
+	return "TextureManager"
+}
+
 func (sys *System) Init(world *akara.World) {
 	sys.World = world
 

@@ -16,6 +16,10 @@ type ScreenRenderingSystem struct {
 	sceneViewports *akara.Subscription
 }
 
+func (sys *ScreenRenderingSystem) Name() string {
+	return "ScreenRendering"
+}
+
 func (sys *ScreenRenderingSystem) Init(world *akara.World) {
 	sys.components.Init(world)
 	sys.initViewportSubscription()

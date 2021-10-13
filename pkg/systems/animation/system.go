@@ -21,6 +21,10 @@ func (sys *System) Init(_ *akara.World) {
 	sys.initSubscriptions()
 }
 
+func (sys *System) Name() string {
+	return "Animation"
+}
+
 func (sys *System) initComponents() {
 	sys.InjectComponent(&components.Texture2D{}, &sys.components.textures.ComponentFactory)
 	sys.InjectComponent(&components.Animation{}, &sys.components.animations.ComponentFactory)

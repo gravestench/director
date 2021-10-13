@@ -27,6 +27,10 @@ type System struct {
 	TargetFPS int
 }
 
+func (s *System) Name() string {
+	return "Renderer"
+}
+
 func (s *System) Update() {
 	mainthread.Call(func() {
 		s.Window.Width, s.Window.Height = rl.GetScreenWidth(), rl.GetScreenHeight()
