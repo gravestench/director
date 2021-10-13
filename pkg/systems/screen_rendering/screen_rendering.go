@@ -9,7 +9,7 @@ import (
 )
 
 type ScreenRenderingSystem struct {
-	akara.BaseSubscriberSystem
+	akara.BaseSystem
 	components struct {
 		common.BasicComponents
 	}
@@ -34,15 +34,13 @@ func (sys *ScreenRenderingSystem) IsInitialized() bool {
 }
 
 func (sys *ScreenRenderingSystem) initViewportSubscription() {
-	filter := sys.World.NewComponentFilter()
-
-	filter.Require(
+	filter := sys.World.NewComponentFilter().Require(
 		&components.Viewport{},
 		&components.Transform{},
 		&components.RenderTexture2D{},
-	)
+	).Build()
 
-	sys.sceneViewports = sys.World.AddSubscription(filter.Build())
+	sys.sceneViewports = sys.World.AddSubscription(filter)
 }
 
 func (sys *ScreenRenderingSystem) Update() {
@@ -70,7 +68,7 @@ func (sys *ScreenRenderingSystem) renderViewport(e common.Entity) {
 	}
 
 	rt, found := sys.components.RenderTexture2D.Get(e)
-	if !found {
+	if !found || rt.RenderTexture2D == nil {
 		return
 	}
 

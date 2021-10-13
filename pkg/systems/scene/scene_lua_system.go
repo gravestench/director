@@ -69,7 +69,7 @@ func (scene *LuaScene) callLuaInitFn() {
 }
 
 func (scene *LuaScene) Update() {
-	scene.callLuaUpdateFn(scene.Director.TimeDelta)
+	scene.callLuaUpdateFn(scene.TimeDelta)
 }
 
 func (scene *LuaScene) callLuaUpdateFn(dt time.Duration) {

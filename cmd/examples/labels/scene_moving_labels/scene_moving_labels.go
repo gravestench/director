@@ -18,7 +18,7 @@ import (
 
 const (
 	key              = "Director Example - Moving Text"
-	numTextObjects   = 10
+	numTextObjects   = 3000
 	maxVelocity      = 150
 	maxVelocityDelta = maxVelocity / 10
 )
@@ -35,9 +35,6 @@ func (scene *MovingLabelsScene) Key() string {
 	return key
 }
 
-func (scene *MovingLabelsScene) IsInitialized() bool {
-	return scene.Director.World != nil
-}
 
 func (scene *MovingLabelsScene) Init(w *akara.World) {
 	fmt.Println("moving text scene init")
@@ -83,7 +80,7 @@ func (scene *MovingLabelsScene) Update() {
 
 	for _, eid := range scene.textObjects {
 		scene.updateVelocity(eid)
-		scene.updatePosition(eid, scene.Director.TimeDelta)
+		scene.updatePosition(eid, scene.TimeDelta)
 	}
 
 	scene.resizeCameraWithWindow()
@@ -137,10 +134,9 @@ func (scene *MovingLabelsScene) updateVelocity(eid common.Entity) {
 	velocity.X += (rand.Float32() * maxVelocityDelta * 2) - maxVelocityDelta
 	velocity.Y += (rand.Float32() * maxVelocityDelta * 2) - maxVelocityDelta
 
-	// copy these vectors because Subtract() mutates them
+	// copy this vector because Subtract() mutates it
 	currentMousePos := scene.currentMousePosition
-	lastMousePos := scene.lastMousePosition
-	mv := currentMousePos.Subtract(&lastMousePos)
+	mv := currentMousePos.Subtract(&scene.lastMousePosition)
 	velocity.X += float32(mv.X) / 2
 	velocity.Y -= float32(mv.Y) / 2
 }

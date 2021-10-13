@@ -1,14 +1,13 @@
 package pkg
 
 import (
-	"fmt"
 	"github.com/faiface/mainthread"
+	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/systems/animation"
 	"github.com/gravestench/director/pkg/systems/renderer"
 	"github.com/gravestench/director/pkg/systems/texture_manager"
 	"time"
 
-	"github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/systems/file_loader"
 	"github.com/gravestench/director/pkg/systems/input"
@@ -55,7 +54,7 @@ func (d *Director) AddScene(scene SceneInterface) {
 	scene.GenericSceneInit(d)
 	scene.InitializeLua()
 
-	d.AddSystem(scene)
+	d.AddSystem(scene, true)
 	d.scenes[scene.Key()] = scene
 }
 
@@ -80,24 +79,25 @@ func (d *Director) Update(dt time.Duration) (err error) {
 // likewise, input, file loading, texture management, etc are all functions that
 // have been broken into their own systems.
 func (d *Director) initDirectorSystems() {
-	d.AddSystem(&screen_rendering.ScreenRenderingSystem{})
+	screenRendering := &screen_rendering.ScreenRenderingSystem{}
+	d.AddSystem(screenRendering, true)
 
 	d.Sys.Tweens = &tween.System{}
-	d.AddSystem(d.Sys.Tweens)
+	d.AddSystem(d.Sys.Tweens, true)
 
 	d.Sys.Renderer = &renderer.System{}
-	d.AddSystem(d.Sys.Renderer)
+	d.AddSystem(d.Sys.Renderer, true)
 
 	d.Sys.Input = &input.System{}
-	d.AddSystem(d.Sys.Input)
+	d.AddSystem(d.Sys.Input, true)
 
 	d.Sys.Load = &file_loader.System{}
-	d.AddSystem(d.Sys.Load)
+	d.AddSystem(d.Sys.Load, true)
 
 	d.Sys.Texture = &texture_manager.System{}
-	d.AddSystem(d.Sys.Texture)
+	d.AddSystem(d.Sys.Texture, true)
 
-	d.AddSystem(&animation.System{})
+	d.AddSystem(&animation.System{}, true)
 }
 
 func (d *Director) Run() error {
@@ -109,39 +109,40 @@ func (d *Director) Run() error {
 
 // run the director game loop. this is a blocking operation.
 func (d *Director) run() {
-	now := time.Now()
-	last := now
+	defer d.Stop()
 
-	var delta time.Duration
-
+	// open the raylib window. It'd be nice to have this in the renderer system, but not currently possible due to the
+	// order that things are Init'd in.
 	ww, wh := int32(d.Sys.Renderer.Window.Width), int32(d.Sys.Renderer.Window.Height)
-
 	mainthread.Call(func() {
 		rl.SetTraceLog(rl.LogNone)
 		rl.InitWindow(ww, wh, d.Sys.Renderer.Window.Title)
 	})
 
-	defer mainthread.Call(func() {
-		rl.CloseWindow()
-	})
+	now := time.Now()
+	last := now
 
-	var counter time.Duration
-	var frames uint
-	for !rl.WindowShouldClose() {
-		now = time.Now()
+	var delta time.Duration
+
+	ticker := time.NewTicker(time.Millisecond)
+	defer ticker.Stop()
+	for now = range ticker.C {
+		if !d.Sys.Renderer.Window.IsOpen {
+			break
+		}
+
 		delta = now.Sub(last)
 		last = now
-		counter = counter + delta
-		frames += 1
 
 		if err := d.Update(delta); err != nil {
 			panic(err)
 		}
+	}
+}
 
-		if counter.Seconds() >= 1 {
-			fmt.Println(frames)
-			counter = 0
-			frames = 0
-		}
+// Stop deactivates all the Director's systems
+func (d *Director) Stop() {
+	for _, system := range d.Systems {
+		system.Deactivate()
 	}
 }
