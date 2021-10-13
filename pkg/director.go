@@ -99,6 +99,7 @@ func (d *Director) initDirectorSystems() {
 
 	d.Sys.Input = &input.System{}
 	d.AddSystem(d.Sys.Input, true)
+	d.Sys.Input.SetTickFrequency(1000)
 
 	d.Sys.Load = &file_loader.System{}
 	d.AddSystem(d.Sys.Load, true)

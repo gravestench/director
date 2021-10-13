@@ -20,6 +20,10 @@ type Interactive struct {
 	*Vector
 	Hitbox   *image.Rectangle
 	Callback InputCallback
+	// TODO: better name for this? allows us to temporarily ignore this vector (for debouncing)
+	UsedRecently bool
+	// TODO: better name for this? disables the debouncing functionality so the input callback fires as fast as possible
+	RapidFire bool
 }
 
 // New returns a Interactive component. By default, it contains a nil instance.

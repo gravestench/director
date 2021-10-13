@@ -4,6 +4,7 @@ import director "github.com/gravestench/director/pkg"
 
 func main() {
 	d := director.New()
+	d.SetDebug(true)
 
 	d.AddScene(&GameScene{})
 

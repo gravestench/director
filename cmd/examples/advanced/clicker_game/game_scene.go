@@ -40,6 +40,8 @@ type ShopUpgrades struct {
 	clickerUpgrade3Label common.Entity
 	clickerUpgrade4      common.Entity
 	clickerUpgrade4Label common.Entity
+	rapidFireUpgrade      common.Entity
+	rapidFireUpgradeLabel common.Entity
 	//clickerUpgrade1Price int
 	//clickerUpgrade2Price int
 	//clickerUpgrade3Price int
@@ -52,7 +54,6 @@ func (scene *GameScene) Key() string {
 
 // Game Loop
 func (scene *GameScene) Update() {
-	//scene.updateLabel()
 	if scene.isDebugEnabled {
 		scene.updateTestLabel()
 	}
@@ -220,6 +221,9 @@ func (scene *GameScene) makeShopUpgrades() {
 	upgradeYLocation -= upgradeSize
 	scene.upgrades.clickerUpgrade4 = scene.Add.Rectangle(shopWidth/2, upgradeYLocation, shopWidth-10, upgradeSize-5, purple, nil)
 	scene.upgrades.clickerUpgrade4Label = scene.Add.Label("Upgrade 4", shopWidth/2, upgradeYLocation, 12, "", white)
+	upgradeYLocation -= upgradeSize
+	scene.upgrades.rapidFireUpgrade = scene.Add.Rectangle(shopWidth/2, upgradeYLocation, shopWidth-10, upgradeSize-5, purple, nil)
+	scene.upgrades.rapidFireUpgradeLabel = scene.Add.Label("Rapid Fire", shopWidth/2, upgradeYLocation, 12, "", white)
 }
 
 func (scene *GameScene) upgradeClicker(value int) {
@@ -248,6 +252,11 @@ func (scene *GameScene) bindClickingInput() {
 			Y: rHeight - (int(trs.Translation.Y) - size.Dy()/2),
 		},
 	}
+}
+
+func (scene *GameScene) setRapidFire(enabled bool) {
+	i, _ := scene.Components.Interactive.Get(scene.clickButton)
+	i.RapidFire = enabled
 }
 
 func (scene *GameScene) bindShopClickingInput() {
@@ -374,6 +383,35 @@ func (scene *GameScene) bindShopClickingInput() {
 		},
 	}
 
+	i = scene.Components.Interactive.Add(scene.upgrades.rapidFireUpgrade)
+	i.Callback = func() (preventPropagation bool) {
+		scene.setRapidFire(true)
+		scene.RemoveEntity(scene.upgrades.rapidFireUpgrade)
+		scene.RemoveEntity(scene.upgrades.rapidFireUpgradeLabel)
+		return false
+	}
+	i.Vector = input.NewInputVector()
+	i.Vector.SetMouseButton(input.MouseButtonLeft)
+	size, found = scene.Components.Size.Get(scene.upgrades.rapidFireUpgrade)
+	if !found {
+		return
+	}
+
+	trs, found = scene.Components.Transform.Get(scene.upgrades.rapidFireUpgrade)
+	if !found {
+		return
+	}
+
+	i.Hitbox = &image.Rectangle{
+		Min: image.Point{
+			X: int(trs.Translation.X) - size.Dx()/2,
+			Y: rHeight - (int(trs.Translation.Y) + size.Dy()/2),
+		},
+		Max: image.Point{
+			X: int(trs.Translation.X) + size.Dx()/2,
+			Y: rHeight - (int(trs.Translation.Y) - size.Dy()/2),
+		},
+	}
 }
 
 func (scene *GameScene) updateBalance(amount int) {

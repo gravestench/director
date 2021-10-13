@@ -98,17 +98,17 @@ func (m *System) updateInputState() {
 	}
 
 	for _, key := range keysToCheck {
-		truth := rl.IsKeyPressed(key)
+		truth := rl.IsKeyDown(key)
 		m.InputState.KeyVector.Set(int(key), truth)
 	}
 
 	for _, mod := range modifiersToCheck {
-		truth := rl.IsKeyPressed(mod)
+		truth := rl.IsKeyDown(mod)
 		m.InputState.ModifierVector.Set(int(mod), truth)
 	}
 
 	for _, btn := range buttonsToCheck {
-		truth := rl.IsMouseButtonPressed(btn)
+		truth := rl.IsMouseButtonDown(btn)
 		m.InputState.MouseButtonVector.Set(int(btn), truth)
 	}
 
@@ -117,21 +117,33 @@ func (m *System) updateInputState() {
 }
 
 func (m *System) applyInputState(id akara.EID) (preventPropagation bool) {
-	i, found := m.Components.Interactive.Get(id)
-	if !found {
-		return false
-	}
-
-	// verify that the current InputState matches the state specified in the Vector
-	if !i.Enabled || !m.InputState.Contains(i.Vector) {
-		return false
-	}
+	i, _ := m.Components.Interactive.Get(id)
 
 	// check if this Interactive specified a particular cursor position that the input must occur in
 	if i.Hitbox != nil {
 		if !contains(i.Hitbox, int(m.MousePosition.X), int(m.MousePosition.Y)) {
+			i.UsedRecently = false
 			return false
 		}
+	}
+
+	// verify that the current InputState matches the state specified in the Vector
+	if !i.Enabled || !m.InputState.Contains(i.Vector) {
+		i.UsedRecently = false
+		return false
+	}
+
+	// if this Interactive component is in rapid fire mode, we don't need this debouncing logic
+	if !i.RapidFire {
+		// if the input state hasn't changed since the last time we ran the callback, don't run it again.
+		// This resets when the input state changes.
+		if i.UsedRecently {
+			return false
+		}
+
+		// we've verified that the current input state matches the vector.
+		// mark the callback as having been run so we don't run it again until the input state changes.
+		i.UsedRecently = true
 	}
 
 	return i.Callback()

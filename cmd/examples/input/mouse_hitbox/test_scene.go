@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/faiface/mainthread"
 	"image"
 	"image/color"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 
 	"github.com/gravestench/director/pkg/common"
@@ -35,16 +33,11 @@ func (scene *TestScene) updateLabel() {
 		return
 	}
 
-	var mp rl.Vector2
-	mainthread.Call(func() {
-		mp = rl.GetMousePosition()
-	})
-
 	const (
-		fmtMouse = "Mouse (%v, %v)"
+		fmtMouse = "Mouse (%.2f, %.2f)"
 	)
 
-	text.String = fmt.Sprintf(fmtMouse, mp.X, mp.Y)
+	text.String = fmt.Sprintf(fmtMouse, scene.Sys.Input.MousePosition.X, scene.Sys.Input.MousePosition.Y)
 }
 
 func (scene *TestScene) Init(world *akara.World) {
