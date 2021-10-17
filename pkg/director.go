@@ -27,7 +27,7 @@ type Director struct {
 	*akara.World
 	scenes map[string]SceneInterface
 	Sys    DirectorSystems
-	debug bool
+	debug  bool
 }
 
 // DirectorSystems contains the base systems that are available when a director instance is created
@@ -78,7 +78,7 @@ func (d *Director) RemoveScene(key string) *Director {
 
 // Update calls World.Update()
 func (d *Director) Update(dt time.Duration) (err error) {
-	return d.World.Update(dt)
+	return d.World.Update()
 }
 
 // initDirectorSystems creates all of the systems that scenes will need.
@@ -176,7 +176,7 @@ func (d *Director) PrintDebugMessage() {
 			system.Name(),
 			system.Active(),
 			system.TickFrequency(),
-			float64(system.TickCount()) / system.Uptime().Seconds()))
+			float64(system.TickCount())/system.Uptime().Seconds()))
 	}
 
 	writer.Flush()
