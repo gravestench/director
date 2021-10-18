@@ -5,6 +5,7 @@ import (
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/systems/animation"
+	"github.com/gravestench/director/pkg/systems/audio"
 	"github.com/gravestench/director/pkg/systems/renderer"
 	"github.com/gravestench/director/pkg/systems/texture_manager"
 	"os"
@@ -38,6 +39,7 @@ type DirectorSystems struct {
 	Texture  *texture_manager.System
 	Tweens   *tween.System
 	Input    *input.System
+	Audio    *audio.System
 }
 
 // New creates a new director instance, with default settings
@@ -108,6 +110,9 @@ func (d *Director) initDirectorSystems() {
 	d.AddSystem(d.Sys.Texture, true)
 
 	d.AddSystem(&animation.System{}, true)
+
+	d.Sys.Audio = &audio.System{}
+	d.AddSystem(d.Sys.Audio, true)
 }
 
 func (d *Director) Run() error {

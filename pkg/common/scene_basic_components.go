@@ -3,6 +3,7 @@ package common
 import (
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/components"
+	"github.com/gravestench/director/pkg/systems/audio"
 	"github.com/gravestench/director/pkg/systems/input"
 )
 
@@ -31,6 +32,7 @@ type BasicComponents struct {
 	Texture2D        components.Texture2DFactory
 	Transform        components.TransformFactory
 	UUID             components.UUIDFactory
+	Audible          audio.AudibleFactory
 }
 
 // Init initializes each component factory for the given world,
@@ -59,6 +61,7 @@ func (bc *BasicComponents) Init(w *akara.World) {
 	injectComponent(w, &components.Texture2D{}, &bc.Texture2D.ComponentFactory)
 	injectComponent(w, &components.Transform{}, &bc.Transform.ComponentFactory)
 	injectComponent(w, &components.UUID{}, &bc.UUID.ComponentFactory)
+	injectComponent(w, &audio.Audible{}, &bc.Audible.ComponentFactory)
 }
 
 // IsInit returns whether or not all of the basic component factories have been initialized

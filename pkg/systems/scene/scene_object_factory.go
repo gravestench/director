@@ -17,6 +17,7 @@ type ObjectFactory struct {
 	layer    layerFactory
 	viewport viewportFactory
 	camera   cameraFactory
+	sound    soundFactory
 }
 
 func (factory *ObjectFactory) update(dt time.Duration) {
@@ -27,6 +28,7 @@ func (factory *ObjectFactory) update(dt time.Duration) {
 	factory.label.update(factory.scene, dt)
 	factory.layer.update(factory.scene, dt)
 	factory.image.update(factory.scene, dt)
+	factory.sound.update(factory.scene, dt)
 }
 
 func (factory *ObjectFactory) Label(str string, x, y, size int, fontName string, c color.Color) common.Entity {
@@ -55,4 +57,8 @@ func (factory *ObjectFactory) Image(uri string, x, y int) common.Entity {
 
 func (factory *ObjectFactory) Layer(x, y int) common.Entity {
 	return factory.layer.New(factory.scene, x, y)
+}
+
+func (factory *ObjectFactory) Sound(filePath string, paused bool, volume float64, muted bool, loop bool) common.Entity {
+	return factory.sound.New(factory.scene, filePath, paused, volume, muted, loop)
 }

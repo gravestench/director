@@ -3,6 +3,7 @@ module github.com/gravestench/director
 go 1.16
 
 require (
+	github.com/faiface/beep v1.1.0
 	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3
 	github.com/gempir/go-twitch-irc/v2 v2.6.0
 	github.com/gen2brain/raylib-go/raylib v0.0.0-20210905161606-6acb55e3e6d3

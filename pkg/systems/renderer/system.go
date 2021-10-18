@@ -21,7 +21,7 @@ type System struct {
 		Width, Height int // pixels
 		Title         string
 		ScaleFactor   float64
-		IsOpen		  bool
+		IsOpen        bool
 	}
 	Logging   int
 	TargetFPS int

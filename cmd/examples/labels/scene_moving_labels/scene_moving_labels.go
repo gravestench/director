@@ -35,7 +35,6 @@ func (scene *MovingLabelsScene) Key() string {
 	return key
 }
 
-
 func (scene *MovingLabelsScene) Init(w *akara.World) {
 	fmt.Println("moving text scene init")
 
