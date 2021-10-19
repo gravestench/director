@@ -32,14 +32,14 @@ type GameScene struct {
 }
 
 type ShopUpgrades struct {
-	clickerUpgrade1      common.Entity
-	clickerUpgrade1Label common.Entity
-	clickerUpgrade2      common.Entity
-	clickerUpgrade2Label common.Entity
-	clickerUpgrade3      common.Entity
-	clickerUpgrade3Label common.Entity
-	clickerUpgrade4      common.Entity
-	clickerUpgrade4Label common.Entity
+	clickerUpgrade1       common.Entity
+	clickerUpgrade1Label  common.Entity
+	clickerUpgrade2       common.Entity
+	clickerUpgrade2Label  common.Entity
+	clickerUpgrade3       common.Entity
+	clickerUpgrade3Label  common.Entity
+	clickerUpgrade4       common.Entity
+	clickerUpgrade4Label  common.Entity
 	rapidFireUpgrade      common.Entity
 	rapidFireUpgradeLabel common.Entity
 	//clickerUpgrade1Price int

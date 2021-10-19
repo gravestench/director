@@ -90,10 +90,6 @@ func (sys *System) Update() {
 }
 
 func (sys *System) createTexture(e common.Entity) {
-	var img image.Image
-
-	var err error
-
 	req, found := sys.components.fileLoadRequest.Get(e)
 	if !found {
 		return
@@ -114,14 +110,17 @@ func (sys *System) createTexture(e common.Entity) {
 		return
 	}
 
-	_, _ = res.Stream.Seek(0, io.SeekStart)
-
+	var img image.Image
+	var err error
 	switch ft.Type {
 	case "image/png":
+		_, _ = res.Stream.Seek(0, io.SeekStart)
 		img, err = png.Decode(res.Stream)
 	case "image/jpg", "image/jpeg":
+		_, _ = res.Stream.Seek(0, io.SeekStart)
 		img, err = jpeg.Decode(res.Stream)
 	case "image/gif":
+		_, _ = res.Stream.Seek(0, io.SeekStart)
 		var gifImage *gif.GIF
 
 		gifImage, err = gif.DecodeAll(res.Stream)
@@ -135,13 +134,14 @@ func (sys *System) createTexture(e common.Entity) {
 			img = gifImage.Image[0]
 		}
 	default:
+		// we don't handle this file type, ignore this entity
+		sys.subscriptions.needsTexture.IgnoreEntity(e)
 		return
 	}
 
 	if img == nil || err != nil {
 		return
 	}
-
 
 	mainthread.Call(func() {
 		texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: img}))
@@ -151,6 +151,9 @@ func (sys *System) createTexture(e common.Entity) {
 		t := sys.components.texture2d.Add(e)
 		t.Texture2D = &texture
 	})
+
+	// we've successfully created the texture for this image, so we can ignore this entity ID now
+	sys.subscriptions.needsTexture.IgnoreEntity(e)
 }
 
 func (sys *System) createGifAnimation(e common.Entity, gifImg *gif.GIF) {

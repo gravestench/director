@@ -5,6 +5,7 @@ import (
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/systems/animation"
+	"github.com/gravestench/director/pkg/systems/audio"
 	"github.com/gravestench/director/pkg/systems/renderer"
 	"github.com/gravestench/director/pkg/systems/texture_manager"
 	"os"
@@ -27,7 +28,7 @@ type Director struct {
 	*akara.World
 	scenes map[string]SceneInterface
 	Sys    DirectorSystems
-	debug bool
+	debug  bool
 }
 
 // DirectorSystems contains the base systems that are available when a director instance is created
@@ -38,6 +39,7 @@ type DirectorSystems struct {
 	Texture  *texture_manager.System
 	Tweens   *tween.System
 	Input    *input.System
+	Audio    *audio.System
 }
 
 // New creates a new director instance, with default settings
@@ -78,7 +80,7 @@ func (d *Director) RemoveScene(key string) *Director {
 
 // Update calls World.Update()
 func (d *Director) Update(dt time.Duration) (err error) {
-	return d.World.Update(dt)
+	return d.World.Update()
 }
 
 // initDirectorSystems creates all of the systems that scenes will need.
@@ -108,6 +110,9 @@ func (d *Director) initDirectorSystems() {
 	d.AddSystem(d.Sys.Texture, true)
 
 	d.AddSystem(&animation.System{}, true)
+
+	d.Sys.Audio = &audio.System{}
+	d.AddSystem(d.Sys.Audio, true)
 }
 
 func (d *Director) Run() error {
@@ -176,7 +181,7 @@ func (d *Director) PrintDebugMessage() {
 			system.Name(),
 			system.Active(),
 			system.TickFrequency(),
-			float64(system.TickCount()) / system.Uptime().Seconds()))
+			float64(system.TickCount())/system.Uptime().Seconds()))
 	}
 
 	writer.Flush()
