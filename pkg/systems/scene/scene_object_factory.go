@@ -59,6 +59,6 @@ func (factory *ObjectFactory) Layer(x, y int) common.Entity {
 	return factory.layer.New(factory.scene, x, y)
 }
 
-func (factory *ObjectFactory) Sound(filePath string, paused bool, volume float64, muted bool, loop bool) common.Entity {
-	return factory.sound.New(factory.scene, filePath, paused, volume, muted, loop)
+func (factory *ObjectFactory) Sound(filePath string, paused bool, volume float64, muted bool, loop bool, speedMultiplier float64) common.Entity {
+	return factory.sound.New(factory.scene, filePath, paused, volume, muted, loop, speedMultiplier)
 }

@@ -21,6 +21,7 @@ type Audible struct {
 	controller       *beep.Ctrl
 	volumeController *effects.Volume
 	panController    *effects.Pan
+	speedController  *beep.Resampler
 	topLevelStream   beep.Streamer
 
 	// FinishedCallback is called when the Audible has finished playing. This is never called if the Audible is looping.
@@ -40,7 +41,9 @@ func (*Audible) New() akara.Component {
 		Streamer: audible.volumeController,
 	}
 
-	audible.topLevelStream = audible.panController
+	audible.speedController = beep.ResampleRatio(4, 1, audible.panController)
+
+	audible.topLevelStream = audible.speedController
 
 	return audible
 }
@@ -58,7 +61,7 @@ func (a *Audible) setStream(stream beep.StreamSeekCloser, format beep.Format) {
 }
 
 // Rebuilds the chain of controls and effects.
-// rawDataStream -> Loop (optional) -> Resample (optional) -> Ctrl -> Volume -> Pan
+// rawDataStream -> Loop (optional) -> Resample (optional) -> Ctrl -> Volume -> Pan -> Speed
 func (a *Audible) refreshEffectsChain() {
 	var looped beep.Streamer
 	if a.Looping() {
@@ -201,6 +204,23 @@ func (a *Audible) SetPan(pan float64) {
 	}
 
 	a.panController.Pan = pan
+}
+
+// SpeedMultiplier returns the Audible's current speed multiplier.
+func (a *Audible) SpeedMultiplier() float64 {
+	return a.speedController.Ratio()
+}
+
+// SetSpeedMultiplier sets the Audible's speed multiplier.
+// Examples:
+// 1 = normal speed
+// 2 = 2x normal speed
+// 0.5 = 0.5x normal speed
+func (a *Audible) SetSpeedMultiplier(multiplier float64) {
+	if multiplier < 0 {
+		multiplier = 0.01
+	}
+	a.speedController.SetRatio(multiplier)
 }
 
 // SetFinishedCallback sets the callback function that is called when the Audible has finished playing.

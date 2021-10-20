@@ -32,13 +32,14 @@ func (scene *AudioTonePlayerScene) Init(_ *akara.World) {
 	scene.createLoopButton()
 	scene.createVolumeButtons()
 	scene.createPanButtons()
+	scene.createSpeedButtons()
 
 	scene.Sys.Renderer.Window.Title = scene.Key()
 }
 
 func (scene *AudioTonePlayerScene) loadSounds() {
-	eid1 := scene.Add.Sound("./220hz.wav", true, 0, false, false)
-	eid2 := scene.Add.Sound("./440hz.wav", true, 0, false, false)
+	eid1 := scene.Add.Sound("./220hz.wav", true, 0, false, false, 1)
+	eid2 := scene.Add.Sound("./440hz.wav", true, 0, false, false, 1)
 
 	audible1, _ := scene.Components.Audible.Get(eid1)
 	audible2, _ := scene.Components.Audible.Get(eid2)
@@ -177,6 +178,40 @@ func (scene *AudioTonePlayerScene) createVolumeButtons() {
 	}
 	volumeDownButtonInteractive.Hitbox = scene.getHitboxRectangle(volumeDownButtonEid)
 	volumeDownButtonInteractive.Enabled = true
+}
+
+func (scene *AudioTonePlayerScene) createSpeedButtons() {
+	scene.Add.Label("Speed", 800, 730, 24, "", color.White)
+	speedUpButtonEid := scene.Add.Rectangle(750, 700, 50, 33, color.RGBA{R: 0, G: 180, B: 0, A: 255}, color.RGBA{R: 0, G: 180, B: 0, A: 255})
+	speedDownButtonEid := scene.Add.Rectangle(825, 700, 50, 33, color.RGBA{R: 0, G: 180, B: 0, A: 255}, color.RGBA{R: 0, G: 180, B: 0, A: 255})
+
+	scene.Add.Label("^", 750, 700, 24, "", color.White)
+	scene.Add.Label("v", 825, 700, 24, "", color.White)
+
+	speedUpButtonInteractive := scene.Components.Interactive.Add(speedUpButtonEid)
+	speedDownButtonInteractive := scene.Components.Interactive.Add(speedDownButtonEid)
+
+	speedUpButtonInteractive.Vector = input.NewInputVector()
+	speedUpButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	speedUpButtonInteractive.Callback = func() (preventPropogation bool) {
+		for _, sound := range scene.sounds {
+			sound.SetSpeedMultiplier(sound.SpeedMultiplier() + 0.1)
+		}
+		return false
+	}
+	speedUpButtonInteractive.Hitbox = scene.getHitboxRectangle(speedUpButtonEid)
+	speedUpButtonInteractive.Enabled = true
+
+	speedDownButtonInteractive.Vector = input.NewInputVector()
+	speedDownButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	speedDownButtonInteractive.Callback = func() (preventPropogation bool) {
+		for _, sound := range scene.sounds {
+			sound.SetSpeedMultiplier(sound.SpeedMultiplier() - 0.1)
+		}
+		return false
+	}
+	speedDownButtonInteractive.Hitbox = scene.getHitboxRectangle(speedDownButtonEid)
+	speedDownButtonInteractive.Enabled = true
 }
 
 func (scene *AudioTonePlayerScene) updateInfoText() {

@@ -10,7 +10,7 @@ type soundFactory struct {
 	*common.BasicComponents
 }
 
-func (factory *soundFactory) New(s *Scene, filePath string, paused bool, volume float64, muted bool, loop bool) common.Entity {
+func (factory *soundFactory) New(s *Scene, filePath string, paused bool, volume float64, muted bool, loop bool, speedMultiplier float64) common.Entity {
 	e := s.Add.generic.entity(s)
 
 	// all sounds need Audible and FileLoadRequest
@@ -23,6 +23,7 @@ func (factory *soundFactory) New(s *Scene, filePath string, paused bool, volume 
 	}
 	audible.SetVolume(volume)
 	audible.SetLooping(loop)
+	audible.SetSpeedMultiplier(speedMultiplier)
 
 	fileLoadRequest := s.Components.FileLoadRequest.Add(e)
 	fileLoadRequest.Path = filePath
