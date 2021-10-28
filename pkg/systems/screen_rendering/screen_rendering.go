@@ -1,9 +1,12 @@
 package screen_rendering
 
 import (
+	"sort"
+
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+
 	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/components"
 )
@@ -54,13 +57,32 @@ func (sys *ScreenRenderingSystem) Update() {
 		rl.ClearBackground(rl.Blank)
 		rl.BeginBlendMode(rl.BlendAlpha)
 
-		for _, e := range sys.sceneViewports.GetEntities() {
+		for _, e := range sys.getSortedViewports() {
 			sys.renderViewport(e)
 		}
 
 		rl.EndBlendMode()
 		rl.EndDrawing()
 	})
+}
+
+func (sys *ScreenRenderingSystem) getSortedViewports() []common.Entity {
+	renderList := sys.sceneViewports.GetEntities()
+
+	// sort viewports by their render order, if they have it
+	sort.Slice(renderList, func(i, j int) bool {
+		a, b := renderList[i], renderList[j]
+		roA, foundA := sys.components.RenderOrder.Get(a)
+		roB, foundB := sys.components.RenderOrder.Get(b)
+
+		if !foundA || !foundB {
+			return a < b
+		}
+
+		return roA.Value < roB.Value
+	})
+
+	return renderList
 }
 
 func (sys *ScreenRenderingSystem) renderViewport(e common.Entity) {
