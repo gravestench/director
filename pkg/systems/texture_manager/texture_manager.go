@@ -89,6 +89,30 @@ func (sys *System) Update() {
 	}
 }
 
+func (sys *System) createTextureFromImage(e akara.EID, img image.Image) {
+	req, found := sys.components.fileLoadRequest.Get(e)
+	if !found {
+		return
+	}
+
+	mainthread.Call(func() {
+		texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: img}))
+
+		_ = sys.Cache.Insert(req.Path, &texture, 1)
+
+		t := sys.components.texture2d.Add(e)
+		t.Texture2D = &texture
+	})
+}
+
+func (sys *System) NewTextureFromImage(img image.Image) common.Entity {
+	e := sys.NewEntity()
+
+	sys.createTextureFromImage(e, img)
+
+	return e
+}
+
 func (sys *System) createTexture(e common.Entity) {
 	req, found := sys.components.fileLoadRequest.Get(e)
 	if !found {
@@ -143,14 +167,7 @@ func (sys *System) createTexture(e common.Entity) {
 		return
 	}
 
-	mainthread.Call(func() {
-		texture := rl.LoadTextureFromImage(rl.NewImageFromImage(&imageBugHack{img: img}))
-
-		_ = sys.Cache.Insert(req.Path, &texture, 1)
-
-		t := sys.components.texture2d.Add(e)
-		t.Texture2D = &texture
-	})
+	sys.createTextureFromImage(e, img)
 
 	// we've successfully created the texture for this image, so we can ignore this entity ID now
 	sys.subscriptions.needsTexture.IgnoreEntity(e)
