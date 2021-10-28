@@ -17,6 +17,8 @@ const (
 	luaSceneObjectFactoryTable = "add"        // scene.add
 
 	luaConstantsTable = "constants"
+
+	DefaultSceneTickRate = 60
 )
 
 type Scene struct {
@@ -41,6 +43,7 @@ func (s *Scene) GenericSceneInit(d *director.Director) {
 	s.Add.scene = s
 	s.Director = d
 	s.Components.Init(s.Director.World)
+	s.SetTickFrequency(DefaultSceneTickRate)
 	s.BaseSystem.SetPreTickCallback(func() {
 		s.GenericUpdate()
 	})

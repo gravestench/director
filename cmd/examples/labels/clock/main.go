@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gravestench/akara"
-	director "github.com/gravestench/director/pkg"
+	"github.com/gravestench/director"
 )
 
 func main() {

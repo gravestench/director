@@ -1,14 +1,12 @@
 package main
 
 import (
-	director "github.com/gravestench/director/pkg"
-	"github.com/gravestench/director/pkg/systems/scene"
+	"github.com/gravestench/director"
 )
 
 func main() {
 	d := director.New()
-
-	d.AddScene(scene.NewLuaScene("Lua Test Scene", "main.lua"))
+	d.AddScene(director.Scene.NewLuaScene("Lua Test Scene", "main.lua"))
 
 	if err := d.Run(); err != nil {
 		panic(err)

@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Scene) initViewport() {
-	s.Viewports = make([]common.Entity, 1, 1)
+	s.Viewports = make([]common.Entity, 1)
 	rw, rh := s.Sys.Renderer.Window.Width, s.Sys.Renderer.Window.Height
 	s.Viewports[0] = s.Add.Viewport(0, 0, rw, rh)
 	vp, _ := s.Components.Viewport.Get(s.Viewports[0])

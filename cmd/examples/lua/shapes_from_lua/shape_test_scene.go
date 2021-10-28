@@ -34,7 +34,7 @@ func (scene *shapeTestFromLua) Update() {
 	rw, rh := randRange(minWidth, maxWidth), randRange(minHeight, maxHeight)
 
 	script := `
-		v = rectangle.new(%v, %v, %v, %v, "#7f00f7", "#ffffff")
+		v = scene.add.rectangle(%v, %v, %v, %v, "#7f00f7", "#ffffff")
 	`
 
 	if err := scene.Lua.DoString(fmt.Sprintf(script, rx, ry, rw, rh)); err != nil {

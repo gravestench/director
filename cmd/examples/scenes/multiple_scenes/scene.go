@@ -16,8 +16,7 @@ import (
 )
 
 const (
-	maxImages        = 20
-	newImageInterval = time.Second
+	maxImages        = 200
 	imgUrl           = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
 )
 
@@ -29,6 +28,7 @@ type testScene struct {
 	name    string
 	elapsed time.Duration
 	stuff   []common.Entity
+	interval time.Duration
 }
 
 func (scene *testScene) IsInitialized() bool {
@@ -99,7 +99,7 @@ func (scene *testScene) updateImages(dt time.Duration) {
 }
 
 func (scene *testScene) handleNewImage() {
-	if scene.elapsed < newImageInterval {
+	if scene.elapsed < scene.interval {
 		return
 	}
 

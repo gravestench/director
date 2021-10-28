@@ -47,8 +47,12 @@ func (scene *AudioTonePlayerScene) loadSounds() {
 }
 
 func (scene *AudioTonePlayerScene) createPlayButtons() {
-	lowFreqButtonEid := scene.Add.Rectangle(150, 100, 200, 100, color.RGBA{R: 255, G: 0, B: 0, A: 255}, color.RGBA{R: 255, G: 0, B: 0, A: 255})
-	highFreqButtonEid := scene.Add.Rectangle(450, 100, 200, 100, color.RGBA{R: 0, G: 0, B: 255, A: 255}, color.RGBA{R: 0, G: 0, B: 255, A: 255})
+	red := color.RGBA{R: 255, A: 255}
+	blue := color.RGBA{B: 255, A: 255}
+	bWidth, bHeight := 200, 100
+
+	lowFreqButtonEid := scene.Add.Rectangle(150, 100, bWidth, bHeight, red, red)
+	highFreqButtonEid := scene.Add.Rectangle(450, 100, bWidth, bHeight, blue, blue)
 
 	scene.Add.Label("220Hz", 150, 120, 24, "", color.Black)
 	scene.Add.Label("440Hz", 450, 120, 24, "", color.Black)

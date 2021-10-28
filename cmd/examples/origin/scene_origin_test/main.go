@@ -10,7 +10,7 @@ import (
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
-	director "github.com/gravestench/director/pkg"
+	"github.com/gravestench/director"
 	"github.com/gravestench/director/pkg/common"
 )
 

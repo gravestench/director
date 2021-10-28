@@ -1,7 +1,8 @@
 package main
 
 import (
-	director "github.com/gravestench/director/pkg"
+	"github.com/gravestench/director"
+	"time"
 )
 
 func main() {
@@ -13,14 +14,16 @@ func main() {
 		y:    100,
 		w:    200,
 		h:    100,
+		interval: time.Millisecond * 20,
 	})
 
 	d.AddScene(&testScene{
 		name: "b",
 		x:    250,
 		y:    150,
-		w:    120,
+		w:    520,
 		h:    320,
+		interval: time.Second/10,
 	})
 
 	if err := d.Run(); err != nil {

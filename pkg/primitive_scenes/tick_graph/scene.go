@@ -3,21 +3,23 @@
 package tick_graph
 
 import (
-	"github.com/faiface/mainthread"
-	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg"
-	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/systems/scene"
 	"image/color"
 	"math"
 	"math/rand"
 	"time"
+
+	"github.com/faiface/mainthread"
+	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/gravestench/akara"
+
+	"github.com/gravestench/director/pkg"
+	"github.com/gravestench/director/pkg/common"
+	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 const (
-	key                     = "director tick graph"
-	graphWidth, graphHeight = 200, 60
+	Key                     = "director tick graph"
+	graphWidth, graphHeight = 80, 40
 )
 
 type Scene struct {
@@ -30,10 +32,11 @@ type Scene struct {
 }
 
 func (s *Scene) Key() string {
-	return key
+	return Key
 }
 
 func (s *Scene) Init(_ *akara.World) {
+	s.SetTickFrequency(3)
 	s.sceneColors = make(map[string]color.Color)
 	s.sceneSamples = make(map[string][]float64)
 	s.sceneSamplesPixels = make(map[string][]common.Entity)
@@ -48,7 +51,7 @@ func (s *Scene) Update() {
 			continue
 		}
 
-		if theScene.Key() == key {
+		if theScene.Key() == Key {
 			continue
 		}
 

@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/faiface/mainthread"
-	director "github.com/gravestench/director/pkg"
+	"github.com/gravestench/director"
 	"github.com/gravestench/director/pkg/easing"
 	"math/rand"
 	"time"

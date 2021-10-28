@@ -1,7 +1,7 @@
 package main
 
 import (
-	director "github.com/gravestench/director/pkg"
+	"github.com/gravestench/director"
 )
 
 /*
