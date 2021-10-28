@@ -6,7 +6,6 @@ import (
 
 func main() {
 	d := director.New()
-	d.SetDebug(true)
 
 	d.AddScene(&AudioTonePlayerScene{})
 

@@ -1,16 +1,14 @@
 package pkg
 
 import (
-	"fmt"
+	"time"
+
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/systems/animation"
 	"github.com/gravestench/director/pkg/systems/audio"
 	"github.com/gravestench/director/pkg/systems/renderer"
 	"github.com/gravestench/director/pkg/systems/texture_manager"
-	"os"
-	"text/tabwriter"
-	"time"
 
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/systems/file_loader"
@@ -28,7 +26,6 @@ type Director struct {
 	*akara.World
 	scenes map[string]SceneInterface
 	Sys    DirectorSystems
-	debug  bool
 }
 
 // DirectorSystems contains the base systems that are available when a director instance is created
@@ -53,10 +50,6 @@ func New() *Director {
 	director.initDirectorSystems()
 
 	return &director
-}
-
-func (d *Director) SetDebug(debug bool) {
-	d.debug = debug
 }
 
 // AddScene adds a scene
@@ -137,7 +130,6 @@ func (d *Director) run() {
 	now := time.Now()
 	last := now
 	var delta time.Duration
-	var timeSinceLastDebugMessage time.Duration
 
 	ticker := time.NewTicker(time.Millisecond)
 	defer ticker.Stop()
@@ -152,14 +144,6 @@ func (d *Director) run() {
 		if err := d.Update(delta); err != nil {
 			panic(err)
 		}
-
-		if d.debug {
-			timeSinceLastDebugMessage += delta
-			if timeSinceLastDebugMessage.Seconds() > 5 {
-				d.PrintDebugMessage()
-				timeSinceLastDebugMessage = 0
-			}
-		}
 	}
 }
 
@@ -168,21 +152,4 @@ func (d *Director) Stop() {
 	for _, system := range d.Systems {
 		system.Deactivate()
 	}
-}
-
-// PrintDebugMessage prints a debug message to stdout containing information about the running systems, including their
-// target tick rates and their average tick rates.
-func (d *Director) PrintDebugMessage() {
-	writer := tabwriter.NewWriter(os.Stdout, 0, 8, 1, '\t', tabwriter.AlignRight)
-	fmt.Fprintln(writer, "System\tActive?\tTarget Tick Freq\tActual Tick Freq")
-
-	for _, system := range d.Systems {
-		fmt.Fprintln(writer, fmt.Sprintf("%s\t%v\t%.2f\t%.2f",
-			system.Name(),
-			system.Active(),
-			system.TickFrequency(),
-			float64(system.TickCount())/system.Uptime().Seconds()))
-	}
-
-	writer.Flush()
 }
