@@ -67,9 +67,6 @@ func (scene *GameScene) makeMainPanel() {
 	scene.toggleButton = scene.Add.Rectangle(rWidth/2, rHeight/2, rWidth, rHeight, background, nil)
 }
 
-/****************************
-*	  Toggle debug code		*
-****************************/
 func (scene *GameScene) makeToggleButton() {
 	purple := color.RGBA{R: 104, G: 70, B: 236, A: 255}
 	rWidth := scene.Sys.Renderer.Window.Width
@@ -77,6 +74,7 @@ func (scene *GameScene) makeToggleButton() {
 
 	scene.toggleButton = scene.Add.Rectangle(rWidth-60, rHeight-15, 140, 30, purple, nil)
 }
+
 func (scene *GameScene) toggleDebug() {
 	if !scene.isDebugEnabled {
 		scene.isDebugEnabled = true
@@ -87,10 +85,12 @@ func (scene *GameScene) toggleDebug() {
 		scene.clearDebugPanel()
 	}
 }
+
 func (scene *GameScene) clearDebugPanel() {
 	scene.RemoveEntity(scene.debugPanel)
 	scene.RemoveEntity(scene.mouseDebugLabel)
 }
+
 func (scene *GameScene) makeDebugPanel() {
 	background := color.RGBA{R: 21, G: 23, B: 24, A: 255}
 	rWidth := scene.Sys.Renderer.Window.Width
@@ -98,6 +98,7 @@ func (scene *GameScene) makeDebugPanel() {
 
 	scene.debugPanel = scene.Add.Rectangle(rWidth/2-132, rHeight-30, rWidth, 60, background, nil)
 }
+
 func (scene *GameScene) makeToggleLabel() {
 	white := color.RGBA{R: 255, G: 255, B: 255, A: 255}
 	rWidth := scene.Sys.Renderer.Window.Width
@@ -105,6 +106,7 @@ func (scene *GameScene) makeToggleLabel() {
 
 	scene.toggleLabel = scene.Add.Label("Toggle Debug", rWidth-30, rHeight-15, 12, "", white)
 }
+
 func (scene *GameScene) makeMouseDebugLabel() {
 	white := color.RGBA{R: 255, G: 255, B: 255, A: 255}
 	rWidth := scene.Sys.Renderer.Window.Width
@@ -155,6 +157,7 @@ func (scene *GameScene) bindDebugInput() {
 
 	fmt.Print(i)
 }
+
 func (scene *GameScene) updateTestLabel() {
 	text, found := scene.Components.Text.Get(scene.mouseDebugLabel)
 	if !found {
@@ -169,7 +172,7 @@ func (scene *GameScene) updateTestLabel() {
 }
 
 /****************************
-*	End toggle debug code	*
+*	End toggle tick_graph code	*
 ****************************/
 
 func (scene *GameScene) makeInitialUI() {
