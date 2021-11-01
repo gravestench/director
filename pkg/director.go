@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"flag"
+	"github.com/gravestench/director/pkg/systems/scene"
 	"log"
 	"os"
 	"time"
@@ -66,6 +67,16 @@ func (d *Director) AddScene(scene SceneInterface) {
 
 	d.AddSystem(scene, true)
 	d.scenes[scene.Key()] = scene
+}
+
+// AddLuaScene creates and adds a scene using a lua script
+func (d *Director) AddLuaScene(key, path string) {
+	d.AddScene(scene.NewLuaScene(key, path))
+}
+
+// AddLuaSystem creates and adds a scene using a lua script
+func (d *Director) AddLuaSystem(key, path string) {
+	d.AddSystem(scene.NewLuaSystem(key, path), true)
 }
 
 // RemoveScene queues a scene for removal

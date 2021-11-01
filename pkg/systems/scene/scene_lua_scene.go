@@ -8,33 +8,51 @@ import (
 	"time"
 )
 
-// LuaSystem is a non-graphical system which is created purely from a lua script.
+// Lua scene API
+//
+// A lua script that contains an `init` and `update` function can be
+// used to create a graphical scene in director. Part of the initialization
+// for the lua environment BEFORE the script is loaded includes declaring
+// director/scene stuff for use inside of the lua script
+//
+// TODO: need to elaborate on how director and scene stuff is used inside of lua.
+const (
+	luaFnInit   = "init"
+	luaFnUpdate = "update"
+)
+
+// LuaScene is a graphical scene which is created purely from a lua script.
 // The Lua script requires an init and update function be declared.
-type LuaSystem struct {
-	Base
+type LuaScene struct {
+	Scene
 	LuaScriptPath string
 	scriptLoaded  bool
 	initCalled    bool
 }
 
-func NewLuaSystem(name, scriptPath string) *LuaSystem {
-	var scene LuaSystem
-	
+func NewLuaScene(name, scriptPath string) *LuaScene {
+	var scene LuaScene
+
+	scene.key = name
 	scene.LuaScriptPath = scriptPath
 
 	return &scene
 }
 
-func (scene *LuaSystem) IsInitialized() bool {
+func (scene *LuaScene) Key() string {
+	return scene.key
+}
+
+func (scene *LuaScene) IsInitialized() bool {
 	return scene.scriptLoaded
 }
 
-func (scene *LuaSystem) Init(_ *akara.World) {
+func (scene *LuaScene) Init(_ *akara.World) {
 	scene.loadScript()
 	scene.callLuaInitFn()
 }
 
-func (scene *LuaSystem) loadScript() {
+func (scene *LuaScene) loadScript() {
 	if _, err := os.Stat(scene.LuaScriptPath); err != nil {
 		return
 	}
@@ -46,7 +64,7 @@ func (scene *LuaSystem) loadScript() {
 	scene.scriptLoaded = true
 }
 
-func (scene *LuaSystem) callLuaInitFn() {
+func (scene *LuaScene) callLuaInitFn() {
 	err := scene.Lua.CallByParam(lua.P{
 		Fn:      scene.Lua.GetGlobal(luaFnInit),
 		NRet:    0,
@@ -60,11 +78,11 @@ func (scene *LuaSystem) callLuaInitFn() {
 	scene.initCalled = true
 }
 
-func (scene *LuaSystem) Update() {
+func (scene *LuaScene) Update() {
 	scene.callLuaUpdateFn(scene.TimeDelta)
 }
 
-func (scene *LuaSystem) callLuaUpdateFn(dt time.Duration) {
+func (scene *LuaScene) callLuaUpdateFn(dt time.Duration) {
 	err := scene.Lua.CallByParam(lua.P{
 		Fn:      scene.Lua.GetGlobal(luaFnUpdate),
 		NRet:    0,
@@ -75,6 +93,3 @@ func (scene *LuaSystem) callLuaUpdateFn(dt time.Duration) {
 		fmt.Println(err)
 	}
 }
-
-// a static check to verify that a `LuaSystem` implements the `akara.System` interface
-var _ akara.System = &LuaSystem{}
