@@ -2,8 +2,8 @@ package director
 
 import (
 	"github.com/gravestench/director/pkg"
-	"github.com/gravestench/director/pkg/primitive_scenes/tick_graph"
 	"github.com/gravestench/director/pkg/systems/scene"
+	"github.com/gravestench/director/primitive_scenes/tick_graph"
 )
 
 type SceneInterface = pkg.SceneInterface
