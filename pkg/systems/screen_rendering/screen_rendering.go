@@ -53,16 +53,16 @@ func (sys *ScreenRenderingSystem) initViewportSubscription() {
 func (sys *ScreenRenderingSystem) Update() {
 	mainthread.Call(func() {
 		rl.BeginDrawing()
+		defer rl.EndDrawing()
 
 		rl.ClearBackground(rl.Blank)
+
 		rl.BeginBlendMode(rl.BlendAlpha)
+		defer rl.EndBlendMode()
 
 		for _, e := range sys.getSortedViewports() {
 			sys.renderViewport(e)
 		}
-
-		rl.EndBlendMode()
-		rl.EndDrawing()
 	})
 }
 
