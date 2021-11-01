@@ -6,7 +6,7 @@ import (
 
 func main() {
 	d := director.New()
-	d.AddScene(director.Scene.NewLuaScene("Lua Test Scene", "main.lua"))
+	d.AddScene(director.Scene.NewLuaScene("Lua Test Scene", "scene.lua"))
 
 	if err := d.Run(); err != nil {
 		panic(err)
