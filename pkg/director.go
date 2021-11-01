@@ -1,21 +1,28 @@
 package pkg
 
 import (
+	"flag"
+	"log"
+	"os"
 	"time"
+
+	"runtime/pprof"
+	"runtime/trace"
 
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/gravestench/akara"
+	"github.com/gravestench/eventemitter"
+
 	"github.com/gravestench/director/pkg/systems/animation"
 	"github.com/gravestench/director/pkg/systems/audio"
 	"github.com/gravestench/director/pkg/systems/renderer"
 	"github.com/gravestench/director/pkg/systems/texture_manager"
 
-	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/systems/file_loader"
 	"github.com/gravestench/director/pkg/systems/input"
 	"github.com/gravestench/director/pkg/systems/screen_rendering"
 	"github.com/gravestench/director/pkg/systems/tween"
-	"github.com/gravestench/eventemitter"
 )
 
 // Director provides a scene management abstraction, with
@@ -109,6 +116,42 @@ func (d *Director) initDirectorSystems() {
 }
 
 func (d *Director) Run() error {
+	flagValProfileCPU := flag.Lookup(FlagNameProfileCPU)
+	flagValTrace := flag.Lookup(FlagNameTrace)
+
+	if flagValProfileCPU != nil {
+		path := flagValProfileCPU.Value.(flag.Getter).Get().(string)
+
+		f, err := os.Create(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Printf("%s: %s\n", "begin cpu profile", path)
+
+		_ = pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
+	if flagValTrace != nil && flagValTrace.Value.(flag.Getter).Get().(bool) {
+		f, err := os.Create("trace.out")
+		if err != nil {
+			log.Fatalf("failed to create trace output file: %v", err)
+		}
+
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Fatalf("failed to close trace file: %v", err)
+			}
+		}()
+
+		if err := trace.Start(f); err != nil {
+			log.Fatalf("failed to start trace: %v", err)
+		}
+
+		defer trace.Stop()
+	}
+
 	// mainthread.CallQueueCap = 16
 	mainthread.Run(d.run)
 
