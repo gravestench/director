@@ -187,7 +187,7 @@ func (s *Scene) updatePixelPosition(sceneKey string, sampleIndex int, pixelEID c
 		return
 	}
 
-	trs.Translation.Set(float64(sampleIndex), ((samples[sampleIndex] / s.sampleMax) + s.sampleMin) * graphHeight, 0)
+	trs.Translation.Set(float64(sampleIndex), ((samples[sampleIndex] / s.sampleMax) + s.sampleMin) *graphHeight, 0)
 }
 
 // PrintDebugMessage prints a tick_graph message to stdout containing information about the running systems, including their
