@@ -21,16 +21,23 @@ const (
 	DefaultSceneTickRate = 60
 )
 
-type Scene struct {
-	akara.BaseSystem
+// Base is the generic non-graphical stuff for a scene.
+// This is kept separate so that non-graphical scenes or systems can be created,
+// such as for headless servers.
+type Base struct {
 	*director.Director
+	akara.BaseSystem
 	Lua        *lua.LState
 	Components common.BasicComponents
-	Graph      scenegraph.Node
-	key        string
 	Add        ObjectFactory
+}
+
+type Scene struct {
+	Base
+	Graph      scenegraph.Node
 	renderList []common.Entity
 	Viewports  []common.Entity
+	key        string
 }
 
 var tmpVect mathlib.Vector3
