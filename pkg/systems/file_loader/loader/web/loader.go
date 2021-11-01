@@ -2,10 +2,11 @@ package web
 
 import (
 	"bytes"
-	"github.com/gravestench/director/pkg/common/cache"
 	"io"
 	"net/http"
 	"net/url"
+	
+	"github.com/gravestench/director/pkg/common/cache"
 )
 
 type Loader struct {
