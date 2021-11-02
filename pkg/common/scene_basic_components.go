@@ -7,8 +7,8 @@ import (
 	"github.com/gravestench/director/pkg/systems/input"
 )
 
-// BasicComponents represents components that every scene has available
-type BasicComponents struct {
+// SceneComponents represents components that every scene has available
+type SceneComponents struct {
 	Viewport         components.ViewportFactory
 	Camera           components.CameraFactory
 	Color            components.ColorFactory
@@ -37,7 +37,7 @@ type BasicComponents struct {
 
 // Init initializes each component factory for the given world,
 // putting the generic component factory inside of the concrete component factory
-func (bc *BasicComponents) Init(w *akara.World) {
+func (bc *SceneComponents) Init(w *akara.World) {
 	injectComponent(w, &components.Viewport{}, &bc.Viewport.ComponentFactory)
 	injectComponent(w, &components.Camera{}, &bc.Camera.ComponentFactory)
 	injectComponent(w, &components.Color{}, &bc.Color.ComponentFactory)
@@ -65,7 +65,7 @@ func (bc *BasicComponents) Init(w *akara.World) {
 }
 
 // IsInit returns whether or not all of the basic component factories have been initialized
-func (bc *BasicComponents) IsInit() bool {
+func (bc *SceneComponents) IsInit() bool {
 	if bc.Text.ComponentFactory == nil ||
 		bc.Texture2D.ComponentFactory == nil ||
 		bc.RenderTexture2D.ComponentFactory == nil ||

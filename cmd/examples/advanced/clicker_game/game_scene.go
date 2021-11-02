@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/common"
 	"image"
 	"image/color"
@@ -9,12 +10,10 @@ import (
 
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg/systems/input"
-
-	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 type GameScene struct {
-	scene.Scene
+	pkg.Scene
 	upgrades     ShopUpgrades
 	toggleButton common.Entity
 	toggleLabel  common.Entity

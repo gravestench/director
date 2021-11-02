@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/faiface/mainthread"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/easing"
 	"github.com/gravestench/mathlib"
@@ -12,7 +13,6 @@ import (
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 const (
@@ -21,7 +21,7 @@ const (
 )
 
 type testScene struct {
-	scene.Scene
+	pkg.Scene
 	x, y    int
 	w, h    int
 	bgColor color.Color

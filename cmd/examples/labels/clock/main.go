@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/gravestench/director/pkg/systems/scene"
+	"github.com/gravestench/director/pkg"
 	"image/color"
 	"math"
 	"math/rand"
@@ -27,7 +27,7 @@ const (
 )
 
 type LabelTestScene struct {
-	scene.Scene
+	pkg.Scene
 	singleLabel akara.EID
 }
 

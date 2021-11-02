@@ -14,7 +14,7 @@ import (
 type ScreenRenderingSystem struct {
 	akara.BaseSystem
 	components struct {
-		common.BasicComponents
+		common.SceneComponents
 	}
 	sceneViewports *akara.Subscription
 }

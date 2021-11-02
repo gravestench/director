@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/faiface/mainthread"
-	"github.com/gravestench/director/pkg/systems/scene"
+	"github.com/gravestench/director/pkg"
 	"github.com/gravestench/mathlib"
 	"image/color"
 	"math"
@@ -24,7 +24,7 @@ const (
 )
 
 type MovingLabelsScene struct {
-	scene.Scene
+	pkg.Scene
 	textObjects          [numTextObjects]common.Entity
 	Velocity             VelocityFactory
 	lastMousePosition    mathlib.Vector2

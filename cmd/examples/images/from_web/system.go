@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/faiface/mainthread"
 	"github.com/gravestench/director"
+	"github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/easing"
 	"math/rand"
 	"time"
@@ -11,7 +12,6 @@ import (
 	"github.com/gravestench/mathlib"
 
 	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 const (
@@ -22,7 +22,7 @@ const (
 var _ director.SceneInterface = &testScene{}
 
 type testScene struct {
-	scene.Scene
+	pkg.Scene
 	images  []common.Entity
 	elapsed time.Duration
 }

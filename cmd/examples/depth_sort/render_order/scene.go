@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/systems/scene"
+	"github.com/gravestench/director/pkg"
 	"image"
 	"image/color"
 )
 
 type testScene struct {
-	scene.Scene
+	pkg.Scene
 	highest int
 }
 

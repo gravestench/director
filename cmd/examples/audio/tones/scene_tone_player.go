@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/components"
 	"github.com/gravestench/director/pkg/systems/audio"
 	"github.com/gravestench/director/pkg/systems/input"
-	"github.com/gravestench/director/pkg/systems/scene"
 	"image"
 	"image/color"
 )
@@ -16,7 +16,7 @@ const (
 )
 
 type AudioTonePlayerScene struct {
-	scene.Scene
+	pkg.Scene
 	sounds         []*audio.Audible
 	infoTextLabels []*components.Text
 	loopingText    *components.Text

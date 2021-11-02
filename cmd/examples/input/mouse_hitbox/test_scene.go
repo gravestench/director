@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gravestench/director/pkg"
 	"image"
 	"image/color"
 
@@ -9,11 +10,10 @@ import (
 
 	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/systems/input"
-	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 type TestScene struct {
-	scene.Scene
+	pkg.Scene
 	square common.Entity
 	label  common.Entity
 }

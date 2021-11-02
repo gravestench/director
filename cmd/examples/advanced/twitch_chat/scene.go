@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/faiface/mainthread"
+	"github.com/gravestench/director/pkg"
 	"image/color"
 	"io"
 	"log"
@@ -24,7 +25,6 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/easing"
-	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 const (
@@ -33,7 +33,7 @@ const (
 )
 
 type testScene struct {
-	scene.Scene
+	pkg.Scene
 	ircClient   *twitch.Client
 	helixClient *helix.Client
 	twitch      struct {

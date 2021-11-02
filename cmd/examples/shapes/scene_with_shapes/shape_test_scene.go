@@ -1,11 +1,10 @@
 package main
 
 import (
+	"github.com/gravestench/director/pkg"
 	"image/color"
 
 	"github.com/gravestench/akara"
-
-	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 const (
@@ -13,7 +12,7 @@ const (
 )
 
 type ShapeTestScene struct {
-	scene.Scene
+	pkg.Scene
 }
 
 func (scene *ShapeTestScene) Init(_ *akara.World) {

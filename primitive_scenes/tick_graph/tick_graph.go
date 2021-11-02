@@ -14,7 +14,6 @@ import (
 
 	"github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/systems/scene"
 )
 
 const (
@@ -23,7 +22,7 @@ const (
 )
 
 type Scene struct {
-	scene.Scene
+	pkg.Scene
 	sceneColors          map[string]color.Color
 	sceneSamples         map[string][]float64
 	sceneSamplesPixels   map[string][]common.Entity

@@ -2,13 +2,12 @@ package pkg
 
 import (
 	"flag"
-	"github.com/gravestench/director/pkg/systems/scene"
 	"log"
 	"os"
+	"runtime/trace"
 	"time"
 
 	"runtime/pprof"
-	"runtime/trace"
 
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -71,12 +70,12 @@ func (d *Director) AddScene(scene SceneInterface) {
 
 // AddLuaScene creates and adds a scene using a lua script
 func (d *Director) AddLuaScene(key, path string) {
-	d.AddScene(scene.NewLuaScene(key, path))
+	d.AddScene(NewLuaScene(key, path))
 }
 
 // AddLuaSystem creates and adds a scene using a lua script
 func (d *Director) AddLuaSystem(key, path string) {
-	d.AddSystem(scene.NewLuaSystem(key, path), true)
+	d.AddSystem(NewLuaSystem(key, path), true)
 }
 
 // RemoveScene queues a scene for removal
@@ -127,40 +126,39 @@ func (d *Director) initDirectorSystems() {
 }
 
 func (d *Director) Run() error {
-	flagValProfileCPU := flag.Lookup(FlagNameProfileCPU)
-	flagValTrace := flag.Lookup(FlagNameTrace)
+	if f := flag.Lookup(FlagNameProfileCPU); f != nil {
+		if f.Value != nil {
+			path := f.Value.(flag.Getter).Get().(string)
 
-	if flagValProfileCPU != nil {
-		path := flagValProfileCPU.Value.(flag.Getter).Get().(string)
+			f, err := os.Create(path)
+			if err == nil {
+				log.Printf("%s: %s\n", "begin cpu profile", path)
 
-		f, err := os.Create(path)
-		if err != nil {
-			log.Fatal(err)
+				_ = pprof.StartCPUProfile(f)
+				defer pprof.StopCPUProfile()
+			}
 		}
-
-		log.Printf("%s: %s\n", "begin cpu profile", path)
-
-		_ = pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
 	}
 
-	if flagValTrace != nil && flagValTrace.Value.(flag.Getter).Get().(bool) {
-		f, err := os.Create("trace.out")
-		if err != nil {
-			log.Fatalf("failed to create trace output file: %v", err)
-		}
-
-		defer func() {
-			if err := f.Close(); err != nil {
-				log.Fatalf("failed to close trace file: %v", err)
+	if f := flag.Lookup(FlagNameTrace); f != nil {
+		if f.Value != nil && f.Value.(flag.Getter).Get().(bool) {
+			f, err := os.Create("trace.out")
+			if err != nil {
+				log.Fatalf("failed to create trace output file: %v", err)
 			}
-		}()
 
-		if err := trace.Start(f); err != nil {
-			log.Fatalf("failed to start trace: %v", err)
+			defer func() {
+				if err := f.Close(); err != nil {
+					log.Fatalf("failed to close trace file: %v", err)
+				}
+			}()
+
+			if err := trace.Start(f); err != nil {
+				log.Fatalf("failed to start trace: %v", err)
+			}
+
+			defer trace.Stop()
 		}
-
-		defer trace.Stop()
 	}
 
 	// mainthread.CallQueueCap = 16

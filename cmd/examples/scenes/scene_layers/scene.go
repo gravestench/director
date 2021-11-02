@@ -2,15 +2,15 @@ package main
 
 import (
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/systems/scene"
 	"image/color"
 )
 
 // NOTE: this is currently not working
 
 type layerTest struct {
-	scene.Scene
+	pkg.Scene
 	layer common.Entity
 }
 

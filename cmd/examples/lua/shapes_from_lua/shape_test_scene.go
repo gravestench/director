@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/gravestench/director/pkg/systems/scene"
+	"github.com/gravestench/director/pkg"
 	"math/rand"
 )
 
@@ -16,7 +16,7 @@ const (
 )
 
 type shapeTestFromLua struct {
-	scene.Scene
+	pkg.Scene
 	numRectangles int
 }
 
