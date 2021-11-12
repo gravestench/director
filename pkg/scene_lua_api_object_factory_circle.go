@@ -6,7 +6,7 @@ import (
 	"github.com/gravestench/director/pkg/util"
 )
 
-func (s *Scene) luaBindSceneObjectFactoryCircle(objFactoryTable *lua.LTable) {
+func (s *SceneSystem) luaBindSceneObjectFactoryCircle(objFactoryTable *lua.LTable) {
 	const name = "circle"
 
 	fn := s.Lua.NewFunction(func(L *lua.LState) int {

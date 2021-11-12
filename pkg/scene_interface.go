@@ -7,15 +7,15 @@ import (
 // SceneInterface represents what director considers to be a scene
 type SceneInterface interface {
 	akara.System
-	HasKey
 	initializesLua
-	GenericUpdate()
-	GenericSceneInit(d *Director)
+	isGeneric
+	Key() string
 	Render()
 }
 
-type HasKey interface {
-	Key() string
+type isGeneric interface {
+	GenericUpdate()
+	GenericSceneInit(d *Director)
 }
 
 type initializesLua interface {

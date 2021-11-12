@@ -25,7 +25,7 @@ type SceneObjects = pkg.ObjectFactory
 
 // System is an extension of an akara system, with director lifecycle methods,
 // object factories, components, lua state machine, etc.
-type System = pkg.Base
+type System = pkg.SceneSystem
 
 // Scene is an extension of a director system, which has director lifecycle methods,
 // object factories, components, lua state machine, etc.
@@ -55,8 +55,8 @@ func New() *Director {
 //
 // A lua system is like a non-graphical scene, but still has access to some of the
 // director scene stuff.
-func NewLuaSystem(key, path string) *pkg.LuaSystem {
-	return pkg.NewLuaSystem(key, path)
+func NewLuaSystem(path string) *pkg.LuaSystem {
+	return pkg.NewLuaSystem(path)
 }
 
 // NewLuaScene creates a new scene from a lua script. The lua script needs to have

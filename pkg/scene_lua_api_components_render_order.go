@@ -20,7 +20,7 @@ example lua:
 	renderOrder.value(100) -- set the layer index to 100
 */
 
-func (s *Scene) luaExportComponentRenderOrder(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentRenderOrder(mt *lua.LTable) {
 	renderOrderTable := s.Lua.NewTypeMetatable(luaRenderOrderComponentName)
 
 	s.Lua.SetField(renderOrderTable, "add", s.Lua.NewFunction(s.luaRenderOrderAdd()))
@@ -30,7 +30,7 @@ func (s *Scene) luaExportComponentRenderOrder(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaRenderOrderComponentName, renderOrderTable)
 }
 
-func (s *Scene) luaRenderOrderAdd() lua.LGFunction {
+func (s *SceneSystem) luaRenderOrderAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -46,7 +46,7 @@ func (s *Scene) luaRenderOrderAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaRenderOrderGet() lua.LGFunction {
+func (s *SceneSystem) luaRenderOrderGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -77,7 +77,7 @@ func (s *Scene) luaRenderOrderGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaRenderOrderRemove() lua.LGFunction {
+func (s *SceneSystem) luaRenderOrderRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -93,7 +93,7 @@ func (s *Scene) luaRenderOrderRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentRenderOrder(renderOrder *components.RenderOrder) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentRenderOrder(renderOrder *components.RenderOrder) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "value", s.Lua.NewFunction(func(L *lua.LState) int {

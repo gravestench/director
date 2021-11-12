@@ -18,7 +18,7 @@ example lua:
 	currentFrame = anim.frame()
 */
 
-func (s *Scene) luaExportComponentAnimation(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentAnimation(mt *lua.LTable) {
 	animationTable := s.Lua.NewTypeMetatable(luaAnimationComponentName)
 
 	s.Lua.SetField(animationTable, "add", s.Lua.NewFunction(s.luaAnimationAdd()))
@@ -28,7 +28,7 @@ func (s *Scene) luaExportComponentAnimation(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaAnimationComponentName, animationTable)
 }
 
-func (s *Scene) luaAnimationAdd() lua.LGFunction {
+func (s *SceneSystem) luaAnimationAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -44,7 +44,7 @@ func (s *Scene) luaAnimationAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaAnimationGet() lua.LGFunction {
+func (s *SceneSystem) luaAnimationGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -75,7 +75,7 @@ func (s *Scene) luaAnimationGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaAnimationRemove() lua.LGFunction {
+func (s *SceneSystem) luaAnimationRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -91,7 +91,7 @@ func (s *Scene) luaAnimationRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentAnimation(animation *components.Animation) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentAnimation(animation *components.Animation) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "frame", s.Lua.NewFunction(func(L *lua.LState) int {

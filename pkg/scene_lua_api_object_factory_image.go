@@ -4,7 +4,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-func (s *Scene) luaBindSceneObjectFactoryImage(objFactoryTable *lua.LTable) {
+func (s *SceneSystem) luaBindSceneObjectFactoryImage(objFactoryTable *lua.LTable) {
 	const name = "image"
 
 	fn := s.Lua.NewFunction(func(L *lua.LState) int {

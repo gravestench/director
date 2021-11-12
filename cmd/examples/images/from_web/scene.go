@@ -1,12 +1,13 @@
 package main
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/faiface/mainthread"
 	"github.com/gravestench/director"
 	"github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/easing"
-	"math/rand"
-	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/mathlib"

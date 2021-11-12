@@ -9,7 +9,7 @@ const (
 	luaConstantsLogName = "log"
 )
 
-func (s *Scene) luaExportConstantsLogging(mt *lua.LTable) {
+func (s *SceneSystem) luaExportConstantsLogging(mt *lua.LTable) {
 	keyTable := s.Lua.NewTypeMetatable(luaConstantsLogName)
 
 	keys := map[string]int{

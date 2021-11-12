@@ -22,7 +22,7 @@ example lua:
 	end
 */
 
-func (s *Scene) luaExportComponentInteractive(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentInteractive(mt *lua.LTable) {
 	const name = "interactive"
 
 	cTable := s.Lua.NewTable()
@@ -81,7 +81,7 @@ func (s *Scene) luaExportComponentInteractive(mt *lua.LTable) {
 	s.Lua.SetField(mt, name, cTable)
 }
 
-func (s *Scene) makeLuaTableComponentInteractive(in *input.Interactive) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentInteractive(in *input.Interactive) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	fnSetKey := func(L *lua.LState) int {

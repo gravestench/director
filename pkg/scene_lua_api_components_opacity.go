@@ -19,7 +19,7 @@ example lua:
 	opacity.value(0.5) -- set the opacity to 50%
 */
 
-func (s *Scene) luaExportComponentOpacity(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentOpacity(mt *lua.LTable) {
 	opacityTable := s.Lua.NewTypeMetatable(luaOpacityComponentName)
 
 	s.Lua.SetField(opacityTable, "add", s.Lua.NewFunction(s.luaOpacityAdd()))
@@ -29,7 +29,7 @@ func (s *Scene) luaExportComponentOpacity(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaOpacityComponentName, opacityTable)
 }
 
-func (s *Scene) luaOpacityAdd() lua.LGFunction {
+func (s *SceneSystem) luaOpacityAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -45,7 +45,7 @@ func (s *Scene) luaOpacityAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaOpacityGet() lua.LGFunction {
+func (s *SceneSystem) luaOpacityGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -76,7 +76,7 @@ func (s *Scene) luaOpacityGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaOpacityRemove() lua.LGFunction {
+func (s *SceneSystem) luaOpacityRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -92,7 +92,7 @@ func (s *Scene) luaOpacityRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentOpacity(opacity *components.Opacity) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentOpacity(opacity *components.Opacity) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "value", s.Lua.NewFunction(func(L *lua.LState) int {

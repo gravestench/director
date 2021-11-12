@@ -24,7 +24,7 @@ example lua:
     end
 */
 
-func (s *Scene) luaExportComponentFileLoadResponse(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentFileLoadResponse(mt *lua.LTable) {
 	fileLoadResponseTable := s.Lua.NewTypeMetatable(luaFileLoadResponseComponentName)
 
 	s.Lua.SetField(fileLoadResponseTable, "add", s.Lua.NewFunction(s.luaFileLoadResponseAdd()))
@@ -34,7 +34,7 @@ func (s *Scene) luaExportComponentFileLoadResponse(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaFileLoadResponseComponentName, fileLoadResponseTable)
 }
 
-func (s *Scene) luaFileLoadResponseAdd() lua.LGFunction {
+func (s *SceneSystem) luaFileLoadResponseAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -50,7 +50,7 @@ func (s *Scene) luaFileLoadResponseAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaFileLoadResponseGet() lua.LGFunction {
+func (s *SceneSystem) luaFileLoadResponseGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -81,7 +81,7 @@ func (s *Scene) luaFileLoadResponseGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaFileLoadResponseRemove() lua.LGFunction {
+func (s *SceneSystem) luaFileLoadResponseRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -97,7 +97,7 @@ func (s *Scene) luaFileLoadResponseRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentFileLoadResponse(res *components.FileLoadResponse) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentFileLoadResponse(res *components.FileLoadResponse) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "data", s.Lua.NewFunction(func(L *lua.LState) int {

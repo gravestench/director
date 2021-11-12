@@ -11,7 +11,7 @@ const (
 	luaTransformComponentName = "transform"
 )
 
-func (s *Scene) luaExportComponentTransform(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentTransform(mt *lua.LTable) {
 	trsTable := s.Lua.NewTypeMetatable(luaTransformComponentName)
 
 	s.Lua.SetField(trsTable, "add", s.Lua.NewFunction(s.luaTransformAdd()))
@@ -21,7 +21,7 @@ func (s *Scene) luaExportComponentTransform(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaTransformComponentName, trsTable)
 }
 
-func (s *Scene) luaTransformAdd() lua.LGFunction {
+func (s *SceneSystem) luaTransformAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -37,7 +37,7 @@ func (s *Scene) luaTransformAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaTransformGet() lua.LGFunction {
+func (s *SceneSystem) luaTransformGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -68,7 +68,7 @@ func (s *Scene) luaTransformGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaTransformRemove() lua.LGFunction {
+func (s *SceneSystem) luaTransformRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -84,7 +84,7 @@ func (s *Scene) luaTransformRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentTransform(trs *components.Transform) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentTransform(trs *components.Transform) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "translation", s.makeLuaSetterGetterVec3(trs.Translation))

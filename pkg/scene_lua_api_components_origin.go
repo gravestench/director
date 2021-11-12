@@ -19,7 +19,7 @@ example lua:
 	anim.frame(0.5, 0.5) -- set the origin to the center of the entity
 */
 
-func (s *Scene) luaExportComponentOrigin(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentOrigin(mt *lua.LTable) {
 	originTable := s.Lua.NewTypeMetatable(luaOriginComponentName)
 
 	s.Lua.SetField(originTable, "add", s.Lua.NewFunction(s.luaOriginAdd()))
@@ -29,7 +29,7 @@ func (s *Scene) luaExportComponentOrigin(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaOriginComponentName, originTable)
 }
 
-func (s *Scene) luaOriginAdd() lua.LGFunction {
+func (s *SceneSystem) luaOriginAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -45,7 +45,7 @@ func (s *Scene) luaOriginAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaOriginGet() lua.LGFunction {
+func (s *SceneSystem) luaOriginGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -76,7 +76,7 @@ func (s *Scene) luaOriginGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaOriginRemove() lua.LGFunction {
+func (s *SceneSystem) luaOriginRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -92,7 +92,7 @@ func (s *Scene) luaOriginRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentOrigin(origin *components.Origin) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentOrigin(origin *components.Origin) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "xyz", s.makeLuaSetterGetterVec3(origin.Vector3))

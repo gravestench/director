@@ -13,44 +13,45 @@ import (
 // LuaSystem is a non-graphical system which is created purely from a lua script.
 // The Lua script requires an init and update function be declared.
 type LuaSystem struct {
-	Base
+	SceneSystem
 	LuaScriptPath string
 	scriptLoaded  bool
 	initCalled    bool
 }
 
-func NewLuaSystem(name, scriptPath string) *LuaSystem {
-	var scene LuaSystem
+func NewLuaSystem(scriptPath string) *LuaSystem {
+	var sys LuaSystem
 
-	scene.LuaScriptPath = scriptPath
+	sys.LuaScriptPath = scriptPath
 
-	return &scene
+	return &sys
 }
 
-func (scene *LuaSystem) IsInitialized() bool {
-	return scene.scriptLoaded
+func (sys *LuaSystem) IsInitialized() bool {
+	return sys.scriptLoaded
 }
 
-func (scene *LuaSystem) Init(_ *akara.World) {
-	scene.loadScript()
-	scene.callLuaInitFn()
+func (sys *LuaSystem) Init(_ *akara.World) {
+	sys.InitializeLua()
+	sys.loadScript()
+	sys.callLuaInitFn()
 }
 
-func (scene *LuaSystem) loadScript() {
-	if _, err := os.Stat(scene.LuaScriptPath); err != nil {
+func (sys *LuaSystem) loadScript() {
+	if _, err := os.Stat(sys.LuaScriptPath); err != nil {
 		return
 	}
 
-	if err := scene.Lua.DoFile(scene.LuaScriptPath); err != nil {
+	if err := sys.Lua.DoFile(sys.LuaScriptPath); err != nil {
 		fmt.Printf("Lua script failed to execute: %s\n", err.Error())
 	}
 
-	scene.scriptLoaded = true
+	sys.scriptLoaded = true
 }
 
-func (scene *LuaSystem) callLuaInitFn() {
-	err := scene.Lua.CallByParam(lua.P{
-		Fn:      scene.Lua.GetGlobal(luaFnInit),
+func (sys *LuaSystem) callLuaInitFn() {
+	err := sys.Lua.CallByParam(lua.P{
+		Fn:      sys.Lua.GetGlobal(luaFnInit),
 		NRet:    0,
 		Protect: true,
 	})
@@ -59,16 +60,16 @@ func (scene *LuaSystem) callLuaInitFn() {
 		return
 	}
 
-	scene.initCalled = true
+	sys.initCalled = true
 }
 
-func (scene *LuaSystem) Update() {
-	scene.callLuaUpdateFn(scene.TimeDelta)
+func (sys *LuaSystem) Update() {
+	sys.callLuaUpdateFn(sys.TimeDelta)
 }
 
-func (scene *LuaSystem) callLuaUpdateFn(dt time.Duration) {
-	err := scene.Lua.CallByParam(lua.P{
-		Fn:      scene.Lua.GetGlobal(luaFnUpdate),
+func (sys *LuaSystem) callLuaUpdateFn(dt time.Duration) {
+	err := sys.Lua.CallByParam(lua.P{
+		Fn:      sys.Lua.GetGlobal(luaFnUpdate),
 		NRet:    0,
 		Protect: true,
 	}, lua.LNumber(dt))

@@ -22,7 +22,7 @@ example lua:
 	rot = cam.rotate()
 */
 
-func (s *Scene) luaExportComponentCamera(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentCamera(mt *lua.LTable) {
 	cameraTable := s.Lua.NewTypeMetatable(luaCameraComponentName)
 
 	s.Lua.SetField(cameraTable, "add", s.Lua.NewFunction(s.luaCameraAdd()))
@@ -32,7 +32,7 @@ func (s *Scene) luaExportComponentCamera(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaCameraComponentName, cameraTable)
 }
 
-func (s *Scene) luaCameraAdd() lua.LGFunction {
+func (s *SceneSystem) luaCameraAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -48,7 +48,7 @@ func (s *Scene) luaCameraAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaCameraGet() lua.LGFunction {
+func (s *SceneSystem) luaCameraGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -79,7 +79,7 @@ func (s *Scene) luaCameraGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaCameraRemove() lua.LGFunction {
+func (s *SceneSystem) luaCameraRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -95,7 +95,7 @@ func (s *Scene) luaCameraRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentCamera(camera *components.Camera) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentCamera(camera *components.Camera) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "rotation", s.Lua.NewFunction(func(L *lua.LState) int {

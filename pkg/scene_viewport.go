@@ -1,12 +1,13 @@
 package pkg
 
 import (
+	"math"
+	"sort"
+
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/mathlib"
-	"math"
-	"sort"
 )
 
 func (s *Scene) initViewport() {
@@ -79,6 +80,7 @@ func (s *Scene) generateEntityRenderBatch(entities []common.Entity) []entityRend
 		}
 
 		// this is rotating around the origin point from the origin component
+		var tmpVect mathlib.Vector3
 		tmpVect.Set(float64(t.Width), float64(t.Height), 1)
 		yRad := trs.Rotation.Y * mathlib.DegreesToRadians
 		ov2 := mathlib.NewVector2(origin.Clone().Multiply(&tmpVect).XY()).Rotate(yRad).Negate()

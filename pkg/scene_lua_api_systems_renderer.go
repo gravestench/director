@@ -9,7 +9,7 @@ const (
 	luaRendererSystemName = "renderer"
 )
 
-func (s *Scene) luaExportSystemRenderer(mt *lua.LTable) {
+func (s *SceneSystem) luaExportSystemRenderer(mt *lua.LTable) {
 	sysTable := s.Lua.NewTypeMetatable(luaRendererSystemName)
 
 	windowTable := s.Lua.NewTable()

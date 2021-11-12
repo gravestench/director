@@ -10,8 +10,8 @@ local elapsed = 0
 function init()
     for i = 0,maxShapes,1
     do
-        e = randObject()
-        shapes[i] = e
+        obj = randObject()
+        shapes[i] = obj
     end
 end
 
@@ -39,11 +39,11 @@ function updatePosition(eid)
     w, h = size.size()
     rw, rh = scene.sys.renderer.window.size()
 
-    if (tx + w) > (rw + w) then
+    if (tx + w) > rw then
         tx = -h
     end
 
-    if (ty + h) > (rh + h) then
+    if (ty + h * 2) > rh + h then
         ty = -h
     end
 
@@ -89,13 +89,13 @@ function randObject()
     randNumber = math.random() * 3
 
     if randNumber > 2 then
-        e = scene.add.rectangle(x, y, w, h, fill, stroke)
+        obj = scene.add.rectangle(x, y, w, h, fill, stroke)
     elseif randNumber > 1 then
-        e = scene.add.circle(x, y, w/2, fill, stroke)
+        obj = scene.add.circle(x, y, w/2, fill, stroke)
     else
         KEKW = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
-        e = scene.add.image(KEKW, x, y)
+        obj = scene.add.image(KEKW, x, y)
     end
 
-    return e
+    return obj
 end

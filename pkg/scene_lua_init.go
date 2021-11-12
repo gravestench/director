@@ -4,7 +4,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-func (s *Scene) initLuaSceneTable() {
+func (s *SceneSystem) initLuaSceneTable() {
 	table := s.Lua.NewTable()
 	s.Lua.SetGlobal(luaSceneTable, table)
 
@@ -13,7 +13,7 @@ func (s *Scene) initLuaSceneTable() {
 	s.initLuaSystemsTable(table)
 }
 
-func (s *Scene) initLuaConstantsTable() {
+func (s *SceneSystem) initLuaConstantsTable() {
 	componentsTable := s.Lua.NewTable()
 	s.Lua.SetGlobal(luaConstantsTable, componentsTable)
 
@@ -21,7 +21,7 @@ func (s *Scene) initLuaConstantsTable() {
 	s.luaExportConstantsLogging(componentsTable)
 }
 
-func (s *Scene) initLuaComponentsTable(sceneTable *lua.LTable) {
+func (s *SceneSystem) initLuaComponentsTable(sceneTable *lua.LTable) {
 	componentsTable := s.Lua.NewTable()
 	s.Lua.SetField(sceneTable, luaSceneComponentsTable, componentsTable)
 
@@ -50,14 +50,14 @@ func (s *Scene) initLuaComponentsTable(sceneTable *lua.LTable) {
 	// s.luaExportComponentViewport(componentsTable)
 }
 
-func (s *Scene) initLuaSystemsTable(sceneTable *lua.LTable) {
+func (s *SceneSystem) initLuaSystemsTable(sceneTable *lua.LTable) {
 	sysTable := s.Lua.NewTable()
 	s.Lua.SetField(sceneTable, luaSceneSystemsTable, sysTable)
 
 	s.luaExportSystemRenderer(sysTable)
 }
 
-func (s *Scene) initLuaSceneObjectFactories(sceneTable *lua.LTable) {
+func (s *SceneSystem) initLuaSceneObjectFactories(sceneTable *lua.LTable) {
 	objFactoryTable := s.Lua.NewTable()
 
 	s.luaBindSceneObjectFactoryCircle(objFactoryTable)

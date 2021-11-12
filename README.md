@@ -27,14 +27,29 @@ instance of a specific component type. Components are generally used to describe
 entity possess.
 
 ## What is an object?
-This is just how I refer to an entity that is composed of several required components (like an image, or a label).
-It's just a term I use, I don't know if it has much significance.
+An object is just what I call entities created using the scene's object factories.
+All objects that are created will themselves be entities, so they are just ID's.
+However, **there are a set of components that all objects will have when
+created within a scene**. These components are:
+* `SceneGraphNode` - A node for representing the parent-child hierarchy of the scene. The default parent node is the root node of the scene graph. 
+* `Transform` - contains the position, rotation, and scale of an entity
+* `Origin` - represents the origin point of the entity, using normalized values
+stored in a Vector3.
+The default origin point is the center of the entity, with values `(0.5, 0.5, 0.5)`
+* `Opacity` - The opacity of the entity, as a normalized value between `0.0` and `1.0`
+* `RenderOrder` - the render order of the entity, default is `0`. Higher numbers are rendered later (on top).
+* `UUID` - contains a unique identifier as a string
 
-## What is a scene?
+## What is a Scene?
 A scene is a struct that contains all of the component factories, as well as references to 
 supporting systems, object factories, and entity lifecycle methods. 
 Each scene is equipped to easily create objects and render them to the screen, 
 without actually having to worry about rendering.
+
+## What is a System?
+In Director, there is a generic `System` that scenes are derived from. This is
+the non-graphical aspect of a scene, and contains most everything a scene needs
+except for the rendering functionality.
 
 ## How are Scenes rendered?
 Scenes have at least one "viewport," but can have more.
@@ -49,5 +64,90 @@ Viewports can be treated like any visible entity (they can be transformed, scale
 Each scene has its own set of object factories, such as the object factory for creating images.
 When any object factory is used to create an entity, the entity ID is added to the scene's "render list."
 
+# Lua Scene/System API
+Scenes and Systems can be created with lua scripts. The only requirement 
+is that the script contain an `init` and `update` function. This is true for both Scenes and Systems.
+
+Before this script execution, a scene or system will initialize the lua state
+machine with global tables that are constants, other systems, the
+scene object factories, etc.
+
+## `scene`
+The `scene` table is the current scene, exposed as a lua table.
+**This table is only available inside of lua scripts that are loaded as Scenes.**
+
+
+This table contains bindings to the object factories, the director instance, 
+component factories, and director systems (like the input, rendering, or 
+events systems).
+
+### `scene.add`
+The scene's object factory. This table contains factory functions for all of the
+various object types which are bundled inside of director.
+
+All object factory functions will yield an entity ID number for the entity
+that is created. This entity ID can be used for adding additional 
+components, retrieving existing components, or even for deleting
+the entity.
+
+#### `scene.add.rectangle` example:
+```lua
+x, y = 0, 0
+w, h = 10, 10 -- width and height
+fill = "#FF00FF" -- magenta
+stroke = "#00FF00" -- green
+
+eid = scene.add.rectangle(x, y, w, h, fill, stroke)
+```
+
+
+#### `scene.add.image` example:
+```lua
+x, y = 0, 0
+
+eidA = scene.add.image("path/to/file.jpg", x, y)
+eidB = scene.add.image("http://example.com/example.jpg", x, y)
+```
+
+#### `scene.add.label` example:
+```lua
+x, y = 0, 0
+size = 12 -- pixels
+font = "Mono" -- font name
+color = "#FF00FF" -- magenta
+str = "This is a label."
+
+eid = scene.add.label(str, x, y, size, font, color)
+```
+
+### `scene.components`
+The scene component factories. These are used for creating, retrieving, and 
+deleting component instances using a given entity ID.
+
+**All component factories have the following functions**:
+* `add(eid)` - adds and yields a component instance for the given entity ID.
+* `remove(eid)` - deletes a component instance for the given entity ID.
+* `get(eid)` - yields a component instance which can be nil **AND** a bool for whether a component was found.
+
+Here are the components that are available for use:
+* `scene.components.animation`
+* `scene.components.camera`
+* `scene.components.color`
+* `scene.components.debug`
+* `scene.components.fileLoadRequest`
+* `scene.components.fileLoadResponse`
+* `scene.components.fill`
+* `scene.components.font`
+* `scene.components.hasChildren`
+* `scene.components.opacity`
+* `scene.components.origin`
+* `scene.components.renderOrder`
+* `scene.components.size`
+* `scene.components.stroke`
+* `scene.components.text`
+* `scene.components.transform`
+* `scene.components.uuid`
+
+
 # Examples
-see `cmd/examples` 
+see `cmd/examples`

@@ -21,7 +21,7 @@ example lua:
 	r, g, b, a = fill.rgba()
 */
 
-func (s *Scene) luaExportComponentFill(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentFill(mt *lua.LTable) {
 	fillTable := s.Lua.NewTypeMetatable(luaFillComponentName)
 
 	s.Lua.SetField(fillTable, "add", s.Lua.NewFunction(s.luaFillAdd()))
@@ -31,7 +31,7 @@ func (s *Scene) luaExportComponentFill(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaFillComponentName, fillTable)
 }
 
-func (s *Scene) luaFillAdd() lua.LGFunction {
+func (s *SceneSystem) luaFillAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -47,7 +47,7 @@ func (s *Scene) luaFillAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaFillGet() lua.LGFunction {
+func (s *SceneSystem) luaFillGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -78,7 +78,7 @@ func (s *Scene) luaFillGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaFillRemove() lua.LGFunction {
+func (s *SceneSystem) luaFillRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -94,7 +94,7 @@ func (s *Scene) luaFillRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentFill(fill *components.Fill) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentFill(fill *components.Fill) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "rgba", s.Lua.NewFunction(func(L *lua.LState) int {

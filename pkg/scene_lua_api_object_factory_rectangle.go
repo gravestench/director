@@ -6,7 +6,7 @@ import (
 	"github.com/gravestench/director/pkg/util"
 )
 
-func (s *Scene) luaBindSceneObjectFactoryRectangle(objFactoryTable *lua.LTable) {
+func (s *SceneSystem) luaBindSceneObjectFactoryRectangle(objFactoryTable *lua.LTable) {
 	const name = "rectangle"
 
 	fn := s.Lua.NewFunction(func(L *lua.LState) int {

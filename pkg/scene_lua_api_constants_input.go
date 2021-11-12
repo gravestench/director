@@ -10,7 +10,7 @@ const (
 	luaInputConstantsName = "input"
 )
 
-func (s *Scene) luaExportConstantsInput(mt *lua.LTable) {
+func (s *SceneSystem) luaExportConstantsInput(mt *lua.LTable) {
 	keyTable := s.Lua.NewTypeMetatable(luaInputConstantsName)
 
 	keys := map[string]input.Key{

@@ -19,7 +19,7 @@ example lua:
 	s.size(10, 10) -- the the size, in pixels
 */
 
-func (s *Scene) luaExportComponentSize(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentSize(mt *lua.LTable) {
 	sizeTable := s.Lua.NewTypeMetatable(luaSizeComponentName)
 
 	s.Lua.SetField(sizeTable, "add", s.Lua.NewFunction(s.luaSizeAdd()))
@@ -29,7 +29,7 @@ func (s *Scene) luaExportComponentSize(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaSizeComponentName, sizeTable)
 }
 
-func (s *Scene) luaSizeAdd() lua.LGFunction {
+func (s *SceneSystem) luaSizeAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -45,7 +45,7 @@ func (s *Scene) luaSizeAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaSizeGet() lua.LGFunction {
+func (s *SceneSystem) luaSizeGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -76,7 +76,7 @@ func (s *Scene) luaSizeGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaSizeRemove() lua.LGFunction {
+func (s *SceneSystem) luaSizeRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -92,7 +92,7 @@ func (s *Scene) luaSizeRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentSize(size *components.Size) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentSize(size *components.Size) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "size", s.Lua.NewFunction(func(L *lua.LState) int {

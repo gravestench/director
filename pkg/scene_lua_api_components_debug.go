@@ -20,7 +20,7 @@ example lua:
 	-- can check if an entity has this debug flag
 */
 
-func (s *Scene) luaExportComponentDebug(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentDebug(mt *lua.LTable) {
 	debugTable := s.Lua.NewTypeMetatable(luaDebugComponentName)
 
 	s.Lua.SetField(debugTable, "add", s.Lua.NewFunction(s.luaDebugAdd()))
@@ -30,7 +30,7 @@ func (s *Scene) luaExportComponentDebug(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaDebugComponentName, debugTable)
 }
 
-func (s *Scene) luaDebugAdd() lua.LGFunction {
+func (s *SceneSystem) luaDebugAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -48,7 +48,7 @@ func (s *Scene) luaDebugAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaDebugGet() lua.LGFunction {
+func (s *SceneSystem) luaDebugGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -81,7 +81,7 @@ func (s *Scene) luaDebugGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaDebugRemove() lua.LGFunction {
+func (s *SceneSystem) luaDebugRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0

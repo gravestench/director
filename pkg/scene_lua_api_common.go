@@ -10,7 +10,7 @@ import (
 	"github.com/gravestench/director/pkg/systems/input"
 )
 
-func (s *Scene) makeLuaSetterGetterVec3(vec3 *mathlib.Vector3) *lua.LFunction {
+func (s *SceneSystem) makeLuaSetterGetterVec3(vec3 *mathlib.Vector3) *lua.LFunction {
 	setGetXYZ := func(L *lua.LState) int {
 		if L.GetTop() == 3 {
 			x := L.CheckNumber(1)
@@ -34,7 +34,7 @@ func (s *Scene) makeLuaSetterGetterVec3(vec3 *mathlib.Vector3) *lua.LFunction {
 	return s.Lua.NewFunction(setGetXYZ)
 }
 
-func (s *Scene) makeLuaTableImageRectangle(r *image.Rectangle) *lua.LTable {
+func (s *SceneSystem) makeLuaTableImageRectangle(r *image.Rectangle) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	getSetPosition := func(L *lua.LState) int {
@@ -80,7 +80,7 @@ func (s *Scene) makeLuaTableImageRectangle(r *image.Rectangle) *lua.LTable {
 	return table
 }
 
-func (s *Scene) makeLuaInteractiveCallbackSetGet(in *input.Interactive) *lua.LFunction {
+func (s *SceneSystem) makeLuaInteractiveCallbackSetGet(in *input.Interactive) *lua.LFunction {
 	fn := func(L *lua.LState) int {
 		returnCount := 0
 

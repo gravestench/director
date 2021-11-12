@@ -25,7 +25,7 @@ example lua:
 	hc.children({child1, child2, child3})
 */
 
-func (s *Scene) luaExportComponentHasChildren(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentHasChildren(mt *lua.LTable) {
 	hasChildrenTable := s.Lua.NewTypeMetatable(luaHasChildrenComponentName)
 
 	s.Lua.SetField(hasChildrenTable, "add", s.Lua.NewFunction(s.luaHasChildrenAdd()))
@@ -35,7 +35,7 @@ func (s *Scene) luaExportComponentHasChildren(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaHasChildrenComponentName, hasChildrenTable)
 }
 
-func (s *Scene) luaHasChildrenAdd() lua.LGFunction {
+func (s *SceneSystem) luaHasChildrenAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -51,7 +51,7 @@ func (s *Scene) luaHasChildrenAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaHasChildrenGet() lua.LGFunction {
+func (s *SceneSystem) luaHasChildrenGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -82,7 +82,7 @@ func (s *Scene) luaHasChildrenGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaHasChildrenRemove() lua.LGFunction {
+func (s *SceneSystem) luaHasChildrenRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -98,7 +98,7 @@ func (s *Scene) luaHasChildrenRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentHasChildren(hc *components.HasChildren) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentHasChildren(hc *components.HasChildren) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "children", s.Lua.NewFunction(func(L *lua.LState) int {

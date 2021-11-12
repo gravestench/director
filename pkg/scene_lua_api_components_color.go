@@ -21,7 +21,7 @@ example lua:
 	r, g, b, a = color.rgba()
 */
 
-func (s *Scene) luaExportComponentColor(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentColor(mt *lua.LTable) {
 	colorTable := s.Lua.NewTypeMetatable(luaColorComponentName)
 
 	s.Lua.SetField(colorTable, "add", s.Lua.NewFunction(s.luaColorAdd()))
@@ -31,7 +31,7 @@ func (s *Scene) luaExportComponentColor(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaColorComponentName, colorTable)
 }
 
-func (s *Scene) luaColorAdd() lua.LGFunction {
+func (s *SceneSystem) luaColorAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -47,7 +47,7 @@ func (s *Scene) luaColorAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaColorGet() lua.LGFunction {
+func (s *SceneSystem) luaColorGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -78,7 +78,7 @@ func (s *Scene) luaColorGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaColorRemove() lua.LGFunction {
+func (s *SceneSystem) luaColorRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -94,7 +94,7 @@ func (s *Scene) luaColorRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentColor(c *components.Color) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentColor(c *components.Color) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "rgba", s.Lua.NewFunction(func(L *lua.LState) int {

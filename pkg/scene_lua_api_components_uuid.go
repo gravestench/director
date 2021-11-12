@@ -19,7 +19,7 @@ example lua:
 	uuid.value(0.5) -- set the uuid to 50%
 */
 
-func (s *Scene) luaExportComponentUUID(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentUUID(mt *lua.LTable) {
 	uuidTable := s.Lua.NewTypeMetatable(luaUUIDComponentName)
 
 	s.Lua.SetField(uuidTable, "add", s.Lua.NewFunction(s.luaUUIDAdd()))
@@ -29,7 +29,7 @@ func (s *Scene) luaExportComponentUUID(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaUUIDComponentName, uuidTable)
 }
 
-func (s *Scene) luaUUIDAdd() lua.LGFunction {
+func (s *SceneSystem) luaUUIDAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -45,7 +45,7 @@ func (s *Scene) luaUUIDAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaUUIDGet() lua.LGFunction {
+func (s *SceneSystem) luaUUIDGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -76,7 +76,7 @@ func (s *Scene) luaUUIDGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaUUIDRemove() lua.LGFunction {
+func (s *SceneSystem) luaUUIDRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -92,7 +92,7 @@ func (s *Scene) luaUUIDRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentUUID(uuid *components.UUID) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentUUID(uuid *components.UUID) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "string", s.Lua.NewFunction(func(L *lua.LState) int {

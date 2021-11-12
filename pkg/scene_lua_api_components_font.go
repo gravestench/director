@@ -22,7 +22,7 @@ example lua:
 	font.size(24) -- pixels
 */
 
-func (s *Scene) luaExportComponentFont(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentFont(mt *lua.LTable) {
 	fontTable := s.Lua.NewTypeMetatable(luaFontComponentName)
 
 	s.Lua.SetField(fontTable, "add", s.Lua.NewFunction(s.luaFontAdd()))
@@ -32,7 +32,7 @@ func (s *Scene) luaExportComponentFont(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaFontComponentName, fontTable)
 }
 
-func (s *Scene) luaFontAdd() lua.LGFunction {
+func (s *SceneSystem) luaFontAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -48,7 +48,7 @@ func (s *Scene) luaFontAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaFontGet() lua.LGFunction {
+func (s *SceneSystem) luaFontGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -79,7 +79,7 @@ func (s *Scene) luaFontGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaFontRemove() lua.LGFunction {
+func (s *SceneSystem) luaFontRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -95,7 +95,7 @@ func (s *Scene) luaFontRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentFont(font *components.Font) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentFont(font *components.Font) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "face", s.Lua.NewFunction(func(L *lua.LState) int {

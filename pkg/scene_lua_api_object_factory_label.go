@@ -8,7 +8,7 @@ import (
 	"github.com/gravestench/director/pkg/util"
 )
 
-func (s *Scene) luaBindSceneObjectFactoryLabel(objFactoryTable *lua.LTable) {
+func (s *SceneSystem) luaBindSceneObjectFactoryLabel(objFactoryTable *lua.LTable) {
 	const name = "label"
 
 	fn := s.Lua.NewFunction(func(L *lua.LState) int {

@@ -1,14 +1,15 @@
 math.randomseed(os.time())
 
-theSquare = 0
-
 function init()
-    e = makeObject()
-    setupInput(e)
+    fill = "#FF0000"
+    scene.add.label("Press A", 300, 500, 32, "", fill)
+
+    square = makeSquare()
+    setupInput(square)
 end
 
 function update()
-
+    -- nothing to do...
 end
 
 function randColorComponent()
@@ -21,7 +22,7 @@ function randColor()
     return "#" .. r .. g .. b
 end
 
-function makeObject()
+function makeSquare()
     rw, rh = scene.sys.renderer.window.size()
     x, y = rw/2, rh/2
     w, h = 200, 200
@@ -30,7 +31,6 @@ function makeObject()
     stroke = randColor()
 
     theSquare = scene.add.rectangle(x, y, w, h, fill, stroke)
-    scene.add.label("Press A", 300, 500, 32, "", fill)
 
     return theSquare
 end
@@ -38,7 +38,7 @@ end
 function setupInput(e)
     v = scene.components.interactive.add(e)
 
-    v.setKey(constants.input.KeyA)
+    v.setKey(constants.input.KeyX)
     v.callback("testCallback")
 end
 
@@ -49,5 +49,5 @@ function testCallback()
     end
 
     x, y, z = trs.translation()
-    trs.translation(x + 20, y, z)
+    trs.translation(x + 20, y - 5, z)
 end

@@ -50,6 +50,7 @@ func (scene *LuaScene) IsInitialized() bool {
 }
 
 func (scene *LuaScene) Init(_ *akara.World) {
+	scene.InitializeLua()
 	scene.loadScript()
 	scene.callLuaInitFn()
 }

@@ -11,6 +11,7 @@ import (
 
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
+
 	"github.com/gravestench/akara"
 	"github.com/gravestench/eventemitter"
 
@@ -62,10 +63,22 @@ func New() *Director {
 // AddScene adds a scene
 func (d *Director) AddScene(scene SceneInterface) {
 	scene.GenericSceneInit(d)
-	scene.InitializeLua()
 
-	d.AddSystem(scene, true)
+	d.AddSystem(scene)
 	d.scenes[scene.Key()] = scene
+}
+
+// AddScene adds a scene
+func (d *Director) AddSystem(sys akara.System) {
+	if sceneGeneric, ok := sys.(isGeneric); ok {
+		sceneGeneric.GenericSceneInit(d)
+	}
+
+	if luaInitializer, ok := sys.(initializesLua); ok {
+		luaInitializer.InitializeLua()
+	}
+
+	d.World.AddSystem(sys, true)
 }
 
 // AddLuaScene creates and adds a scene using a lua script
@@ -74,8 +87,8 @@ func (d *Director) AddLuaScene(key, path string) {
 }
 
 // AddLuaSystem creates and adds a scene using a lua script
-func (d *Director) AddLuaSystem(key, path string) {
-	d.AddSystem(NewLuaSystem(key, path), true)
+func (d *Director) AddLuaSystem(path string) {
+	d.AddSystem(NewLuaSystem(path))
 }
 
 // RemoveScene queues a scene for removal
@@ -100,29 +113,29 @@ func (d *Director) Update(dt time.Duration) (err error) {
 // have been broken into their own systems.
 func (d *Director) initDirectorSystems() {
 	screenRendering := &screen_rendering.ScreenRenderingSystem{}
-	d.AddSystem(screenRendering, true)
+	d.AddSystem(screenRendering)
 	screenRendering.SetTickFrequency(0) // unlimited FPS. TODO: set this from somewhere?
 
 	d.Sys.Tweens = &tween.System{}
-	d.AddSystem(d.Sys.Tweens, true)
+	d.AddSystem(d.Sys.Tweens)
 
 	d.Sys.Renderer = &renderer.System{}
-	d.AddSystem(d.Sys.Renderer, true)
+	d.AddSystem(d.Sys.Renderer)
 
 	d.Sys.Input = &input.System{}
-	d.AddSystem(d.Sys.Input, true)
+	d.AddSystem(d.Sys.Input)
 	d.Sys.Input.SetTickFrequency(1000)
 
 	d.Sys.Load = &file_loader.System{}
-	d.AddSystem(d.Sys.Load, true)
+	d.AddSystem(d.Sys.Load)
 
 	d.Sys.Texture = &texture_manager.System{}
-	d.AddSystem(d.Sys.Texture, true)
+	d.AddSystem(d.Sys.Texture)
 
-	d.AddSystem(&animation.System{}, true)
+	d.AddSystem(&animation.System{})
 
 	d.Sys.Audio = &audio.System{}
-	d.AddSystem(d.Sys.Audio, true)
+	d.AddSystem(d.Sys.Audio)
 }
 
 func (d *Director) Run() error {

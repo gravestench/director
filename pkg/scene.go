@@ -4,9 +4,7 @@ import (
 	"time"
 
 	"github.com/gravestench/akara"
-	"github.com/gravestench/mathlib"
 	"github.com/gravestench/scenegraph"
-	lua "github.com/yuin/gopher-lua"
 
 	"github.com/gravestench/director/pkg/common"
 )
@@ -22,26 +20,13 @@ const (
 	DefaultSceneTickRate = 60
 )
 
-// Base is the generic non-graphical stuff for a scene.
-// This is kept separate so that non-graphical scenes or systems can be created,
-// such as for headless servers.
-type Base struct {
-	*Director
-	akara.BaseSystem
-	Lua        *lua.LState
-	Components common.SceneComponents
-	Add        ObjectFactory
-}
-
 type Scene struct {
-	Base
+	SceneSystem
 	Graph      scenegraph.Node
 	renderList []common.Entity
 	Viewports  []common.Entity
 	key        string
 }
-
-var tmpVect mathlib.Vector3
 
 func (s *Scene) Name() string {
 	return "BaseScene"
@@ -55,32 +40,6 @@ func (s *Scene) GenericSceneInit(d *Director) {
 	s.BaseSystem.SetPreTickCallback(func() {
 		s.GenericUpdate()
 	})
-}
-
-func (s *Scene) IsInitialized() bool {
-	return s.Director.World != nil
-}
-
-func (s *Scene) InitializeLua() {
-	if s.LuaInitialized() {
-		return
-	}
-
-	s.Lua = lua.NewState()
-	if err := s.Lua.DoString(common.LuaLibSTD); err != nil {
-		panic(err)
-	}
-
-	s.initLuaConstantsTable()
-	s.initLuaSceneTable()
-}
-
-func (s *Scene) UninitializeLua() {
-	s.Lua = nil
-}
-
-func (s *Scene) LuaInitialized() bool {
-	return s.Lua != nil
 }
 
 func (s *Scene) updateSceneGraph() {

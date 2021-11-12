@@ -19,7 +19,7 @@ example lua:
 	text.value(0.5) -- set the text to 50%
 */
 
-func (s *Scene) luaExportComponentText(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentText(mt *lua.LTable) {
 	textTable := s.Lua.NewTypeMetatable(luaTextComponentName)
 
 	s.Lua.SetField(textTable, "add", s.Lua.NewFunction(s.luaTextAdd()))
@@ -29,7 +29,7 @@ func (s *Scene) luaExportComponentText(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaTextComponentName, textTable)
 }
 
-func (s *Scene) luaTextAdd() lua.LGFunction {
+func (s *SceneSystem) luaTextAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -45,7 +45,7 @@ func (s *Scene) luaTextAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaTextGet() lua.LGFunction {
+func (s *SceneSystem) luaTextGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -76,7 +76,7 @@ func (s *Scene) luaTextGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaTextRemove() lua.LGFunction {
+func (s *SceneSystem) luaTextRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -92,7 +92,7 @@ func (s *Scene) luaTextRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentText(text *components.Text) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentText(text *components.Text) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "string", s.Lua.NewFunction(func(L *lua.LState) int {

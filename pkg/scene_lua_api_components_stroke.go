@@ -21,7 +21,7 @@ example lua:
 	r, g, b, a = stroke.rgba()
 */
 
-func (s *Scene) luaStrokeAdd() lua.LGFunction {
+func (s *SceneSystem) luaStrokeAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -37,7 +37,7 @@ func (s *Scene) luaStrokeAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaExportComponentStroke(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentStroke(mt *lua.LTable) {
 	strokeTable := s.Lua.NewTypeMetatable(luaStrokeComponentName)
 
 	s.Lua.SetField(strokeTable, "add", s.Lua.NewFunction(s.luaStrokeAdd()))
@@ -47,7 +47,7 @@ func (s *Scene) luaExportComponentStroke(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaStrokeComponentName, strokeTable)
 }
 
-func (s *Scene) luaStrokeGet() lua.LGFunction {
+func (s *SceneSystem) luaStrokeGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -78,7 +78,7 @@ func (s *Scene) luaStrokeGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaStrokeRemove() lua.LGFunction {
+func (s *SceneSystem) luaStrokeRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -94,7 +94,7 @@ func (s *Scene) luaStrokeRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentStroke(stroke *components.Stroke) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentStroke(stroke *components.Stroke) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "rgba", s.Lua.NewFunction(func(L *lua.LState) int {

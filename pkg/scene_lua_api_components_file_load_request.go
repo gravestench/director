@@ -19,7 +19,7 @@ example lua:
 	req.path("http://example.com/image.jpg")
 */
 
-func (s *Scene) luaExportComponentFileLoadRequest(mt *lua.LTable) {
+func (s *SceneSystem) luaExportComponentFileLoadRequest(mt *lua.LTable) {
 	fileLoadRequestTable := s.Lua.NewTypeMetatable(luaFileLoadRequestComponentName)
 
 	s.Lua.SetField(fileLoadRequestTable, "add", s.Lua.NewFunction(s.luaFileLoadRequestAdd()))
@@ -29,7 +29,7 @@ func (s *Scene) luaExportComponentFileLoadRequest(mt *lua.LTable) {
 	s.Lua.SetField(mt, luaFileLoadRequestComponentName, fileLoadRequestTable)
 }
 
-func (s *Scene) luaFileLoadRequestAdd() lua.LGFunction {
+func (s *SceneSystem) luaFileLoadRequestAdd() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -45,7 +45,7 @@ func (s *Scene) luaFileLoadRequestAdd() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaFileLoadRequestGet() lua.LGFunction {
+func (s *SceneSystem) luaFileLoadRequestGet() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -76,7 +76,7 @@ func (s *Scene) luaFileLoadRequestGet() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) luaFileLoadRequestRemove() lua.LGFunction {
+func (s *SceneSystem) luaFileLoadRequestRemove() lua.LGFunction {
 	fn := func(L *lua.LState) int {
 		if L.GetTop() != 1 {
 			return 0
@@ -92,7 +92,7 @@ func (s *Scene) luaFileLoadRequestRemove() lua.LGFunction {
 	return fn
 }
 
-func (s *Scene) makeLuaTableComponentFileLoadRequest(req *components.FileLoadRequest) *lua.LTable {
+func (s *SceneSystem) makeLuaTableComponentFileLoadRequest(req *components.FileLoadRequest) *lua.LTable {
 	table := s.Lua.NewTable()
 
 	s.Lua.SetField(table, "path", s.Lua.NewFunction(func(L *lua.LState) int {
