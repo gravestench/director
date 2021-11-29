@@ -34,7 +34,7 @@ function updatePosition(eid)
         return
     end
 
-    tx, ty, tz = trs.translation()
+    tx, ty, tz = trs.translation.xyz()
     tx, ty, tz = tx + 1, ty + 1, tz
     w, h = size.size()
     rw, rh = scene.sys.renderer.window.size()
@@ -47,7 +47,7 @@ function updatePosition(eid)
         ty = -h
     end
 
-    trs.translation(tx, ty, tz)
+    trs.translation.xyz(tx, ty, tz)
 end
 
 function updateRotation(eid)
@@ -56,10 +56,10 @@ function updateRotation(eid)
         return
     end
 
-    rx, ry, rz = trs.rotation()
+    rx, ry, rz = trs.rotation.xyz()
     ry = ry + 1
 
-    trs.rotation(rx, ry, rz)
+    trs.rotation.xyz(rx, ry, rz)
 end
 
 function updateOrigin(eid)

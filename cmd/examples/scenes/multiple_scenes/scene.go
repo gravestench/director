@@ -1,33 +1,33 @@
 package main
 
 import (
-	"github.com/faiface/mainthread"
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg"
-	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/easing"
-	"github.com/gravestench/mathlib"
 	"image/color"
 	"math"
 	"math/rand"
 	"time"
 
+	"github.com/faiface/mainthread"
+	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg"
+	"github.com/gravestench/director/pkg/easing"
+	"github.com/gravestench/mathlib"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 const (
-	maxImages        = 200
-	imgUrl           = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
+	maxImages = 200
+	imgUrl    = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
 )
 
 type testScene struct {
 	pkg.Scene
-	x, y    int
-	w, h    int
-	bgColor color.Color
-	name    string
-	elapsed time.Duration
-	stuff   []common.Entity
+	x, y     int
+	w, h     int
+	bgColor  color.Color
+	name     string
+	elapsed  time.Duration
+	stuff    []common.entity
 	interval time.Duration
 }
 
@@ -117,7 +117,7 @@ func (scene *testScene) handleNewImage() {
 	scene.fadeIn(newImage)
 }
 
-func (scene *testScene) fadeIn(e common.Entity) {
+func (scene *testScene) fadeIn(e common.entity) {
 	t := scene.Sys.Tweens.New()
 	t.Time(time.Second)
 	t.Ease(easing.Sine)
@@ -138,7 +138,7 @@ func (scene *testScene) fadeIn(e common.Entity) {
 	scene.Sys.Tweens.Add(t)
 }
 
-func (scene *testScene) updatePosition(e common.Entity) {
+func (scene *testScene) updatePosition(e common.entity) {
 	trs, found := scene.Components.Transform.Get(e)
 	if !found {
 		return
@@ -164,7 +164,7 @@ func (scene *testScene) updatePosition(e common.Entity) {
 	}
 }
 
-func (scene *testScene) setRandomImagePosition(e common.Entity) {
+func (scene *testScene) setRandomImagePosition(e common.entity) {
 	rWidth := scene.Sys.Renderer.Window.Width
 	rHeight := scene.Sys.Renderer.Window.Height
 

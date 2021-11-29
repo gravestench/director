@@ -3,6 +3,8 @@ package pkg
 import (
 	"time"
 
+	"github.com/gravestench/akara"
+
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 
@@ -14,7 +16,7 @@ type viewportFactory struct {
 	*common.SceneComponents
 }
 
-func (*viewportFactory) New(s *Scene, x, y, w, h int) common.Entity {
+func (*viewportFactory) New(s *Scene, x, y, w, h int) akara.EID {
 	e := s.Add.generic.visibleEntity(s)
 
 	viewport := s.Components.Viewport.Add(e)

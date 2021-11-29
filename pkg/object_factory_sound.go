@@ -3,6 +3,8 @@ package pkg
 import (
 	"time"
 
+	"github.com/gravestench/akara"
+
 	"github.com/gravestench/director/pkg/common"
 )
 
@@ -11,10 +13,10 @@ type soundFactory struct {
 	*common.SceneComponents
 }
 
-func (factory *soundFactory) New(s *Scene, filePath string, paused bool, volume float64, muted bool, loop bool, speedMultiplier float64) common.Entity {
+func (factory *soundFactory) New(s *Scene, filePath string, paused bool, volume float64, muted bool, loop bool, speedMultiplier float64) akara.EID {
 	e := s.Add.generic.entity(s)
 
-	// all sounds need Audible and FileLoadRequest
+	// all sounds need Audio and FileLoadRequest
 	audible := s.Components.Audible.Add(e)
 	if paused {
 		audible.Pause()

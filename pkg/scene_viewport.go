@@ -4,20 +4,21 @@ import (
 	"math"
 	"sort"
 
+	"github.com/gravestench/akara"
+
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/mathlib"
 )
 
 func (s *Scene) initViewport() {
-	s.Viewports = make([]common.Entity, 1)
+	s.Viewports = make([]akara.EID, 1)
 	rw, rh := s.Sys.Renderer.Window.Width, s.Sys.Renderer.Window.Height
 	s.Viewports[0] = s.Add.Viewport(0, 0, rw, rh)
 	vp, _ := s.Components.Viewport.Get(s.Viewports[0])
 
 	// remove viewport and camera from the scene's renderList so they don't get rendered to themselves later
-	newRenderList := make([]common.Entity, 0, len(s.renderList))
+	newRenderList := make([]akara.EID, 0, len(s.renderList))
 	for _, entity := range s.renderList {
 		if entity != s.Viewports[0] && entity != vp.CameraEntity {
 			newRenderList = append(newRenderList, entity)
@@ -34,7 +35,7 @@ type entityRenderRequest struct {
 	Tint     rl.Color
 }
 
-func (s *Scene) generateEntityRenderBatch(entities []common.Entity) []entityRenderRequest {
+func (s *Scene) generateEntityRenderBatch(entities []akara.EID) []entityRenderRequest {
 	entityRenderRequests := make([]entityRenderRequest, 0, len(entities))
 
 	for _, e := range entities {
@@ -104,7 +105,7 @@ func (s *Scene) generateEntityRenderBatch(entities []common.Entity) []entityRend
 	return entityRenderRequests
 }
 
-func (s *Scene) drawEntitiesAndRender(viewport common.Entity) {
+func (s *Scene) drawEntitiesAndRender(viewport akara.EID) {
 	vp, found := s.Components.Viewport.Get(viewport)
 	if !found {
 		return

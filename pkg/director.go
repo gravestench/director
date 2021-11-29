@@ -7,6 +7,10 @@ import (
 	"runtime/trace"
 	"time"
 
+	"github.com/gravestench/director/pkg/components/audio"
+
+	"github.com/gravestench/director/pkg/components/viewport"
+
 	"runtime/pprof"
 
 	"github.com/faiface/mainthread"
@@ -15,14 +19,36 @@ import (
 	"github.com/gravestench/akara"
 	"github.com/gravestench/eventemitter"
 
-	"github.com/gravestench/director/pkg/systems/animation"
-	"github.com/gravestench/director/pkg/systems/audio"
-	"github.com/gravestench/director/pkg/systems/renderer"
-	"github.com/gravestench/director/pkg/systems/texture_manager"
+	"github.com/gravestench/director/pkg/components/animation"
+	"github.com/gravestench/director/pkg/components/camera"
+	"github.com/gravestench/director/pkg/components/color"
+	"github.com/gravestench/director/pkg/components/debug"
+	fileLoadRequest "github.com/gravestench/director/pkg/components/file_load_request"
+	fileLoadResponse "github.com/gravestench/director/pkg/components/file_load_response"
+	fileType "github.com/gravestench/director/pkg/components/file_type"
+	"github.com/gravestench/director/pkg/components/fill"
+	"github.com/gravestench/director/pkg/components/font"
+	hasChildren "github.com/gravestench/director/pkg/components/has_children"
+	"github.com/gravestench/director/pkg/components/interactive"
+	"github.com/gravestench/director/pkg/components/opacity"
+	"github.com/gravestench/director/pkg/components/origin"
+	renderOrder "github.com/gravestench/director/pkg/components/render_order"
+	"github.com/gravestench/director/pkg/components/render_texture"
+	sceneGraphNode "github.com/gravestench/director/pkg/components/scene_graph_node"
+	"github.com/gravestench/director/pkg/components/size"
+	"github.com/gravestench/director/pkg/components/stroke"
+	"github.com/gravestench/director/pkg/components/text"
+	texture2D "github.com/gravestench/director/pkg/components/texture"
+	"github.com/gravestench/director/pkg/components/transform"
+	"github.com/gravestench/director/pkg/components/uuid"
 
+	animationSystem "github.com/gravestench/director/pkg/systems/animation"
+	audioSystem "github.com/gravestench/director/pkg/systems/audio"
 	"github.com/gravestench/director/pkg/systems/file_loader"
 	"github.com/gravestench/director/pkg/systems/input"
+	"github.com/gravestench/director/pkg/systems/renderer"
 	"github.com/gravestench/director/pkg/systems/screen_rendering"
+	"github.com/gravestench/director/pkg/systems/texture_manager"
 	"github.com/gravestench/director/pkg/systems/tween"
 )
 
@@ -32,8 +58,9 @@ import (
 // a bunch of object creation facilities provided for free.
 type Director struct {
 	*akara.World
-	scenes map[string]SceneInterface
-	Sys    DirectorSystems
+	scenes     map[string]SceneInterface
+	Sys        DirectorSystems
+	Components DirectorComponents
 }
 
 // DirectorSystems contains the base systems that are available when a director instance is created
@@ -44,7 +71,37 @@ type DirectorSystems struct {
 	Texture  *texture_manager.System
 	Tweens   *tween.System
 	Input    *input.System
-	Audio    *audio.System
+	Audio    *audioSystem.System
+}
+
+// DirectorComponents contains all of the primitive components that come with director.
+// These are INTENTIONALLY nil instances, which can be used when creating component filters.
+// See akara's `World.NewComponentFilter` and `World.AddSubscription`
+type DirectorComponents struct {
+	audio            *audio.Component
+	interactive      *interactive.Component
+	viewport         *viewport.Component
+	camera           *camera.Camera
+	color            *color.Color
+	debug            *debug.Component
+	fileLoadRequest  *fileLoadRequest.Component
+	fileLoadResponse *fileLoadResponse.Component
+	fileType         *fileType.Component
+	fill             *fill.Component
+	hasChildren      *hasChildren.Component
+	animation        *animation.Component
+	stroke           *stroke.Component
+	font             *font.Component
+	opacity          *opacity.Component
+	origin           *origin.Component
+	render_texture   *render_texture.Component
+	renderOrder      *renderOrder.Component
+	size             *size.Component
+	sceneGraphNode   *sceneGraphNode.Component
+	text             *text.Component
+	texture2D        *texture2D.Component
+	transform        *transform.Component
+	uuid             *uuid.Component
 }
 
 // New creates a new director instance, with default settings
@@ -132,9 +189,9 @@ func (d *Director) initDirectorSystems() {
 	d.Sys.Texture = &texture_manager.System{}
 	d.AddSystem(d.Sys.Texture)
 
-	d.AddSystem(&animation.System{})
+	d.AddSystem(&animationSystem.System{})
 
-	d.Sys.Audio = &audio.System{}
+	d.Sys.Audio = &audioSystem.System{}
 	d.AddSystem(d.Sys.Audio)
 }
 

@@ -3,6 +3,8 @@ package director
 import (
 	"flag"
 
+	"github.com/gravestench/akara"
+
 	"github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/primitive_scenes/tick_graph"
@@ -12,7 +14,7 @@ import (
 type Director = pkg.Director
 
 // Entity is the the base entity type
-type Entity = common.Entity
+type Entity = akara.EID
 
 // SceneComponents contains component factories that scenes use for composing objects
 type SceneComponents = common.SceneComponents

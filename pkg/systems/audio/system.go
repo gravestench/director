@@ -2,17 +2,19 @@ package audio
 
 import (
 	"fmt"
+	"io"
+
+	"github.com/gravestench/director/pkg/audio_source"
+
+	fileLoadResponse "github.com/gravestench/director/pkg/components/file_load_response"
+
+	fileType "github.com/gravestench/director/pkg/components/file_type"
+
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/wav"
 	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/components"
-	"io"
-)
-
-const (
-	SampleRate        = 48000
-	BufferSizeSamples = 2400
+	"github.com/gravestench/director/pkg/components/audio"
 )
 
 // static check that System implements the System interface
@@ -27,9 +29,9 @@ type System struct {
 	}
 	initialized bool
 	Components  struct {
-		Audible          AudibleFactory
-		fileType         components.FileTypeFactory
-		fileLoadResponse components.FileLoadResponseFactory
+		Audible          audio.ComponentFactory
+		fileType         fileType.ComponentFactory
+		fileLoadResponse fileLoadResponse.ComponentFactory
 	}
 }
 
@@ -46,7 +48,7 @@ func (m *System) Init(_ *akara.World) {
 	m.setupFactories()
 	m.setupSubscriptions()
 
-	err := speaker.Init(SampleRate, BufferSizeSamples)
+	err := speaker.Init(audio_source.SampleRate, audio_source.BufferSizeSamples)
 	if err != nil {
 		panic("Failed to initialize audio system: " + err.Error())
 	}
@@ -55,22 +57,22 @@ func (m *System) Init(_ *akara.World) {
 }
 
 func (m *System) setupFactories() {
-	m.InjectComponent(&Audible{}, &m.Components.Audible.ComponentFactory)
-	m.InjectComponent(&components.FileLoadResponse{}, &m.Components.fileLoadResponse.ComponentFactory)
-	m.InjectComponent(&components.FileType{}, &m.Components.fileType.ComponentFactory)
+	m.InjectComponent(&audio.Audio{}, &m.Components.Audible.ComponentFactory)
+	m.InjectComponent(&fileLoadResponse.Component{}, &m.Components.fileLoadResponse.ComponentFactory)
+	m.InjectComponent(&fileType.Component{}, &m.Components.fileType.ComponentFactory)
 }
 
 func (m *System) setupSubscriptions() {
 	sounds := m.NewComponentFilter().
-		Require(&Audible{}).
+		Require(&audio.Audio{}).
 		Build()
 
 	m.subscriptions.sounds = m.AddSubscription(sounds)
 
 	needsFile := m.NewComponentFilter().
-		Require(&Audible{}).
-		Require(&components.FileType{}).
-		Require(&components.FileLoadResponse{}).
+		Require(&audio.Audio{}).
+		Require(&fileType.Component{}).
+		Require(&fileLoadResponse.Component{}).
 		Build()
 
 	m.subscriptions.needsFile = m.AddSubscription(needsFile)
@@ -106,7 +108,7 @@ func (m *System) addStreamToAudible(id akara.EID) {
 		return
 	}
 
-	audible.setStream(stream, format)
+	audible.AudioSource.SetStream(stream, format)
 
 	// we've handled this fileLoadResponse, so we don't need to keep seeing it in the subscription anymore
 	m.subscriptions.needsFile.IgnoreEntity(id)

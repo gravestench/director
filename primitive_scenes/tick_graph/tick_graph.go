@@ -13,7 +13,6 @@ import (
 	"github.com/gravestench/akara"
 
 	"github.com/gravestench/director/pkg"
-	"github.com/gravestench/director/pkg/common"
 )
 
 const (
@@ -25,7 +24,7 @@ type Scene struct {
 	pkg.Scene
 	sceneColors          map[string]color.Color
 	sceneSamples         map[string][]float64
-	sceneSamplesPixels   map[string][]common.Entity
+	sceneSamplesPixels   map[string][]akara.EID
 	sampleMax, sampleMin float64
 	sampleIndex          int
 }
@@ -38,7 +37,7 @@ func (s *Scene) Init(_ *akara.World) {
 	s.SetTickFrequency(3)
 	s.sceneColors = make(map[string]color.Color)
 	s.sceneSamples = make(map[string][]float64)
-	s.sceneSamplesPixels = make(map[string][]common.Entity)
+	s.sceneSamplesPixels = make(map[string][]akara.EID)
 }
 
 func (s *Scene) Update() {
@@ -69,7 +68,7 @@ func (s *Scene) resizeViewportTexture(w, h int32) {
 			continue
 		}
 
-		vp.Background = color.RGBA{R: 0xFF, G:0xFF, B: 0xFF, A: 0x64}
+		vp.Background = color.RGBA{R: 0xFF, G: 0xFF, B: 0xFF, A: 0x64}
 
 		vprt, found := s.Components.RenderTexture2D.Get(e)
 		if !found {
@@ -158,7 +157,7 @@ func (s *Scene) updateSceneSamples(theScene pkg.SceneInterface) {
 func (s *Scene) updatePixels() {
 	for key := range s.sceneSamples {
 		if _, found := s.sceneSamplesPixels[key]; !found {
-			s.sceneSamplesPixels[key] = make([]common.Entity, graphWidth)
+			s.sceneSamplesPixels[key] = make([]akara.EID, graphWidth)
 
 			sceneColor := s.sceneColors[key]
 
@@ -175,7 +174,7 @@ func (s *Scene) updatePixels() {
 	}
 }
 
-func (s *Scene) updatePixelPosition(sceneKey string, sampleIndex int, pixelEID common.Entity) {
+func (s *Scene) updatePixelPosition(sceneKey string, sampleIndex int, pixelEID akara.EID) {
 	trs, found := s.Components.Transform.Get(pixelEID)
 	if !found {
 		return
@@ -186,7 +185,7 @@ func (s *Scene) updatePixelPosition(sceneKey string, sampleIndex int, pixelEID c
 		return
 	}
 
-	trs.Translation.Set(float64(sampleIndex), ((samples[sampleIndex] / s.sampleMax) + s.sampleMin) *graphHeight, 0)
+	trs.Translation.Set(float64(sampleIndex), ((samples[sampleIndex]/s.sampleMax)+s.sampleMin)*graphHeight, 0)
 }
 
 // PrintDebugMessage prints a tick_graph message to stdout containing information about the running systems, including their

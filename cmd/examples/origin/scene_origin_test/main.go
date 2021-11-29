@@ -1,17 +1,17 @@
 package main
 
 import (
-	"github.com/faiface/mainthread"
-	"github.com/gravestench/director/pkg"
 	"image/color"
 	"math"
 	"math/rand"
 	"time"
 
+	"github.com/faiface/mainthread"
+	"github.com/gravestench/director/pkg"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director"
-	"github.com/gravestench/director/pkg/common"
 )
 
 func main() {
@@ -30,8 +30,8 @@ const (
 
 type LabelTestScene struct {
 	pkg.Scene
-	singleLabel common.Entity
-	originPoint common.Entity
+	singleLabel common.entity
+	originPoint common.entity
 }
 
 func (scene *LabelTestScene) Key() string {

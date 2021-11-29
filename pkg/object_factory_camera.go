@@ -3,6 +3,8 @@ package pkg
 import (
 	"time"
 
+	"github.com/gravestench/akara"
+
 	"github.com/faiface/mainthread"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -14,7 +16,7 @@ type cameraFactory struct {
 	*common.SceneComponents
 }
 
-func (*cameraFactory) New(s *Scene, x, y, w, h int) common.Entity {
+func (*cameraFactory) New(s *Scene, x, y, w, h int) akara.EID {
 	ce := s.Add.generic.visibleEntity(s)
 
 	cam := s.Components.Camera.Add(ce)

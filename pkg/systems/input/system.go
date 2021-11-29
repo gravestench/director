@@ -1,10 +1,16 @@
 package input
 
 import (
+	"image"
+
+	"github.com/gravestench/director/pkg/systems/input/vector"
+
+	"github.com/gravestench/director/pkg/systems/input/constants"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/components/interactive"
 	"github.com/gravestench/mathlib"
-	"image"
 )
 
 // static check that System implements the System interface
@@ -14,10 +20,10 @@ var _ akara.System = &System{}
 type System struct {
 	akara.BaseSystem
 	interactives  *akara.Subscription
-	InputState    *Vector
+	InputState    *vector.Vector
 	MousePosition mathlib.Vector2
 	Components    struct {
-		Interactive InteractiveFactory
+		Interactive interactive.ComponentFactory
 	}
 }
 
@@ -34,16 +40,16 @@ func (m *System) Init(_ *akara.World) {
 	m.setupFactories()
 	m.setupSubscriptions()
 
-	m.InputState = NewInputVector()
+	m.InputState = vector.NewInputVector()
 }
 
 func (m *System) setupFactories() {
-	m.InjectComponent(&Interactive{}, &m.Components.Interactive.ComponentFactory)
+	m.InjectComponent(&interactive.Interactive{}, &m.Components.Interactive.ComponentFactory)
 }
 
 func (m *System) setupSubscriptions() {
 	interactives := m.NewComponentFilter().
-		Require(&Interactive{}).
+		Require(&interactive.Interactive{}).
 		Build()
 
 	m.interactives = m.AddSubscription(interactives)
@@ -64,37 +70,37 @@ func (m *System) Update() {
 func (m *System) updateInputState() {
 	m.InputState.Clear()
 
-	var keysToCheck = []Key{
-		Key0, Key1, Key2, Key3, Key4, Key5, Key6,
-		Key7, Key8, Key9, KeyA, KeyB, KeyC, KeyD,
-		KeyE, KeyF, KeyG, KeyH, KeyI, KeyJ, KeyK,
-		KeyL, KeyM, KeyN, KeyO, KeyP, KeyQ, KeyR,
-		KeyS, KeyT, KeyU, KeyV, KeyW, KeyX, KeyY,
-		KeyZ, KeyApostrophe, KeyBackslash, KeyBackspace,
-		KeyCapsLock, KeyComma, KeyDelete, KeyDown,
-		KeyEnd, KeyEnter, KeyEqual, KeyEscape,
-		KeyF1, KeyF2, KeyF3, KeyF4, KeyF5, KeyF6,
-		KeyF7, KeyF8, KeyF9, KeyF10, KeyF11, KeyF12,
-		KeyGraveAccent, KeyHome, KeyInsert, KeyKP0,
-		KeyKP1, KeyKP2, KeyKP3, KeyKP4, KeyKP5,
-		KeyKP6, KeyKP7, KeyKP8, KeyKP9,
-		KeyKPAdd, KeyKPDecimal, KeyKPDivide, KeyKPEnter,
-		KeyKPEqual, KeyKPMultiply, KeyKPSubtract, KeyLeft,
-		KeyLeftBracket, KeyMenu, KeyMinus, KeyNumLock,
-		KeyPageDown, KeyPageUp, KeyPause, KeyPeriod,
-		KeyPrintScreen, KeyRight, KeyRightBracket,
-		KeyScrollLock, KeySemicolon, KeySlash,
-		KeySpace, KeyTab, KeyUp,
+	var keysToCheck = []constants.Key{
+		constants.Key0, constants.Key1, constants.Key2, constants.Key3, constants.Key4, constants.Key5, constants.Key6,
+		constants.Key7, constants.Key8, constants.Key9, constants.KeyA, constants.KeyB, constants.KeyC, constants.KeyD,
+		constants.KeyE, constants.KeyF, constants.KeyG, constants.KeyH, constants.KeyI, constants.KeyJ, constants.KeyK,
+		constants.KeyL, constants.KeyM, constants.KeyN, constants.KeyO, constants.KeyP, constants.KeyQ, constants.KeyR,
+		constants.KeyS, constants.KeyT, constants.KeyU, constants.KeyV, constants.KeyW, constants.KeyX, constants.KeyY,
+		constants.KeyZ, constants.KeyApostrophe, constants.KeyBackslash, constants.KeyBackspace,
+		constants.KeyCapsLock, constants.KeyComma, constants.KeyDelete, constants.KeyDown,
+		constants.KeyEnd, constants.KeyEnter, constants.KeyEqual, constants.KeyEscape,
+		constants.KeyF1, constants.KeyF2, constants.KeyF3, constants.KeyF4, constants.KeyF5, constants.KeyF6,
+		constants.KeyF7, constants.KeyF8, constants.KeyF9, constants.KeyF10, constants.KeyF11, constants.KeyF12,
+		constants.KeyGraveAccent, constants.KeyHome, constants.KeyInsert, constants.KeyKP0,
+		constants.KeyKP1, constants.KeyKP2, constants.KeyKP3, constants.KeyKP4, constants.KeyKP5,
+		constants.KeyKP6, constants.KeyKP7, constants.KeyKP8, constants.KeyKP9,
+		constants.KeyKPAdd, constants.KeyKPDecimal, constants.KeyKPDivide, constants.KeyKPEnter,
+		constants.KeyKPEqual, constants.KeyKPMultiply, constants.KeyKPSubtract, constants.KeyLeft,
+		constants.KeyLeftBracket, constants.KeyMenu, constants.KeyMinus, constants.KeyNumLock,
+		constants.KeyPageDown, constants.KeyPageUp, constants.KeyPause, constants.KeyPeriod,
+		constants.KeyPrintScreen, constants.KeyRight, constants.KeyRightBracket,
+		constants.KeyScrollLock, constants.KeySemicolon, constants.KeySlash,
+		constants.KeySpace, constants.KeyTab, constants.KeyUp,
 	}
 
-	var modifiersToCheck = []Modifier{
-		ModAltLeft, ModAltRight,
-		ModControlLeft, ModControlRight,
-		ModShiftLeft, ModShiftRight,
+	var modifiersToCheck = []constants.Modifier{
+		constants.ModAltLeft, constants.ModAltRight,
+		constants.ModControlLeft, constants.ModControlRight,
+		constants.ModShiftLeft, constants.ModShiftRight,
 	}
 
-	var buttonsToCheck = []MouseButton{
-		MouseButtonLeft, MouseButtonMiddle, MouseButtonRight,
+	var buttonsToCheck = []constants.MouseButton{
+		constants.MouseButtonLeft, constants.MouseButtonMiddle, constants.MouseButtonRight,
 	}
 
 	for _, key := range keysToCheck {

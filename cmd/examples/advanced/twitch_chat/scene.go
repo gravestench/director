@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/faiface/mainthread"
-	"github.com/gravestench/director/pkg"
 	"image/color"
 	"io"
 	"log"
@@ -13,6 +11,9 @@ import (
 	"math/rand"
 	"net/http"
 	"time"
+
+	"github.com/faiface/mainthread"
+	"github.com/gravestench/director/pkg"
 
 	"github.com/gravestench/akara"
 	"github.com/gravestench/mathlib"
@@ -23,7 +24,6 @@ import (
 	"github.com/nicklaw5/helix"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/easing"
 )
 
@@ -211,7 +211,7 @@ func (scene *testScene) newMessage(name, msg string) {
 	x, y := rWidth/2, rHeight/2
 	fontSize := rHeight / 20
 
-	var entity common.Entity
+	var entity common.entity
 
 	emoteURL, emoteFound := scene.emoteMap[msg]
 	if emoteFound {

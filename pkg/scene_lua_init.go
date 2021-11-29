@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"github.com/gravestench/director/pkg/common/components"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -25,29 +26,36 @@ func (s *SceneSystem) initLuaComponentsTable(sceneTable *lua.LTable) {
 	componentsTable := s.Lua.NewTable()
 	s.Lua.SetField(sceneTable, luaSceneComponentsTable, componentsTable)
 
-	s.luaExportComponentAnimation(componentsTable)
-	s.luaExportComponentCamera(componentsTable)
-	s.luaExportComponentColor(componentsTable)
-	s.luaExportComponentDebug(componentsTable)
-	s.luaExportComponentFileLoadRequest(componentsTable)
-	s.luaExportComponentFileLoadResponse(componentsTable)
-	// s.luaExportComponentFileType(componentsTable)
-	s.luaExportComponentFill(componentsTable)
-	s.luaExportComponentFont(componentsTable)
-	s.luaExportComponentHasChildren(componentsTable)
-	s.luaExportComponentInteractive(componentsTable)
-	s.luaExportComponentOpacity(componentsTable)
-	s.luaExportComponentOrigin(componentsTable)
-	s.luaExportComponentRenderOrder(componentsTable)
-	// s.luaExportComponentRender_texture(componentsTable)
-	// s.luaExportComponentScene_graph_node(componentsTable)
-	s.luaExportComponentSize(componentsTable)
-	s.luaExportComponentStroke(componentsTable)
-	s.luaExportComponentText(componentsTable)
-	// s.luaExportComponentTexture(componentsTable)
-	s.luaExportComponentTransform(componentsTable)
-	s.luaExportComponentUUID(componentsTable)
-	// s.luaExportComponentViewport(componentsTable)
+	factories := []components.LuaExport{
+		&s.Components.Animation,
+		&s.Components.Camera,
+		&s.Components.Viewport,
+		&s.Components.Color,
+		&s.Components.Debug,
+		&s.Components.FileLoadRequest,
+		&s.Components.FileLoadResponse,
+		&s.Components.FileType,
+		&s.Components.Fill,
+		&s.Components.HasChildren,
+		&s.Components.Stroke,
+		&s.Components.Font,
+		&s.Components.Interactive,
+		&s.Components.Opacity,
+		&s.Components.Origin,
+		&s.Components.RenderTexture2D,
+		&s.Components.RenderOrder,
+		&s.Components.Size,
+		&s.Components.SceneGraphNode,
+		&s.Components.Text,
+		&s.Components.Texture2D,
+		&s.Components.Transform,
+		&s.Components.UUID,
+		&s.Components.Audible,
+	}
+
+	for _, factory := range factories {
+		factory.ExportToLua(s.Lua, componentsTable)
+	}
 }
 
 func (s *SceneSystem) initLuaSystemsTable(sceneTable *lua.LTable) {

@@ -2,18 +2,25 @@ package texture_manager
 
 import (
 	"fmt"
-	"github.com/faiface/mainthread"
-	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/common/cache"
-	"github.com/gravestench/director/pkg/components"
 	"image"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
 	"time"
+
+	fileLoadRequest "github.com/gravestench/director/pkg/components/file_load_request"
+
+	fileLoadResponse "github.com/gravestench/director/pkg/components/file_load_response"
+	fileType "github.com/gravestench/director/pkg/components/file_type"
+	texture2D "github.com/gravestench/director/pkg/components/texture"
+
+	"github.com/gravestench/director/pkg/components/animation"
+
+	"github.com/faiface/mainthread"
+	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/common/cache"
 )
 
 const (
@@ -24,11 +31,11 @@ type System struct {
 	akara.BaseSystem
 	*cache.Cache
 	components struct {
-		fileLoadRequest  components.FileLoadRequestFactory
-		fileLoadResponse components.FileLoadResponseFactory
-		fileType         components.FileTypeFactory
-		texture2d        components.Texture2DFactory
-		animations       components.AnimationFactory
+		fileLoadRequest  fileLoadRequest.ComponentFactory
+		fileLoadResponse fileLoadResponse.ComponentFactory
+		fileType         fileType.ComponentFactory
+		texture2d        texture2D.ComponentFactory
+		animations       animation.ComponentFactory
 	}
 	subscriptions struct {
 		needsTexture *akara.Subscription
@@ -49,11 +56,11 @@ func (sys *System) Init(world *akara.World) {
 }
 
 func (sys *System) initComponents() {
-	sys.InjectComponent(&components.FileLoadRequest{}, &sys.components.fileLoadRequest.ComponentFactory)
-	sys.InjectComponent(&components.FileLoadResponse{}, &sys.components.fileLoadResponse.ComponentFactory)
-	sys.InjectComponent(&components.FileType{}, &sys.components.fileType.ComponentFactory)
-	sys.InjectComponent(&components.Texture2D{}, &sys.components.texture2d.ComponentFactory)
-	sys.InjectComponent(&components.Animation{}, &sys.components.animations.ComponentFactory)
+	sys.InjectComponent(&fileLoadRequest.Component{}, &sys.components.fileLoadRequest.ComponentFactory)
+	sys.InjectComponent(&fileLoadResponse.Component{}, &sys.components.fileLoadResponse.ComponentFactory)
+	sys.InjectComponent(&fileType.Component{}, &sys.components.fileType.ComponentFactory)
+	sys.InjectComponent(&texture2D.Component{}, &sys.components.texture2d.ComponentFactory)
+	sys.InjectComponent(&animation.Animation{}, &sys.components.animations.ComponentFactory)
 }
 
 func (sys *System) initSubscriptions() {
@@ -64,9 +71,9 @@ func (sys *System) initTextureQueueSubscription() {
 	filter := sys.World.NewComponentFilter()
 
 	filter.
-		Require(&components.FileLoadResponse{}).
-		Require(&components.FileType{}).
-		Forbid(&components.Texture2D{})
+		Require(&fileLoadResponse.Component{}).
+		Require(&fileType.Component{}).
+		Forbid(&texture2D.Component{})
 
 	sys.subscriptions.needsTexture = sys.AddSubscription(filter.Build())
 }
@@ -105,7 +112,7 @@ func (sys *System) createTextureFromImage(e akara.EID, img image.Image) {
 	})
 }
 
-func (sys *System) NewTextureFromImage(img image.Image) common.Entity {
+func (sys *System) NewTextureFromImage(img image.Image) akara.EID {
 	e := sys.NewEntity()
 
 	sys.createTextureFromImage(e, img)
@@ -113,7 +120,7 @@ func (sys *System) NewTextureFromImage(img image.Image) common.Entity {
 	return e
 }
 
-func (sys *System) createTexture(e common.Entity) {
+func (sys *System) createTexture(e akara.EID) {
 	req, found := sys.components.fileLoadRequest.Get(e)
 	if !found {
 		return
@@ -173,7 +180,7 @@ func (sys *System) createTexture(e common.Entity) {
 	sys.subscriptions.needsTexture.IgnoreEntity(e)
 }
 
-func (sys *System) createGifAnimation(e common.Entity, gifImg *gif.GIF) {
+func (sys *System) createGifAnimation(e akara.EID, gifImg *gif.GIF) {
 	req, found := sys.components.fileLoadRequest.Get(e)
 	if !found {
 		return

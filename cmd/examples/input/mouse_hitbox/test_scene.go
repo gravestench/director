@@ -2,20 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/gravestench/director/pkg"
 	"image"
 	"image/color"
 
-	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/systems/input/constants"
 
-	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/systems/input"
+	"github.com/gravestench/director/pkg"
+
+	"github.com/gravestench/akara"
 )
 
 type TestScene struct {
 	pkg.Scene
-	square common.Entity
-	label  common.Entity
+	square common.entity
+	label  common.entity
 }
 
 func (scene *TestScene) Key() string {
@@ -94,7 +94,7 @@ func (scene *TestScene) bindInput() {
 		return false
 	}
 
-	i.Vector.SetMouseButton(input.MouseButtonLeft)
+	i.Vector.SetMouseButton(constants.MouseButtonLeft)
 
 	size, found := scene.Components.Size.Get(scene.square)
 	if !found {

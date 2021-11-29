@@ -11,8 +11,6 @@ import (
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/mathlib"
-
-	"github.com/gravestench/director/pkg/common"
 )
 
 const (
@@ -24,7 +22,7 @@ var _ director.SceneInterface = &testScene{}
 
 type testScene struct {
 	pkg.Scene
-	images  []common.Entity
+	images  []common.entity
 	elapsed time.Duration
 }
 
@@ -58,7 +56,7 @@ func (scene *testScene) handleNewImage() {
 	scene.fadeIn(newImage)
 }
 
-func (scene *testScene) fadeIn(e common.Entity) {
+func (scene *testScene) fadeIn(e common.entity) {
 	t := scene.Sys.Tweens.New()
 	t.Time(time.Second)
 	t.Ease(easing.Sine)
@@ -79,7 +77,7 @@ func (scene *testScene) fadeIn(e common.Entity) {
 	scene.Sys.Tweens.Add(t)
 }
 
-func (scene *testScene) updatePosition(e common.Entity) {
+func (scene *testScene) updatePosition(e common.entity) {
 	trs, found := scene.Components.Transform.Get(e)
 	if !found {
 		return
@@ -128,7 +126,7 @@ func (scene *testScene) resizeCameraWithWindow() {
 	}
 }
 
-func (scene *testScene) setRandomImagePosition(e common.Entity) {
+func (scene *testScene) setRandomImagePosition(e common.entity) {
 	rWidth := scene.Sys.Renderer.Window.Width
 	rHeight := scene.Sys.Renderer.Window.Height
 

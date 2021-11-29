@@ -68,7 +68,7 @@ When any object factory is used to create an entity, the entity ID is added to t
 Scenes and Systems can be created with lua scripts. The only requirement 
 is that the script contain an `init` and `update` function. This is true for both Scenes and Systems.
 
-Before this script execution, a scene or system will initialize the lua state
+Before script execution, a scene or system will initialize the lua state
 machine with global tables that are constants, other systems, the
 scene object factories, etc.
 

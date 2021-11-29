@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/gravestench/director/pkg"
 	"image/color"
 	"time"
+
+	"github.com/gravestench/director/pkg"
 
 	"github.com/gravestench/akara"
 
 	"github.com/gravestench/director"
-	"github.com/gravestench/director/pkg/common"
 	"github.com/gravestench/director/pkg/easing"
 	"github.com/gravestench/director/pkg/systems/tween"
 )
@@ -25,7 +25,7 @@ func main() {
 
 type TweenTest struct {
 	pkg.Scene
-	object common.Entity
+	object common.entity
 }
 
 func (scene *TweenTest) Key() string {

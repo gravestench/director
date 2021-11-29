@@ -5,6 +5,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gravestench/akara"
+
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 
@@ -13,7 +15,7 @@ import (
 
 type circleFactory struct {
 	common.EntityManager
-	cache      map[common.Entity]*circleParameters
+	cache      map[akara.EID]*circleParameters
 	cacheMutex sync.Mutex
 }
 
@@ -22,7 +24,7 @@ type circleParameters struct {
 	fill, stroke  color.Color
 }
 
-func (factory *circleFactory) putInCache(e common.Entity, width, height int, fill, stroke color.Color) {
+func (factory *circleFactory) putInCache(e akara.EID, width, height int, fill, stroke color.Color) {
 	entry := &circleParameters{
 		width:  width,
 		height: height,
@@ -35,7 +37,7 @@ func (factory *circleFactory) putInCache(e common.Entity, width, height int, fil
 	factory.cacheMutex.Unlock()
 }
 
-func (factory *circleFactory) New(s *Scene, x, y, radius int, fill, stroke color.Color) common.Entity {
+func (factory *circleFactory) New(s *Scene, x, y, radius int, fill, stroke color.Color) akara.EID {
 	e := s.Add.generic.visibleEntity(s)
 
 	size := s.Components.Size.Add(e)
@@ -63,7 +65,7 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 	}
 
 	if factory.cache == nil {
-		factory.cache = make(map[common.Entity]*circleParameters)
+		factory.cache = make(map[akara.EID]*circleParameters)
 	}
 
 	factory.EntitiesMutex.Lock()
@@ -79,7 +81,7 @@ func (factory *circleFactory) update(s *Scene, dt time.Duration) {
 	factory.EntityManager.ProcessRemovalQueue()
 }
 
-func (factory *circleFactory) needsToGenerateTexture(s *Scene, e common.Entity) bool {
+func (factory *circleFactory) needsToGenerateTexture(s *Scene, e akara.EID) bool {
 	factory.cacheMutex.Lock()
 	entry, found := factory.cache[e]
 	factory.cacheMutex.Unlock()
@@ -126,7 +128,7 @@ func (factory *circleFactory) needsToGenerateTexture(s *Scene, e common.Entity) 
 	return false
 }
 
-func (factory *circleFactory) generateNewTexture(s *Scene, e common.Entity) {
+func (factory *circleFactory) generateNewTexture(s *Scene, e akara.EID) {
 	fill, fillFound := s.Components.Fill.Get(e)
 	stroke, strokeFound := s.Components.Stroke.Get(e)
 	col, colorFound := s.Components.Color.Get(e)

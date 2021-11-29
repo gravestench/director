@@ -1,17 +1,20 @@
 package animation
 
 import (
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/components"
 	"time"
+
+	texture2D "github.com/gravestench/director/pkg/components/texture"
+
+	"github.com/gravestench/director/pkg/components/animation"
+
+	"github.com/gravestench/akara"
 )
 
 type System struct {
 	akara.BaseSystem
 	components struct {
-		animations components.AnimationFactory
-		textures   components.Texture2DFactory
+		animations animation.ComponentFactory
+		textures   texture2D.ComponentFactory
 	}
 	animations *akara.Subscription
 }
@@ -26,15 +29,15 @@ func (sys *System) Name() string {
 }
 
 func (sys *System) initComponents() {
-	sys.InjectComponent(&components.Texture2D{}, &sys.components.textures.ComponentFactory)
-	sys.InjectComponent(&components.Animation{}, &sys.components.animations.ComponentFactory)
+	sys.InjectComponent(&texture2D.Component{}, &sys.components.textures.ComponentFactory)
+	sys.InjectComponent(&animation.Component{}, &sys.components.animations.ComponentFactory)
 }
 
 func (sys *System) initSubscriptions() {
 	filter := sys.NewComponentFilter()
 
-	filter.Require(&components.Texture2D{})
-	filter.Require(&components.Animation{})
+	filter.Require(&texture2D.Component{})
+	filter.Require(&animation.Animation{})
 
 	sys.animations = sys.AddSubscription(filter.Build())
 }
@@ -49,7 +52,7 @@ func (sys *System) Update() {
 	}
 }
 
-func (sys *System) updateAnimation(e common.Entity, dt time.Duration) {
+func (sys *System) updateAnimation(e akara.EID, dt time.Duration) {
 	anim, found := sys.components.animations.Get(e)
 	if !found {
 		return

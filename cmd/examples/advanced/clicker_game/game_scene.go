@@ -2,45 +2,48 @@ package main
 
 import (
 	"fmt"
-	"github.com/gravestench/director/pkg"
-	"github.com/gravestench/director/pkg/common"
 	"image"
 	"image/color"
 	"strconv"
 
+	"github.com/gravestench/director/pkg/systems/input/vector"
+
+	"github.com/gravestench/director/pkg/systems/input/constants"
+
+	"github.com/gravestench/director/pkg"
+
 	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/systems/input"
 )
 
 type GameScene struct {
 	pkg.Scene
 	upgrades     ShopUpgrades
-	toggleButton common.Entity
-	toggleLabel  common.Entity
-	debugPanel   common.Entity
-	//mainPanel       common.Entity
-	//square          common.Entity
-	//label           common.Entity
-	mouseDebugLabel common.Entity
-	balanceLabel    common.Entity
-	clickButton     common.Entity
-	shopPanel       common.Entity
+	toggleButton common.entity
+	toggleLabel  common.entity
+	debugPanel   common.entity
+	//mainPanel       common.entity
+	//square          common.entity
+	//label           common.entity
+	mouseDebugLabel common.entity
+	balanceLabel    common.entity
+	clickButton     common.entity
+	shopPanel       common.entity
 	isDebugEnabled  bool
 	balanceValue    int
 	clickValue      int
 }
 
 type ShopUpgrades struct {
-	clickerUpgrade1       common.Entity
-	clickerUpgrade1Label  common.Entity
-	clickerUpgrade2       common.Entity
-	clickerUpgrade2Label  common.Entity
-	clickerUpgrade3       common.Entity
-	clickerUpgrade3Label  common.Entity
-	clickerUpgrade4       common.Entity
-	clickerUpgrade4Label  common.Entity
-	rapidFireUpgrade      common.Entity
-	rapidFireUpgradeLabel common.Entity
+	clickerUpgrade1       common.entity
+	clickerUpgrade1Label  common.entity
+	clickerUpgrade2       common.entity
+	clickerUpgrade2Label  common.entity
+	clickerUpgrade3       common.entity
+	clickerUpgrade3Label  common.entity
+	clickerUpgrade4       common.entity
+	clickerUpgrade4Label  common.entity
+	rapidFireUpgrade      common.entity
+	rapidFireUpgradeLabel common.entity
 	//clickerUpgrade1Price int
 	//clickerUpgrade2Price int
 	//clickerUpgrade3Price int
@@ -128,8 +131,8 @@ func (scene *GameScene) bindDebugInput() {
 		return false
 	}
 
-	i.Vector = input.NewInputVector()
-	i.Vector.SetMouseButton(input.MouseButtonLeft)
+	i.Vector = vector.NewInputVector()
+	i.Vector.SetMouseButton(constants.MouseButtonLeft)
 
 	size, found := scene.Components.Size.Get(scene.toggleButton)
 	if !found {
@@ -238,8 +241,8 @@ func (scene *GameScene) bindClickingInput() {
 		scene.updateBalance(scene.clickValue)
 		return false
 	}
-	i.Vector = input.NewInputVector()
-	i.Vector.SetMouseButton(input.MouseButtonLeft)
+	i.Vector = vector.NewInputVector()
+	i.Vector.SetMouseButton(constants.MouseButtonLeft)
 	size, _ := scene.Components.Size.Get(scene.clickButton)
 	trs, _ := scene.Components.Transform.Get(scene.clickButton)
 	rHeight := scene.Sys.Renderer.Window.Height
@@ -270,8 +273,8 @@ func (scene *GameScene) bindShopClickingInput() {
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade1Label)
 		return false
 	}
-	i.Vector = input.NewInputVector()
-	i.Vector.SetMouseButton(input.MouseButtonLeft)
+	i.Vector = vector.NewInputVector()
+	i.Vector.SetMouseButton(constants.MouseButtonLeft)
 	size, found := scene.Components.Size.Get(scene.upgrades.clickerUpgrade1)
 	if !found {
 		return
@@ -302,8 +305,8 @@ func (scene *GameScene) bindShopClickingInput() {
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade2Label)
 		return false
 	}
-	i.Vector = input.NewInputVector()
-	i.Vector.SetMouseButton(input.MouseButtonLeft)
+	i.Vector = vector.NewInputVector()
+	i.Vector.SetMouseButton(constants.MouseButtonLeft)
 	size, found = scene.Components.Size.Get(scene.upgrades.clickerUpgrade2)
 	if !found {
 		return
@@ -332,8 +335,8 @@ func (scene *GameScene) bindShopClickingInput() {
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade3Label)
 		return false
 	}
-	i.Vector = input.NewInputVector()
-	i.Vector.SetMouseButton(input.MouseButtonLeft)
+	i.Vector = vector.NewInputVector()
+	i.Vector.SetMouseButton(constants.MouseButtonLeft)
 	size, found = scene.Components.Size.Get(scene.upgrades.clickerUpgrade3)
 	if !found {
 		return
@@ -362,8 +365,8 @@ func (scene *GameScene) bindShopClickingInput() {
 		scene.RemoveEntity(scene.upgrades.clickerUpgrade4Label)
 		return false
 	}
-	i.Vector = input.NewInputVector()
-	i.Vector.SetMouseButton(input.MouseButtonLeft)
+	i.Vector = vector.NewInputVector()
+	i.Vector.SetMouseButton(constants.MouseButtonLeft)
 	size, found = scene.Components.Size.Get(scene.upgrades.clickerUpgrade4)
 	if !found {
 		return
@@ -392,8 +395,8 @@ func (scene *GameScene) bindShopClickingInput() {
 		scene.RemoveEntity(scene.upgrades.rapidFireUpgradeLabel)
 		return false
 	}
-	i.Vector = input.NewInputVector()
-	i.Vector.SetMouseButton(input.MouseButtonLeft)
+	i.Vector = vector.NewInputVector()
+	i.Vector.SetMouseButton(constants.MouseButtonLeft)
 	size, found = scene.Components.Size.Get(scene.upgrades.rapidFireUpgrade)
 	if !found {
 		return

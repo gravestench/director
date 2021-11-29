@@ -3,6 +3,8 @@ package pkg
 import (
 	"time"
 
+	"github.com/gravestench/akara"
+
 	"github.com/gravestench/director/pkg/common"
 )
 
@@ -19,7 +21,7 @@ func (factory *imageFactory) update(_ *Scene, _ time.Duration) {
 	factory.EntityManager.ProcessRemovalQueue()
 }
 
-func (factory *imageFactory) New(s *Scene, uri string, x, y int) common.Entity {
+func (factory *imageFactory) New(s *Scene, uri string, x, y int) akara.EID {
 	e := s.Add.generic.visibleEntity(s)
 
 	trs, _ := s.Components.Transform.Get(e) // this is a component all visible entities have

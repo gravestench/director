@@ -6,8 +6,11 @@ import (
 	"net/http"
 	"os"
 
+	fileLoadRequest "github.com/gravestench/director/pkg/components/file_load_request"
+	fileLoadResponse "github.com/gravestench/director/pkg/components/file_load_response"
+	fileType "github.com/gravestench/director/pkg/components/file_type"
+
 	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg/components"
 	"github.com/gravestench/director/pkg/systems/file_loader/loader"
 	"github.com/gravestench/director/pkg/systems/file_loader/loader/file_system"
 	"github.com/gravestench/director/pkg/systems/file_loader/loader/web"
@@ -21,9 +24,9 @@ type System struct {
 	akara.BaseSystem
 	loader.Loader
 	components struct {
-		request  components.FileLoadRequestFactory
-		response components.FileLoadResponseFactory
-		fileType components.FileTypeFactory
+		request  fileLoadRequest.ComponentFactory
+		response fileLoadResponse.ComponentFactory
+		fileType fileType.ComponentFactory
 	}
 	subscribed struct {
 		awaitingResponse *akara.Subscription
@@ -44,9 +47,9 @@ func (sys *System) Init(world *akara.World) {
 }
 
 func (sys *System) initComponents() {
-	sys.InjectComponent(&components.FileLoadRequest{}, &sys.components.request.ComponentFactory)
-	sys.InjectComponent(&components.FileLoadResponse{}, &sys.components.response.ComponentFactory)
-	sys.InjectComponent(&components.FileType{}, &sys.components.fileType.ComponentFactory)
+	sys.InjectComponent(&fileLoadRequest.Component{}, &sys.components.request.ComponentFactory)
+	sys.InjectComponent(&fileLoadResponse.Component{}, &sys.components.response.ComponentFactory)
+	sys.InjectComponent(&fileType.Component{}, &sys.components.fileType.ComponentFactory)
 }
 
 func (sys *System) initProviders() {
@@ -68,8 +71,8 @@ func (sys *System) initLoadRequestSubscription() {
 	filter := sys.World.NewComponentFilter()
 
 	filter.
-		Require(&components.FileLoadRequest{}).
-		Forbid(&components.FileLoadResponse{})
+		Require(&fileLoadRequest.Component{}).
+		Forbid(&fileLoadResponse.Component{})
 
 	sys.subscribed.awaitingResponse = sys.AddSubscription(filter.Build())
 }
@@ -78,8 +81,8 @@ func (sys *System) initTypeResolutionSubscription() {
 	filter := sys.World.NewComponentFilter()
 
 	filter.
-		Require(&components.FileLoadResponse{}).
-		Forbid(&components.FileType{})
+		Require(&fileLoadResponse.Component{}).
+		Forbid(&fileType.Component{})
 
 	sys.subscribed.needsFileType = sys.AddSubscription(filter.Build())
 }

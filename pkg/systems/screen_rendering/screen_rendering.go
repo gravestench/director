@@ -3,12 +3,16 @@ package screen_rendering
 import (
 	"sort"
 
+	renderTexture "github.com/gravestench/director/pkg/components/render_texture"
+
+	"github.com/gravestench/director/pkg/components/transform"
+	"github.com/gravestench/director/pkg/components/viewport"
+
 	"github.com/faiface/mainthread"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
 
 	"github.com/gravestench/director/pkg/common"
-	"github.com/gravestench/director/pkg/components"
 )
 
 type ScreenRenderingSystem struct {
@@ -42,9 +46,9 @@ func (sys *ScreenRenderingSystem) IsInitialized() bool {
 
 func (sys *ScreenRenderingSystem) initViewportSubscription() {
 	filter := sys.World.NewComponentFilter().Require(
-		&components.Viewport{},
-		&components.Transform{},
-		&components.RenderTexture2D{},
+		&viewport.Component{},
+		&transform.Component{},
+		&renderTexture.Component{},
 	).Build()
 
 	sys.sceneViewports = sys.World.AddSubscription(filter)
@@ -66,7 +70,7 @@ func (sys *ScreenRenderingSystem) Update() {
 	})
 }
 
-func (sys *ScreenRenderingSystem) getSortedViewports() []common.Entity {
+func (sys *ScreenRenderingSystem) getSortedViewports() []akara.EID {
 	renderList := sys.sceneViewports.GetEntities()
 
 	// sort viewports by their render order, if they have it
@@ -85,7 +89,7 @@ func (sys *ScreenRenderingSystem) getSortedViewports() []common.Entity {
 	return renderList
 }
 
-func (sys *ScreenRenderingSystem) renderViewport(e common.Entity) {
+func (sys *ScreenRenderingSystem) renderViewport(e akara.EID) {
 	// we use the camera in the filter merely to tag the transform + rendertexture
 	// for rendering here
 	trs, found := sys.components.Transform.Get(e)

@@ -5,8 +5,6 @@ import (
 
 	"github.com/gravestench/akara"
 	"github.com/gravestench/scenegraph"
-
-	"github.com/gravestench/director/pkg/common"
 )
 
 const (
@@ -23,8 +21,8 @@ const (
 type Scene struct {
 	SceneSystem
 	Graph      scenegraph.Node
-	renderList []common.Entity
-	Viewports  []common.Entity
+	renderList []akara.EID
+	Viewports  []akara.EID
 	key        string
 }
 
@@ -83,7 +81,7 @@ func (s *Scene) Render() {
 	}
 }
 
-func (s *Scene) RemoveEntity(e common.Entity) {
+func (s *Scene) RemoveEntity(e akara.EID) {
 	factories := []*akara.ComponentFactory{
 		s.Components.Viewport.ComponentFactory,
 		s.Components.Camera.ComponentFactory,

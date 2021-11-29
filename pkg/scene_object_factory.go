@@ -4,6 +4,8 @@ import (
 	"image/color"
 	"time"
 
+	"github.com/gravestench/akara"
+
 	"github.com/gravestench/director/pkg/common"
 )
 
@@ -31,34 +33,34 @@ func (factory *ObjectFactory) update(dt time.Duration) {
 	factory.sound.update(factory.scene, dt)
 }
 
-func (factory *ObjectFactory) Label(str string, x, y, size int, fontName string, c color.Color) common.Entity {
+func (factory *ObjectFactory) Label(str string, x, y, size int, fontName string, c color.Color) akara.EID {
 	return factory.label.New(factory.scene, str, x, y, size, fontName, c)
 }
 
-func (factory *ObjectFactory) Viewport(x, y, w, h int) common.Entity {
+func (factory *ObjectFactory) Viewport(x, y, w, h int) akara.EID {
 	return factory.viewport.New(factory.scene, x, y, w, h)
 }
 
-func (factory *ObjectFactory) Camera(x, y, w, h int) common.Entity {
+func (factory *ObjectFactory) Camera(x, y, w, h int) akara.EID {
 	return factory.camera.New(factory.scene, x, y, w, h)
 }
 
-func (factory *ObjectFactory) Rectangle(x, y, w, h int, fill, stroke color.Color) common.Entity {
+func (factory *ObjectFactory) Rectangle(x, y, w, h int, fill, stroke color.Color) akara.EID {
 	return factory.shape.rectangle.New(factory.scene, x, y, w, h, fill, stroke)
 }
 
-func (factory *ObjectFactory) Circle(x, y, radius int, fill, stroke color.Color) common.Entity {
+func (factory *ObjectFactory) Circle(x, y, radius int, fill, stroke color.Color) akara.EID {
 	return factory.shape.circle.New(factory.scene, x, y, radius, fill, stroke)
 }
 
-func (factory *ObjectFactory) Image(uri string, x, y int) common.Entity {
+func (factory *ObjectFactory) Image(uri string, x, y int) akara.EID {
 	return factory.image.New(factory.scene, uri, x, y)
 }
 
-func (factory *ObjectFactory) Layer(x, y int) common.Entity {
+func (factory *ObjectFactory) Layer(x, y int) akara.EID {
 	return factory.layer.New(factory.scene, x, y)
 }
 
-func (factory *ObjectFactory) Sound(filePath string, paused bool, volume float64, muted bool, loop bool, speedMultiplier float64) common.Entity {
+func (factory *ObjectFactory) Sound(filePath string, paused bool, volume float64, muted bool, loop bool, speedMultiplier float64) akara.EID {
 	return factory.sound.New(factory.scene, filePath, paused, volume, muted, loop, speedMultiplier)
 }

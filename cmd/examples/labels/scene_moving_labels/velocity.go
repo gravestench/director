@@ -5,7 +5,7 @@ import (
 	"github.com/gravestench/akara"
 )
 
-// static check that Velocity implements Component
+// static check that Velocity implements Camera
 var _ akara.Component = &Velocity{}
 
 // Velocity is a component that contains a 2-dimensional Vector

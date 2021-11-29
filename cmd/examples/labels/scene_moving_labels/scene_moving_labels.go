@@ -2,18 +2,17 @@ package main
 
 import (
 	"fmt"
-	"github.com/faiface/mainthread"
-	"github.com/gravestench/director/pkg"
-	"github.com/gravestench/mathlib"
 	"image/color"
 	"math"
 	"math/rand"
 	"time"
 
+	"github.com/faiface/mainthread"
+	"github.com/gravestench/director/pkg"
+	"github.com/gravestench/mathlib"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/akara"
-
-	"github.com/gravestench/director/pkg/common"
 )
 
 const (
@@ -25,7 +24,7 @@ const (
 
 type MovingLabelsScene struct {
 	pkg.Scene
-	textObjects          [numTextObjects]common.Entity
+	textObjects          [numTextObjects]common.entity
 	Velocity             VelocityFactory
 	lastMousePosition    mathlib.Vector2
 	currentMousePosition mathlib.Vector2
@@ -85,7 +84,7 @@ func (scene *MovingLabelsScene) Update() {
 	scene.resizeCameraWithWindow()
 }
 
-func (scene *MovingLabelsScene) updatePosition(eid common.Entity, dt time.Duration) {
+func (scene *MovingLabelsScene) updatePosition(eid common.entity, dt time.Duration) {
 	trs, found := scene.Components.Transform.Get(eid)
 	if !found {
 		return
@@ -124,7 +123,7 @@ func (scene *MovingLabelsScene) updatePosition(eid common.Entity, dt time.Durati
 	position.Y = float64(wrap(float32(position.Y), float32(-th), wh+float32(th)))
 }
 
-func (scene *MovingLabelsScene) updateVelocity(eid common.Entity) {
+func (scene *MovingLabelsScene) updateVelocity(eid common.entity) {
 	velocity, found := scene.Velocity.Get(eid)
 	if !found {
 		velocity = scene.Velocity.Add(eid)

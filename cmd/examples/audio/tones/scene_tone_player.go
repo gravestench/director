@@ -2,13 +2,17 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"image/color"
+
+	"github.com/gravestench/director/pkg/systems/input/vector"
+
+	"github.com/gravestench/director/pkg/systems/input/constants"
+
 	"github.com/gravestench/akara"
 	"github.com/gravestench/director/pkg"
 	"github.com/gravestench/director/pkg/components"
-	"github.com/gravestench/director/pkg/systems/audio"
-	"github.com/gravestench/director/pkg/systems/input"
-	"image"
-	"image/color"
+	"github.com/gravestench/director/pkg/components/audio"
 )
 
 const (
@@ -17,7 +21,7 @@ const (
 
 type AudioTonePlayerScene struct {
 	pkg.Scene
-	sounds         []*audio.Audible
+	sounds         []*audio.Audio
 	infoTextLabels []*components.Text
 	loopingText    *components.Text
 }
@@ -66,8 +70,8 @@ func (scene *AudioTonePlayerScene) createPlayButtons() {
 	lowFreqButtonInteractive := scene.Components.Interactive.Add(lowFreqButtonEid)
 	highFreqButtonInteractive := scene.Components.Interactive.Add(highFreqButtonEid)
 
-	lowFreqButtonInteractive.Vector = input.NewInputVector()
-	lowFreqButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	lowFreqButtonInteractive.Vector = vector.NewInputVector()
+	lowFreqButtonInteractive.Vector.SetMouseButton(constants.MouseButtonLeft)
 	lowFreqButtonInteractive.Callback = func() (preventPropogation bool) {
 		if scene.sounds[0].Paused() {
 			scene.sounds[0].Play()
@@ -79,8 +83,8 @@ func (scene *AudioTonePlayerScene) createPlayButtons() {
 	lowFreqButtonInteractive.Hitbox = scene.getHitboxRectangle(lowFreqButtonEid)
 	lowFreqButtonInteractive.Enabled = true
 
-	highFreqButtonInteractive.Vector = input.NewInputVector()
-	highFreqButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	highFreqButtonInteractive.Vector = vector.NewInputVector()
+	highFreqButtonInteractive.Vector.SetMouseButton(constants.MouseButtonLeft)
 	highFreqButtonInteractive.Callback = func() (preventPropogation bool) {
 		if scene.sounds[1].Paused() {
 			scene.sounds[1].Play()
@@ -104,8 +108,8 @@ func (scene *AudioTonePlayerScene) createLoopButton() {
 
 	loopButtonInteractive := scene.Components.Interactive.Add(loopButtonEid)
 
-	loopButtonInteractive.Vector = input.NewInputVector()
-	loopButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	loopButtonInteractive.Vector = vector.NewInputVector()
+	loopButtonInteractive.Vector.SetMouseButton(constants.MouseButtonLeft)
 	loopButtonInteractive.Callback = func() (preventPropogation bool) {
 		for _, sound := range scene.sounds {
 			sound.SetLooping(!sound.Looping())
@@ -127,8 +131,8 @@ func (scene *AudioTonePlayerScene) createPanButtons() {
 	panLeftButtonInteractive := scene.Components.Interactive.Add(panLeftButtonEid)
 	panRightButtonInteractive := scene.Components.Interactive.Add(panRightButtonEid)
 
-	panLeftButtonInteractive.Vector = input.NewInputVector()
-	panLeftButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	panLeftButtonInteractive.Vector = vector.NewInputVector()
+	panLeftButtonInteractive.Vector.SetMouseButton(constants.MouseButtonLeft)
 	panLeftButtonInteractive.Callback = func() (preventPropogation bool) {
 		for _, sound := range scene.sounds {
 			sound.SetPan(sound.Pan() - 0.1)
@@ -138,8 +142,8 @@ func (scene *AudioTonePlayerScene) createPanButtons() {
 	panLeftButtonInteractive.Hitbox = scene.getHitboxRectangle(panLeftButtonEid)
 	panLeftButtonInteractive.Enabled = true
 
-	panRightButtonInteractive.Vector = input.NewInputVector()
-	panRightButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	panRightButtonInteractive.Vector = vector.NewInputVector()
+	panRightButtonInteractive.Vector.SetMouseButton(constants.MouseButtonLeft)
 	panRightButtonInteractive.Callback = func() (preventPropogation bool) {
 		for _, sound := range scene.sounds {
 			sound.SetPan(sound.Pan() + 0.1)
@@ -161,8 +165,8 @@ func (scene *AudioTonePlayerScene) createVolumeButtons() {
 	volumeUpButtonInteractive := scene.Components.Interactive.Add(volumeUpButtonEid)
 	volumeDownButtonInteractive := scene.Components.Interactive.Add(volumeDownButtonEid)
 
-	volumeUpButtonInteractive.Vector = input.NewInputVector()
-	volumeUpButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	volumeUpButtonInteractive.Vector = vector.NewInputVector()
+	volumeUpButtonInteractive.Vector.SetMouseButton(constants.MouseButtonLeft)
 	volumeUpButtonInteractive.Callback = func() (preventPropogation bool) {
 		for _, sound := range scene.sounds {
 			sound.SetVolume(sound.Volume() + 0.5)
@@ -172,8 +176,8 @@ func (scene *AudioTonePlayerScene) createVolumeButtons() {
 	volumeUpButtonInteractive.Hitbox = scene.getHitboxRectangle(volumeUpButtonEid)
 	volumeUpButtonInteractive.Enabled = true
 
-	volumeDownButtonInteractive.Vector = input.NewInputVector()
-	volumeDownButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	volumeDownButtonInteractive.Vector = vector.NewInputVector()
+	volumeDownButtonInteractive.Vector.SetMouseButton(constants.MouseButtonLeft)
 	volumeDownButtonInteractive.Callback = func() (preventPropogation bool) {
 		for _, sound := range scene.sounds {
 			sound.SetVolume(sound.Volume() - 0.5)
@@ -195,8 +199,8 @@ func (scene *AudioTonePlayerScene) createSpeedButtons() {
 	speedUpButtonInteractive := scene.Components.Interactive.Add(speedUpButtonEid)
 	speedDownButtonInteractive := scene.Components.Interactive.Add(speedDownButtonEid)
 
-	speedUpButtonInteractive.Vector = input.NewInputVector()
-	speedUpButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	speedUpButtonInteractive.Vector = vector.NewInputVector()
+	speedUpButtonInteractive.Vector.SetMouseButton(constants.MouseButtonLeft)
 	speedUpButtonInteractive.Callback = func() (preventPropogation bool) {
 		for _, sound := range scene.sounds {
 			sound.SetSpeedMultiplier(sound.SpeedMultiplier() + 0.1)
@@ -206,8 +210,8 @@ func (scene *AudioTonePlayerScene) createSpeedButtons() {
 	speedUpButtonInteractive.Hitbox = scene.getHitboxRectangle(speedUpButtonEid)
 	speedUpButtonInteractive.Enabled = true
 
-	speedDownButtonInteractive.Vector = input.NewInputVector()
-	speedDownButtonInteractive.Vector.SetMouseButton(input.MouseButtonLeft)
+	speedDownButtonInteractive.Vector = vector.NewInputVector()
+	speedDownButtonInteractive.Vector.SetMouseButton(constants.MouseButtonLeft)
 	speedDownButtonInteractive.Callback = func() (preventPropogation bool) {
 		for _, sound := range scene.sounds {
 			sound.SetSpeedMultiplier(sound.SpeedMultiplier() - 0.1)

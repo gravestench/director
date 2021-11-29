@@ -1,11 +1,12 @@
 math.randomseed(os.time())
 
+theSquare = 0
+
 function init()
     fill = "#FF0000"
     scene.add.label("Press A", 300, 500, 32, "", fill)
 
-    square = makeSquare()
-    setupInput(square)
+    setupInput(makeSquare())
 end
 
 function update()
@@ -38,16 +39,13 @@ end
 function setupInput(e)
     v = scene.components.interactive.add(e)
 
-    v.setKey(constants.input.KeyX)
+    v.setKey(constants.input.KeyA)
     v.callback("testCallback")
 end
 
 function testCallback()
     trs, found = scene.components.transform.get(theSquare)
-    if not found then
-        return
-    end
 
     x, y, z = trs.translation()
-    trs.translation(x + 20, y - 5, z)
+    trs.translation(x + 20, y, z)
 end

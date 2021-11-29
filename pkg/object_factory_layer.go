@@ -3,6 +3,8 @@ package pkg
 import (
 	"time"
 
+	"github.com/gravestench/akara"
+
 	"github.com/gravestench/director/pkg/common"
 )
 
@@ -11,7 +13,7 @@ type layerFactory struct {
 	*common.SceneComponents
 }
 
-func (factory *layerFactory) New(s *Scene, x, y int) common.Entity {
+func (factory *layerFactory) New(s *Scene, x, y int) akara.EID {
 	e := s.Add.generic.visibleEntity(s)
 
 	trs, _ := s.Components.Transform.Get(e) // this is a component all visible entities have

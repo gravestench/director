@@ -1,8 +1,12 @@
 package common
 
-import "sync"
+import (
+	"sync"
 
-type entityMap map[Entity]Entity
+	"github.com/gravestench/akara"
+)
+
+type entityMap map[akara.EID]akara.EID
 
 type EntityManager struct {
 	EntitiesMutex     sync.Mutex
@@ -20,7 +24,7 @@ func (em *EntityManager) Init() {
 	em.removalQueue = make(entityMap)
 }
 
-func (em *EntityManager) AddEntity(e Entity) {
+func (em *EntityManager) AddEntity(e akara.EID) {
 	if !em.IsInit() {
 		em.Init()
 	}
@@ -30,7 +34,7 @@ func (em *EntityManager) AddEntity(e Entity) {
 	em.EntitiesMutex.Unlock()
 }
 
-func (em *EntityManager) RemoveEntity(e Entity) {
+func (em *EntityManager) RemoveEntity(e akara.EID) {
 	em.removalQueueMutex.Lock()
 	em.removalQueue[e] = e
 	em.removalQueueMutex.Unlock()
