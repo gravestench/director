@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg"
 	"image"
 	"image/color"
+
+	. "github.com/gravestench/director"
 )
 
 type testScene struct {
-	pkg.Scene
+	Scene
 	highest int
 }
 
@@ -24,7 +24,7 @@ func (scene *testScene) IsInitialized() bool {
 	return true
 }
 
-func (scene *testScene) Init(_ *akara.World) {
+func (scene *testScene) Init(_ *World) {
 	startX, startY, step := 100, 100, 30
 	w, h := 80, 80
 

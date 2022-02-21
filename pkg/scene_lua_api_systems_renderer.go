@@ -17,12 +17,12 @@ func (s *SceneSystem) luaExportSystemRenderer(mt *lua.LTable) {
 		if s.Lua.GetTop() == 2 {
 			w, h := int(s.Lua.CheckNumber(1)), int(s.Lua.CheckNumber(2))
 
-			s.Sys.Renderer.Window.Width, s.Sys.Renderer.Window.Height = w, h
+			s.Director.Sys.Renderer.Window.Width, s.Director.Sys.Renderer.Window.Height = w, h
 			return 0
 		}
 
-		s.Lua.Push(lua.LNumber(s.Sys.Renderer.Window.Width))
-		s.Lua.Push(lua.LNumber(s.Sys.Renderer.Window.Height))
+		s.Lua.Push(lua.LNumber(s.Director.Sys.Renderer.Window.Width))
+		s.Lua.Push(lua.LNumber(s.Director.Sys.Renderer.Window.Height))
 
 		return 2
 	}))
@@ -30,7 +30,7 @@ func (s *SceneSystem) luaExportSystemRenderer(mt *lua.LTable) {
 	logTable := s.Lua.NewTable()
 	makeLogLevelFunc := func(lvl int) *lua.LFunction {
 		return s.Lua.NewFunction(func(L *lua.LState) int {
-			s.Sys.Renderer.Logging = lvl
+			s.Director.Sys.Renderer.Logging = lvl
 			return 0
 		})
 	}
@@ -47,10 +47,10 @@ func (s *SceneSystem) luaExportSystemRenderer(mt *lua.LTable) {
 	s.Lua.SetField(sysTable, "fps", s.Lua.NewFunction(func(L *lua.LState) int {
 		if L.GetTop() == 1 {
 			fpsSet := L.CheckNumber(1)
-			s.Sys.Renderer.TargetFPS = int(fpsSet)
+			s.Director.Sys.Renderer.TargetFPS = int(fpsSet)
 		}
 
-		L.Push(lua.LNumber(s.Sys.Renderer.TargetFPS))
+		L.Push(lua.LNumber(s.Director.Sys.Renderer.TargetFPS))
 
 		return 1
 	}))

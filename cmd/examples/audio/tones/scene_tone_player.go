@@ -5,14 +5,13 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/gravestench/director/pkg/systems/input/vector"
+	. "github.com/gravestench/director"
+
+	"github.com/gravestench/director/pkg/components/audio"
+	"github.com/gravestench/director/pkg/components/text"
 
 	"github.com/gravestench/director/pkg/systems/input/constants"
-
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg"
-	"github.com/gravestench/director/pkg/components"
-	"github.com/gravestench/director/pkg/components/audio"
+	"github.com/gravestench/director/pkg/systems/input/vector"
 )
 
 const (
@@ -20,17 +19,17 @@ const (
 )
 
 type AudioTonePlayerScene struct {
-	pkg.Scene
+	Scene
 	sounds         []*audio.Audio
-	infoTextLabels []*components.Text
-	loopingText    *components.Text
+	infoTextLabels []*text.Component
+	loopingText    *text.Component
 }
 
 func (scene *AudioTonePlayerScene) Key() string {
 	return key
 }
 
-func (scene *AudioTonePlayerScene) Init(_ *akara.World) {
+func (scene *AudioTonePlayerScene) Init(_ *World) {
 	scene.loadSounds()
 	scene.createPlayButtons()
 	scene.createLoopButton()
@@ -42,8 +41,8 @@ func (scene *AudioTonePlayerScene) Init(_ *akara.World) {
 }
 
 func (scene *AudioTonePlayerScene) loadSounds() {
-	eid1 := scene.Add.Sound("./220hz.wav", true, 0, false, false, 1)
-	eid2 := scene.Add.Sound("./440hz.wav", true, 0, false, false, 1)
+	eid1 := scene.Add.Sound("data/220hz.wav", true, 0, false, false, 1)
+	eid2 := scene.Add.Sound("data/440hz.wav", true, 0, false, false, 1)
 
 	audible1, _ := scene.Components.Audible.Get(eid1)
 	audible2, _ := scene.Components.Audible.Get(eid2)
@@ -249,7 +248,7 @@ func (scene *AudioTonePlayerScene) Update() {
 }
 
 // we probably need a better way to do this
-func (scene *AudioTonePlayerScene) getHitboxRectangle(id akara.EID) *image.Rectangle {
+func (scene *AudioTonePlayerScene) getHitboxRectangle(id Entity) *image.Rectangle {
 	size, _ := scene.Components.Size.Get(id)
 	trs, _ := scene.Components.Transform.Get(id)
 	rHeight := scene.Sys.Renderer.Window.Height

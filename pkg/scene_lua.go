@@ -5,6 +5,19 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
+const (
+	luaSceneTable              = "scene"
+	luaSceneSystemsTable       = "sys"        // scene.sys
+	luaSceneComponentsTable    = "components" // scene.components
+	luaSceneObjectFactoryTable = "add"        // scene.add
+
+	luaConstantsTable = "constants"
+)
+
+func (s *Scene) ExportToLua(state *lua.LState, table *lua.LTable) *lua.LTable {
+	panic("implement me")
+}
+
 func (s *SceneSystem) initLuaSceneTable() {
 	table := s.Lua.NewTable()
 	s.Lua.SetGlobal(luaSceneTable, table)

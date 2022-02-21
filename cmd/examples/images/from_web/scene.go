@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/faiface/mainthread"
-	"github.com/gravestench/director"
-	"github.com/gravestench/director/pkg"
-	"github.com/gravestench/director/pkg/easing"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/mathlib"
+
+	. "github.com/gravestench/director"
+
+	"github.com/gravestench/director/pkg/easing"
 )
 
 const (
@@ -18,11 +18,11 @@ const (
 	imgUrl           = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
 )
 
-var _ director.SceneInterface = &testScene{}
+var _ SceneInterface = &testScene{}
 
 type testScene struct {
-	pkg.Scene
-	images  []common.entity
+	Scene
+	images  []Entity
 	elapsed time.Duration
 }
 
@@ -56,7 +56,7 @@ func (scene *testScene) handleNewImage() {
 	scene.fadeIn(newImage)
 }
 
-func (scene *testScene) fadeIn(e common.entity) {
+func (scene *testScene) fadeIn(e Entity) {
 	t := scene.Sys.Tweens.New()
 	t.Time(time.Second)
 	t.Ease(easing.Sine)
@@ -77,7 +77,7 @@ func (scene *testScene) fadeIn(e common.entity) {
 	scene.Sys.Tweens.Add(t)
 }
 
-func (scene *testScene) updatePosition(e common.entity) {
+func (scene *testScene) updatePosition(e Entity) {
 	trs, found := scene.Components.Transform.Get(e)
 	if !found {
 		return
@@ -126,7 +126,7 @@ func (scene *testScene) resizeCameraWithWindow() {
 	}
 }
 
-func (scene *testScene) setRandomImagePosition(e common.entity) {
+func (scene *testScene) setRandomImagePosition(e Entity) {
 	rWidth := scene.Sys.Renderer.Window.Width
 	rHeight := scene.Sys.Renderer.Window.Height
 

@@ -7,11 +7,10 @@ import (
 	"time"
 
 	"github.com/faiface/mainthread"
-	"github.com/gravestench/director/pkg"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
+
 	"github.com/gravestench/director"
+	. "github.com/gravestench/director"
 )
 
 func main() {
@@ -29,9 +28,9 @@ const (
 )
 
 type LabelTestScene struct {
-	pkg.Scene
-	singleLabel common.entity
-	originPoint common.entity
+	Scene
+	singleLabel Entity
+	originPoint Entity
 }
 
 func (scene *LabelTestScene) Key() string {
@@ -42,7 +41,7 @@ func (scene *LabelTestScene) IsInitialized() bool {
 	return true
 }
 
-func (scene *LabelTestScene) Init(w *akara.World) {
+func (scene *LabelTestScene) Init(w *World) {
 	scene.makeLabels()
 }
 

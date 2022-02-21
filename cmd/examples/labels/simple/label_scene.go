@@ -1,16 +1,15 @@
 package main
 
 import (
-	"github.com/gravestench/director/pkg"
 	"image/color"
 
-	"github.com/gravestench/akara"
+	. "github.com/gravestench/director"
 )
 
 const sceneName = "Label Scene"
 
 type LabelScene struct {
-	pkg.Scene
+	Scene
 }
 
 func (scene *LabelScene) Key() string {
@@ -21,7 +20,7 @@ func (scene *LabelScene) IsInitialized() bool {
 	return true
 }
 
-func (scene *LabelScene) Init(_ *akara.World) {
+func (scene *LabelScene) Init(_ *World) {
 	scene.Add.Label("Hello World!", 200, 200, 20, "", color.White)
 }
 

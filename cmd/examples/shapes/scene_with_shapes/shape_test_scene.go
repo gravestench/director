@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/gravestench/director/pkg"
 	"image/color"
 
-	"github.com/gravestench/akara"
+	. "github.com/gravestench/director"
 )
 
 const (
@@ -12,10 +11,10 @@ const (
 )
 
 type ShapeTestScene struct {
-	pkg.Scene
+	Scene
 }
 
-func (scene *ShapeTestScene) Init(_ *akara.World) {
+func (scene *ShapeTestScene) Init(_ *World) {
 	yellow := color.RGBA{R: 255, G: 255, A: 255}
 	pink := color.RGBA{R: 255, B: 255, A: 255}
 

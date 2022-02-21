@@ -4,14 +4,14 @@ import (
 	"image/color"
 
 	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg"
+	. "github.com/gravestench/director"
 )
 
 // NOTE: this is currently not working
 
 type layerTest struct {
-	pkg.Scene
-	layer common.entity
+	Scene
+	layer Entity
 }
 
 func (scene *layerTest) Key() string {

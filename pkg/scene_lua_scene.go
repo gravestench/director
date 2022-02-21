@@ -3,7 +3,6 @@ package pkg
 import (
 	"fmt"
 	"os"
-	"time"
 
 	lua "github.com/yuin/gopher-lua"
 
@@ -82,15 +81,15 @@ func (scene *LuaScene) callLuaInitFn() {
 }
 
 func (scene *LuaScene) Update() {
-	go scene.callLuaUpdateFn(scene.TimeDelta)
+	go scene.callLuaUpdateFn()
 }
 
-func (scene *LuaScene) callLuaUpdateFn(dt time.Duration) {
+func (scene *LuaScene) callLuaUpdateFn() {
 	err := scene.Lua.CallByParam(lua.P{
 		Fn:      scene.Lua.GetGlobal(luaFnUpdate),
 		NRet:    0,
 		Protect: true,
-	}, lua.LNumber(dt))
+	}, lua.LNumber(scene.TimeDelta))
 
 	if err != nil {
 		fmt.Println(err)

@@ -6,13 +6,13 @@ import (
 	"math/rand"
 	"time"
 
+	rl "github.com/gen2brain/raylib-go/raylib"
+
 	"github.com/faiface/mainthread"
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director/pkg"
-	"github.com/gravestench/director/pkg/easing"
 	"github.com/gravestench/mathlib"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
+	. "github.com/gravestench/director"
+	"github.com/gravestench/director/pkg/easing"
 )
 
 const (
@@ -21,13 +21,13 @@ const (
 )
 
 type testScene struct {
-	pkg.Scene
+	Scene
 	x, y     int
 	w, h     int
 	bgColor  color.Color
 	name     string
 	elapsed  time.Duration
-	stuff    []common.entity
+	stuff    []Entity
 	interval time.Duration
 }
 
@@ -39,7 +39,7 @@ func (scene *testScene) Key() string {
 	return scene.name
 }
 
-func (scene *testScene) Init(_ *akara.World) {
+func (scene *testScene) Init(_ *World) {
 	rand.Seed(time.Now().UnixNano())
 	scene.stuff = append(scene.stuff, scene.Add.Circle(0, 0, 300, randColor(), nil))
 }
@@ -117,7 +117,7 @@ func (scene *testScene) handleNewImage() {
 	scene.fadeIn(newImage)
 }
 
-func (scene *testScene) fadeIn(e common.entity) {
+func (scene *testScene) fadeIn(e Entity) {
 	t := scene.Sys.Tweens.New()
 	t.Time(time.Second)
 	t.Ease(easing.Sine)
@@ -138,7 +138,7 @@ func (scene *testScene) fadeIn(e common.entity) {
 	scene.Sys.Tweens.Add(t)
 }
 
-func (scene *testScene) updatePosition(e common.entity) {
+func (scene *testScene) updatePosition(e Entity) {
 	trs, found := scene.Components.Transform.Get(e)
 	if !found {
 		return
@@ -164,7 +164,7 @@ func (scene *testScene) updatePosition(e common.entity) {
 	}
 }
 
-func (scene *testScene) setRandomImagePosition(e common.entity) {
+func (scene *testScene) setRandomImagePosition(e Entity) {
 	rWidth := scene.Sys.Renderer.Window.Width
 	rHeight := scene.Sys.Renderer.Window.Height
 

@@ -13,8 +13,11 @@ import (
 // Director is the scene manager
 type Director = pkg.Director
 
-// Entity is the the base entity type
+// Entity is the base entity type. An alias to akara.EID
 type Entity = akara.EID
+
+// World contains all systems, components, and entities. An alias to akara.World
+type World = akara.World
 
 // SceneComponents contains component factories that scenes use for composing objects
 type SceneComponents = common.SceneComponents

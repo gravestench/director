@@ -5,17 +5,15 @@ import (
 	"image"
 	"image/color"
 
+	. "github.com/gravestench/director"
+
 	"github.com/gravestench/director/pkg/systems/input/constants"
-
-	"github.com/gravestench/director/pkg"
-
-	"github.com/gravestench/akara"
 )
 
 type TestScene struct {
-	pkg.Scene
-	square common.entity
-	label  common.entity
+	Scene
+	square Entity
+	label  Entity
 }
 
 func (scene *TestScene) Key() string {
@@ -40,7 +38,7 @@ func (scene *TestScene) updateLabel() {
 	text.String = fmt.Sprintf(fmtMouse, scene.Sys.Input.MousePosition.X, scene.Sys.Input.MousePosition.Y)
 }
 
-func (scene *TestScene) Init(world *akara.World) {
+func (scene *TestScene) Init(world *World) {
 	scene.makeSquare()
 	scene.makeLabel()
 	scene.bindInput()

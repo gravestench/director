@@ -16,7 +16,12 @@ function init()
 end
 
 function update()
-    for _, eid in ipairs(movingEntities.getEntities()) do
+    movers = movingEntities.getEntities()
+    if movers == nil then
+        return
+    end
+
+    for _, eid in ipairs(movers) do
         updateEntity(eid)
     end
 end

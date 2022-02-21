@@ -13,7 +13,7 @@ import (
 
 func (s *Scene) initViewport() {
 	s.Viewports = make([]akara.EID, 1)
-	rw, rh := s.Sys.Renderer.Window.Width, s.Sys.Renderer.Window.Height
+	rw, rh := s.Director.Sys.Renderer.Window.Width, s.Director.Sys.Renderer.Window.Height
 	s.Viewports[0] = s.Add.Viewport(0, 0, rw, rh)
 	vp, _ := s.Components.Viewport.Get(s.Viewports[0])
 

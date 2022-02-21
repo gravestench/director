@@ -2,18 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/gravestench/director/pkg"
 	"image/color"
 	"math"
 	"math/rand"
 	"time"
 
-	"github.com/gravestench/akara"
-	"github.com/gravestench/director"
+	. "github.com/gravestench/director"
 )
 
 func main() {
-	d := director.New()
+	d := New()
 
 	d.AddScene(&LabelTestScene{})
 
@@ -27,8 +25,8 @@ const (
 )
 
 type LabelTestScene struct {
-	pkg.Scene
-	singleLabel akara.EID
+	Scene
+	singleLabel Entity
 }
 
 func (scene *LabelTestScene) Key() string {
@@ -39,7 +37,7 @@ func (scene *LabelTestScene) IsInitialized() bool {
 	return true
 }
 
-func (scene *LabelTestScene) Init(w *akara.World) {
+func (scene *LabelTestScene) Init(w *World) {
 	scene.makeLabels()
 }
 

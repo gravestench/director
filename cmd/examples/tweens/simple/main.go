@@ -4,9 +4,7 @@ import (
 	"image/color"
 	"time"
 
-	"github.com/gravestench/director/pkg"
-
-	"github.com/gravestench/akara"
+	. "github.com/gravestench/director"
 
 	"github.com/gravestench/director"
 	"github.com/gravestench/director/pkg/easing"
@@ -24,8 +22,7 @@ func main() {
 }
 
 type TweenTest struct {
-	pkg.Scene
-	object common.entity
+	Scene
 }
 
 func (scene *TweenTest) Key() string {
@@ -36,26 +33,25 @@ func (scene *TweenTest) Update() {
 	// noop
 }
 
-func (scene *TweenTest) Init(_ *akara.World) {
+func (scene *TweenTest) Init(_ *World) {
+	x, y := 1024/2, 768/2
+	size := 100
+	font := "" // stub, doesnt work right now
 	red := color.RGBA{R: 255, A: 255}
 
-	scene.object = scene.Add.Label("Director", 1024/2, 768/2, 100, "", red)
+	eid := scene.Add.Label("Director", x, y, size, font, red)
 
-	scene.makeTween()
+	scene.makeTween(eid)
 }
 
-func (scene *TweenTest) IsInitialized() bool {
-	return scene.object != 0
-}
-
-func (scene *TweenTest) makeTween() {
+func (scene *TweenTest) makeTween(eid Entity) {
 	t := scene.Sys.Tweens.New()
 
 	t.Time(time.Second * 5)
 	t.Ease(easing.ElasticOut, []float64{0.5, 0.85, 0.5})
 	t.Repeat(tween.RepeatForever)
 
-	trs, found := scene.Components.Transform.Get(scene.object)
+	trs, found := scene.Components.Transform.Get(eid)
 	if !found {
 		return
 	}

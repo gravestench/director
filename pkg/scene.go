@@ -8,16 +8,12 @@ import (
 )
 
 const (
-	luaSceneTable              = "scene"
-	luaSceneSystemsTable       = "sys"        // scene.sys
-	luaSceneComponentsTable    = "components" // scene.components
-	luaSceneObjectFactoryTable = "add"        // scene.add
-
-	luaConstantsTable = "constants"
-
 	DefaultSceneTickRate = 60
 )
 
+// Scene is the basic scene struct, intended to be embedded in an end-user's scenes.
+// This scene "class" has most of the generic scene lifecycle stuff required, so
+// it is recommended that it's always used to create new scenes (for now).
 type Scene struct {
 	SceneSystem
 	Graph      scenegraph.Node
@@ -82,34 +78,6 @@ func (s *Scene) Render() {
 }
 
 func (s *Scene) RemoveEntity(e akara.EID) {
-	factories := []*akara.ComponentFactory{
-		s.Components.Viewport.ComponentFactory,
-		s.Components.Camera.ComponentFactory,
-		s.Components.Color.ComponentFactory,
-		s.Components.Debug.ComponentFactory,
-		s.Components.FileLoadRequest.ComponentFactory,
-		s.Components.FileLoadResponse.ComponentFactory,
-		s.Components.FileType.ComponentFactory,
-		s.Components.Fill.ComponentFactory,
-		s.Components.Animation.ComponentFactory,
-		s.Components.Origin.ComponentFactory,
-		s.Components.Opacity.ComponentFactory,
-		s.Components.Stroke.ComponentFactory,
-		s.Components.Font.ComponentFactory,
-		s.Components.SceneGraphNode.ComponentFactory,
-		s.Components.Text.ComponentFactory,
-		s.Components.RenderTexture2D.ComponentFactory,
-		s.Components.Size.ComponentFactory,
-		s.Components.Texture2D.ComponentFactory,
-		s.Components.Transform.ComponentFactory,
-		s.Components.UUID.ComponentFactory,
-	}
-
-	// nuke all components the entity may have
-	for idx := range factories {
-		factories[idx].Remove(e)
-	}
-
 	for idx := range s.renderList {
 		if s.renderList[idx] == e {
 			s.renderList = append(s.renderList[:idx], s.renderList[idx+1:]...)

@@ -4,11 +4,13 @@ math.randomseed(os.time())
 
 local second = 1000000000
 local shapes = {}
-local maxShapes = 20
+local maxShapes = 50
 local elapsed = 0
 
+rw, rh = scene.sys.renderer.window.size()
+
 function init()
-    for i = 0,maxShapes,1
+    for i = 1,maxShapes,1
     do
         obj = randObject()
         shapes[i] = obj
@@ -18,43 +20,30 @@ end
 function update(timeDelta)
     elapsed = elapsed + timeDelta
     for _, entity in ipairs(shapes) do
-        updatePosition(entity)
-        updateRotation(entity)
+        updatePositionRotation(entity)
     end
 end
 
-function updatePosition(eid)
+function updatePositionRotation(eid)
     trs, found = scene.components.transform.get(eid)
     if not found then
-        return
-    end
-
-    size, found = scene.components.size.get(eid)
-    if not found then
+        running = false
         return
     end
 
     tx, ty, tz = trs.translation.xyz()
     tx, ty, tz = tx + 1, ty + 1, tz
-    w, h = size.size()
-    rw, rh = scene.sys.renderer.window.size()
 
-    if (tx + w) > rw then
-        tx = -h
+
+    if (tx + w) > (rw + 200) then
+        tx = -w
     end
 
-    if (ty + h * 2) > rh + h then
+    if (ty + h) > (rh + 200) then
         ty = -h
     end
 
     trs.translation.xyz(tx, ty, tz)
-end
-
-function updateRotation(eid)
-    trs, found = scene.components.transform.get(eid)
-    if not found then
-        return
-    end
 
     rx, ry, rz = trs.rotation.xyz()
     ry = ry + 1

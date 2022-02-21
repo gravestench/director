@@ -12,11 +12,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/faiface/mainthread"
-	"github.com/gravestench/director/pkg"
-
 	"github.com/gravestench/akara"
+
+	"github.com/faiface/mainthread"
 	"github.com/gravestench/mathlib"
+
+	. "github.com/gravestench/director"
 
 	// using two twitch libraries because one of them provided a method for pulling emotes
 	// and the other was easy to use at the time i initially wrote this example
@@ -33,7 +34,7 @@ const (
 )
 
 type testScene struct {
-	pkg.Scene
+	Scene
 	ircClient   *twitch.Client
 	helixClient *helix.Client
 	twitch      struct {
@@ -53,7 +54,7 @@ func (scene *testScene) Key() string {
 	return "twitch integration test"
 }
 
-func (scene *testScene) Init(_ *akara.World) {
+func (scene *testScene) Init(_ *World) {
 	scene.parseFlags()   // the command line flags have all the twitch api stuff
 	scene.setupClients() // we set up the two titch client instances
 	scene.initEmotes()   // set up a mapping of emote strings to URLs
@@ -211,7 +212,7 @@ func (scene *testScene) newMessage(name, msg string) {
 	x, y := rWidth/2, rHeight/2
 	fontSize := rHeight / 20
 
-	var entity common.entity
+	var entity akara.EID
 
 	emoteURL, emoteFound := scene.emoteMap[msg]
 	if emoteFound {

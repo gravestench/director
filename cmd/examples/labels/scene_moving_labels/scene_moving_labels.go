@@ -8,23 +8,22 @@ import (
 	"time"
 
 	"github.com/faiface/mainthread"
-	"github.com/gravestench/director/pkg"
+	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gravestench/mathlib"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gravestench/akara"
+	. "github.com/gravestench/director"
 )
 
 const (
 	key              = "Director Example - Moving Text"
-	numTextObjects   = 1000
+	numTextObjects   = 100
 	maxVelocity      = 150
 	maxVelocityDelta = maxVelocity / 10
 )
 
 type MovingLabelsScene struct {
-	pkg.Scene
-	textObjects          [numTextObjects]common.entity
+	Scene
+	textObjects          [numTextObjects]Entity
 	Velocity             VelocityFactory
 	lastMousePosition    mathlib.Vector2
 	currentMousePosition mathlib.Vector2
@@ -34,7 +33,7 @@ func (scene *MovingLabelsScene) Key() string {
 	return key
 }
 
-func (scene *MovingLabelsScene) Init(w *akara.World) {
+func (scene *MovingLabelsScene) Init(w *World) {
 	fmt.Println("moving text scene init")
 
 	rand.Seed(time.Now().UnixNano())
@@ -47,17 +46,12 @@ func (scene *MovingLabelsScene) Init(w *akara.World) {
 }
 
 var messages = []string{
-	"BRB",
-	"be",
-	"right",
-	"back",
-	"I'll be back in a moment",
-	"I'm just running to the store",
-	"please wait",
-	"getting booze",
-	"went to the store",
-	"enjoy the music",
-	"fork me on github!",
+	"director",
+	"scene",
+	"entity",
+	"component",
+	"system",
+	"ecs",
 }
 
 func (scene *MovingLabelsScene) makeLabels() {
@@ -84,7 +78,7 @@ func (scene *MovingLabelsScene) Update() {
 	scene.resizeCameraWithWindow()
 }
 
-func (scene *MovingLabelsScene) updatePosition(eid common.entity, dt time.Duration) {
+func (scene *MovingLabelsScene) updatePosition(eid Entity, dt time.Duration) {
 	trs, found := scene.Components.Transform.Get(eid)
 	if !found {
 		return
@@ -123,7 +117,7 @@ func (scene *MovingLabelsScene) updatePosition(eid common.entity, dt time.Durati
 	position.Y = float64(wrap(float32(position.Y), float32(-th), wh+float32(th)))
 }
 
-func (scene *MovingLabelsScene) updateVelocity(eid common.entity) {
+func (scene *MovingLabelsScene) updateVelocity(eid Entity) {
 	velocity, found := scene.Velocity.Get(eid)
 	if !found {
 		velocity = scene.Velocity.Add(eid)

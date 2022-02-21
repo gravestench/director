@@ -6,44 +6,41 @@ import (
 	"image/color"
 	"strconv"
 
-	"github.com/gravestench/director/pkg/systems/input/vector"
+	. "github.com/gravestench/director"
 
 	"github.com/gravestench/director/pkg/systems/input/constants"
-
-	"github.com/gravestench/director/pkg"
-
-	"github.com/gravestench/akara"
+	"github.com/gravestench/director/pkg/systems/input/vector"
 )
 
 type GameScene struct {
-	pkg.Scene
+	Scene
 	upgrades     ShopUpgrades
-	toggleButton common.entity
-	toggleLabel  common.entity
-	debugPanel   common.entity
-	//mainPanel       common.entity
-	//square          common.entity
-	//label           common.entity
-	mouseDebugLabel common.entity
-	balanceLabel    common.entity
-	clickButton     common.entity
-	shopPanel       common.entity
+	toggleButton Entity
+	toggleLabel  Entity
+	debugPanel   Entity
+	//mainPanel      Entity
+	//square         Entity
+	//label          Entity
+	mouseDebugLabel Entity
+	balanceLabel    Entity
+	clickButton     Entity
+	shopPanel       Entity
 	isDebugEnabled  bool
 	balanceValue    int
 	clickValue      int
 }
 
 type ShopUpgrades struct {
-	clickerUpgrade1       common.entity
-	clickerUpgrade1Label  common.entity
-	clickerUpgrade2       common.entity
-	clickerUpgrade2Label  common.entity
-	clickerUpgrade3       common.entity
-	clickerUpgrade3Label  common.entity
-	clickerUpgrade4       common.entity
-	clickerUpgrade4Label  common.entity
-	rapidFireUpgrade      common.entity
-	rapidFireUpgradeLabel common.entity
+	clickerUpgrade1       Entity
+	clickerUpgrade1Label  Entity
+	clickerUpgrade2       Entity
+	clickerUpgrade2Label  Entity
+	clickerUpgrade3       Entity
+	clickerUpgrade3Label  Entity
+	clickerUpgrade4       Entity
+	clickerUpgrade4Label  Entity
+	rapidFireUpgrade      Entity
+	rapidFireUpgradeLabel Entity
 	//clickerUpgrade1Price int
 	//clickerUpgrade2Price int
 	//clickerUpgrade3Price int
@@ -426,7 +423,7 @@ func (scene *GameScene) updateBalance(amount int) {
 	balValue.String = fmt.Sprintf("Balance: " + strconv.Itoa(scene.balanceValue) + " Cubes")
 }
 
-func (scene *GameScene) Init(world *akara.World) {
+func (scene *GameScene) Init(_ *World) {
 	scene.clickValue = 1
 	scene.isDebugEnabled = false
 	scene.makeInitialUI()
