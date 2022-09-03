@@ -1,8 +1,9 @@
 package tween
 
 import (
-	"github.com/gravestench/director/pkg/easing"
 	"time"
+
+	"github.com/gravestench/director/pkg/easing"
 )
 
 type mode int
@@ -34,7 +35,7 @@ func (t *Tween) Stop() *Tween {
 }
 
 func (t *Tween) Play() *Tween {
-	t.mode = paused
+	t.mode = playingForward
 
 	return t
 }
