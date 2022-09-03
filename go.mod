@@ -13,6 +13,7 @@ require (
 	github.com/gravestench/eventemitter v0.0.0-20210902014026-73feeec3a47f
 	github.com/gravestench/mathlib v0.0.0-20210507220915-5c4e3af775c8
 	github.com/gravestench/scenegraph v0.0.0-20210507220339-246be0205dc2
+	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329
 	github.com/nicklaw5/helix v1.25.0
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9
 )

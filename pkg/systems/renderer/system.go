@@ -8,10 +8,10 @@ import (
 
 const (
 	defaultTitle       = "Director"
-	defaultWidth       = 1024
-	defaultHeight      = 768
-	defaultFPS         = 768
-	defaultScaleFactor = 1.0
+	defaultWidth       = 1024 * 2
+	defaultHeight      = 768 * 2
+	defaultFPS         = 60
+	defaultScaleFactor = 1
 	defaultLogging     = rl.LogNone
 )
 
@@ -25,6 +25,7 @@ type System struct {
 	}
 	Logging   int
 	TargetFPS int
+	Screens   []screenInfo
 }
 
 func (s *System) Name() string {
@@ -54,6 +55,8 @@ func (s *System) Update() {
 
 		s.Deactivate()
 	}
+
+	s.updateScreenInfo()
 }
 
 func (s *System) Init(_ *akara.World) {
