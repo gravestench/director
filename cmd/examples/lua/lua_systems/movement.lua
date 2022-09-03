@@ -38,7 +38,7 @@ function updateEntity(eid)
     end
 
     if shouldUpdatePosition then
-        tx, ty, tz = trs.translation()
+        tx, ty, tz = trs.translation.xyz()
         tx, ty, tz = tx + 1, ty + 1, tz
 
         rw, rh = scene.sys.renderer.window.size()
@@ -51,14 +51,14 @@ function updateEntity(eid)
             ty = -150
         end
 
-        trs.translation(tx, ty, tz)
+        trs.translation.xyz(tx, ty, tz)
     end
 
     if shouldUpdateRotation then
-        rx, ry, rz = trs.rotation()
+        rx, ry, rz = trs.rotation.xyz()
         ry = ry + 1
 
-        trs.rotation(rx, ry, rz)
+        trs.rotation.xyz(rx, ry, rz)
     end
 
     if shouldUpdateOrigin then
