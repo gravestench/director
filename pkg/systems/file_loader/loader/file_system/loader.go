@@ -25,7 +25,7 @@ func (l *Loader) Name() string {
 func (l *Loader) Exists(p string) bool {
 	_, err := os.Stat(path.Join(l.basePath, p))
 
-	return !os.IsNotExist(err)
+	return err == nil
 }
 
 func (l *Loader) Load(p string) (io.ReadSeeker, error) {
