@@ -1,8 +1,11 @@
 package pkg
 
 import (
-	"github.com/gravestench/director/pkg/common/components"
+	"strconv"
+
 	lua "github.com/yuin/gopher-lua"
+
+	"github.com/gravestench/director/pkg/common/components"
 )
 
 const (
@@ -22,9 +25,42 @@ func (s *SceneSystem) initLuaSceneTable() {
 	table := s.Lua.NewTable()
 	s.Lua.SetGlobal(luaSceneTable, table)
 
+	s.initLuaSceneMethods(table)
 	s.initLuaSceneObjectFactories(table)
 	s.initLuaComponentsTable(table)
 	s.initLuaSystemsTable(table)
+}
+
+func (s *SceneSystem) initLuaSceneMethods(sceneTable *lua.LTable) {
+	s.initLuaDirectorSystemTimeManagementMethods(sceneTable)
+}
+
+func (s *SceneSystem) initLuaDirectorSystemTimeManagementMethods(sceneTable *lua.LTable) {
+	s.initLuaTickFrequencyMethod(sceneTable)
+}
+
+func (s *SceneSystem) initLuaTickFrequencyMethod(sceneTable *lua.LTable) {
+	const name = "tickFrequency"
+
+	fn := s.Lua.NewFunction(func(L *lua.LState) int {
+		// check argument count
+		if L.GetTop() != 1 {
+			L.Push(lua.LNumber(s.TickFrequency()))
+			return 1
+		}
+
+		strf := L.CheckString(1)
+		f, err := strconv.ParseFloat(strf, 64)
+		if err != nil {
+			return 0
+		}
+
+		s.SetTickFrequency(f)
+
+		return 0
+	})
+
+	s.Lua.SetField(sceneTable, name, fn)
 }
 
 func (s *SceneSystem) initLuaConstantsTable() {
