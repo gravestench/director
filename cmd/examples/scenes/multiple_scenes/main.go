@@ -15,7 +15,7 @@ func main() {
 		y:        100,
 		w:        200,
 		h:        100,
-		interval: time.Millisecond * 20,
+		interval: time.Second / 33 * 100,
 	})
 
 	d.AddScene(&testScene{
@@ -24,7 +24,16 @@ func main() {
 		y:        150,
 		w:        520,
 		h:        320,
-		interval: time.Second / 10,
+		interval: time.Second / 57 * 100,
+	})
+
+	d.AddScene(&testScene{
+		name:     "b",
+		x:        100,
+		y:        300,
+		w:        800,
+		h:        160,
+		interval: time.Second / 88 * 100,
 	})
 
 	if err := d.Run(); err != nil {

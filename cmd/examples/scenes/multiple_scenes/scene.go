@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	maxImages = 200
+	maxImages = 20
 	imgUrl    = "https://cdn.betterttv.net/emote/5e9c6c187e090362f8b0b9e8/3x"
 )
 
