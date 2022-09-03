@@ -32,21 +32,20 @@ function updatePositionRotation(eid)
     end
 
     tx, ty, tz = trs.translation.xyz()
-    tx, ty, tz = tx + 1, ty + 1, tz
+    tx, ty, tz = tx + 1 + (eid/10), ty + 1 + (eid/10), tz
 
-
-    if (tx + w) > (rw + 200) then
-        tx = -w
+    if (tx + w) > (rw + (w*2)) then
+        tx = -(w*2)
     end
 
-    if (ty + h) > (rh + 200) then
-        ty = -h
+    if (ty + h) > (rh + (h*2)) then
+        ty = -(h*2)
     end
 
     trs.translation.xyz(tx, ty, tz)
 
     rx, ry, rz = trs.rotation.xyz()
-    ry = ry + 1
+    ry = ry + 1 + (eid/100)
 
     trs.rotation.xyz(rx, ry, rz)
 end
@@ -60,15 +59,15 @@ function updateOrigin(eid)
     n = elapsed / second
 
     ox, oy, oz = origin.xyz()
-    ox = math.cos(n)
-    oy = math.sin(n)
+    ox = math.cos(0.5)
+    oy = math.sin(0.5)
 
     origin.xyz(ox, oy, oz)
 end
 
 function randObject()
-    x = math.random(0, 1024)
-    y = math.random(0, 768)
+    x = math.random(0, rw)
+    y = math.random(0, rh)
     w = math.random(0, 150/2) * 2
     h = math.random(0, 150/2) * 2
 
