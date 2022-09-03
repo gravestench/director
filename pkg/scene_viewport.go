@@ -82,7 +82,7 @@ func (s *Scene) generateEntityRenderBatch(entities []akara.EID) []entityRenderRe
 
 		// this is rotating around the origin point from the origin component
 		var tmpVect mathlib.Vector3
-		tmpVect.Set(float64(t.Width), float64(t.Height), 1)
+		tmpVect.Set(float64(t.Width)*trs.Scale.X, float64(t.Height)*trs.Scale.Y, 1)
 		yRad := trs.Rotation.Y * mathlib.DegreesToRadians
 		ov2 := mathlib.NewVector2(origin.Clone().Multiply(&tmpVect).XY()).Rotate(yRad).Negate()
 		ov3 := mathlib.NewVector3(ov2.X, ov2.Y, 0)
