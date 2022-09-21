@@ -124,39 +124,13 @@ func (scene *testScene) parseFlags() {
 }
 
 func (scene *testScene) setupClients() {
-	shouldExit := false
-
-	if scene.twitch.oauthKey == "" {
-		shouldExit = true
-		log.Println("need an oauth key, https://twitchapps.com/tmi/")
-	}
-
-	if scene.twitch.userName == "" {
-		shouldExit = true
-		log.Println("need a username")
-	}
-
-	if scene.twitch.channel == "" {
-		shouldExit = true
-		log.Println("need a channel name")
-	}
-
-	if scene.twitch.clientid == "" {
-		shouldExit = true
-		log.Println("need an client id, see https://dev.twitch.tv/console")
-	}
-
-	if scene.twitch.clientSecret == "" {
-		shouldExit = true
-		log.Println("need a client secret, see https://dev.twitch.tv/console")
-	}
-
-	if scene.twitch.userAccessToken == "" {
-		shouldExit = true
-		log.Println("need a user access token see https://github.com/twitchdev/authentication-go-sample")
-	}
-
-	if shouldExit {
+	if scene.twitch.oauthKey == "" ||
+		scene.twitch.userName == "" ||
+		scene.twitch.channel == "" ||
+		scene.twitch.clientid == "" ||
+		scene.twitch.clientSecret == "" ||
+		scene.twitch.userAccessToken == "" {
+		flag.Usage()
 		os.Exit(1)
 	}
 
