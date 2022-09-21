@@ -10,6 +10,7 @@ import (
 	"math"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gravestench/akara"
@@ -21,10 +22,11 @@ import (
 
 	// using two twitch libraries because one of them provided a method for pulling emotes
 	// and the other was easy to use at the time i initially wrote this example
-	twitch "github.com/gempir/go-twitch-irc/v2"
+	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/nicklaw5/helix"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+
 	"github.com/gravestench/director/pkg/easing"
 )
 
@@ -38,12 +40,12 @@ type testScene struct {
 	ircClient   *twitch.Client
 	helixClient *helix.Client
 	twitch      struct {
-		userName        *string
-		oauthKey        *string
-		channel         *string
-		clientid        *string
-		clientSecret    *string
-		userAccessToken *string
+		userName        string
+		oauthKey        string
+		channel         string
+		clientid        string
+		clientSecret    string
+		userAccessToken string
 		userid          string
 	}
 	userColors map[string]color.Color
@@ -72,7 +74,8 @@ func (scene *testScene) initEmotes() {
 
 	allEmotes, err := scene.helixClient.GetGlobalEmotes()
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
+		os.Exit(1)
 	}
 
 	for _, emote := range allEmotes.Data.Emotes {
@@ -110,75 +113,91 @@ func (scene *testScene) initBTTVEmotes() {
 }
 
 func (scene *testScene) parseFlags() {
-	scene.twitch.userName = flag.String("user", "", "username")
-	scene.twitch.channel = flag.String("channel", "", "channel")
-	scene.twitch.oauthKey = flag.String("oauth", "", "oath key")
-	scene.twitch.clientid = flag.String("clientid", "", "client id token")
-	scene.twitch.clientSecret = flag.String("clientsecret", "", "client secret")
-	scene.twitch.userAccessToken = flag.String("useraccesstoken", "", "client id token")
+	flag.StringVar(&scene.twitch.userName, "user", "", "username")
+	flag.StringVar(&scene.twitch.channel, "channel", "", "channel")
+	flag.StringVar(&scene.twitch.oauthKey, "oauth", "", "oath key")
+	flag.StringVar(&scene.twitch.clientid, "clientid", "", "client id token")
+	flag.StringVar(&scene.twitch.clientSecret, "clientsecret", "", "client secret")
+	flag.StringVar(&scene.twitch.userAccessToken, "useraccesstoken", "", "client id token")
 
 	flag.Parse()
 }
 
 func (scene *testScene) setupClients() {
-	if *scene.twitch.oauthKey == "" {
-		log.Panicln("need an oauth key, https://twitchapps.com/tmi/")
+	shouldExit := false
+
+	if scene.twitch.oauthKey == "" {
+		shouldExit = true
+		log.Println("need an oauth key, https://twitchapps.com/tmi/")
 	}
 
-	if *scene.twitch.userName == "" {
-		log.Panicln("need a username")
+	if scene.twitch.userName == "" {
+		shouldExit = true
+		log.Println("need a username")
 	}
 
-	if *scene.twitch.channel == "" {
-		log.Panicln("need a channel name")
+	if scene.twitch.channel == "" {
+		shouldExit = true
+		log.Println("need a channel name")
 	}
 
-	if *scene.twitch.clientid == "" {
-		log.Panicln("need an client id, see https://dev.twitch.tv/console")
+	if scene.twitch.clientid == "" {
+		shouldExit = true
+		log.Println("need an client id, see https://dev.twitch.tv/console")
 	}
 
-	if *scene.twitch.clientSecret == "" {
-		log.Panicln("need a client secret, see https://dev.twitch.tv/console")
+	if scene.twitch.clientSecret == "" {
+		shouldExit = true
+		log.Println("need a client secret, see https://dev.twitch.tv/console")
 	}
 
-	if *scene.twitch.userAccessToken == "" {
-		log.Panicln("need a user access token see https://github.com/twitchdev/authentication-go-sample")
+	if scene.twitch.userAccessToken == "" {
+		shouldExit = true
+		log.Println("need a user access token see https://github.com/twitchdev/authentication-go-sample")
+	}
+
+	if shouldExit {
+		os.Exit(1)
 	}
 
 	client, _ := helix.NewClient(&helix.Options{
-		ClientID:        *scene.twitch.clientid,
-		ClientSecret:    *scene.twitch.clientSecret,
-		UserAccessToken: *scene.twitch.userAccessToken,
+		ClientID:        scene.twitch.clientid,
+		ClientSecret:    scene.twitch.clientSecret,
+		UserAccessToken: scene.twitch.userAccessToken,
 		RedirectURI:     "http://localhost",
 	})
 
-	isValid, _, err := client.ValidateToken(*scene.twitch.userAccessToken)
+	isValid, _, err := client.ValidateToken(scene.twitch.userAccessToken)
 	if !isValid {
-		log.Panicln("could not validate using user access token")
+		log.Println("could not validate using user access token")
+		os.Exit(1)
 	}
 
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
+		os.Exit(1)
 	}
 
 	scene.helixClient = client
 
 	usersResponse, err := scene.helixClient.GetUsers(&helix.UsersParams{
-		Logins: []string{*scene.twitch.userName},
+		Logins: []string{scene.twitch.userName},
 	})
 
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
+		os.Exit(1)
 	}
 
 	if len(usersResponse.Data.Users) < 1 {
-		log.Panicln("expecting to yield a user from twitch client")
+		log.Println("expecting to yield a user from twitch client")
+		os.Exit(1)
 	}
 
 	scene.twitch.userid = usersResponse.Data.Users[0].ID
 
 	// or client := twitch.NewAnonymousClient() for an anonymous user (no write capabilities)
-	scene.ircClient = twitch.NewClient(*scene.twitch.userName, "oauth:"+*scene.twitch.oauthKey)
+	scene.ircClient = twitch.NewClient(scene.twitch.userName, "oauth:"+scene.twitch.oauthKey)
 
 	scene.ircClient.OnPrivateMessage(func(msg twitch.PrivateMessage) {
 		scene.newMessage(msg.User.Name, msg.Message)
@@ -188,7 +207,7 @@ func (scene *testScene) setupClients() {
 		scene.newMessage(msg.User, fmt.Sprintf("%v has joined the chat!", msg.User))
 	})
 
-	scene.ircClient.Join(*scene.twitch.channel)
+	scene.ircClient.Join(scene.twitch.channel)
 }
 
 func (scene *testScene) getUserColor(name string) color.Color {
@@ -332,7 +351,8 @@ func (scene *testScene) resizeCameraWithWindow() {
 func (scene *testScene) connect() {
 	err := scene.ircClient.Connect()
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
+		os.Exit(1)
 	}
 }
 
