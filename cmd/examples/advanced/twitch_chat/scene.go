@@ -11,6 +11,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gravestench/akara"
@@ -19,6 +20,7 @@ import (
 	"github.com/gravestench/mathlib"
 
 	. "github.com/gravestench/director"
+	"github.com/gravestench/director/cmd/examples/advanced/twitch_chat/access_token"
 
 	// using two twitch libraries because one of them provided a method for pulling emotes
 	// and the other was easy to use at the time i initially wrote this example
@@ -57,7 +59,10 @@ func (scene *testScene) Key() string {
 }
 
 func (scene *testScene) Init(_ *World) {
-	scene.parseFlags()   // the command line flags have all the twitch api stuff
+	scene.parseFlags() // the command line flags have all the twitch api stuff
+
+	scene.twitch.userAccessToken = access_token.Get(scene.twitch.clientid, scene.twitch.clientSecret)
+
 	scene.setupClients() // we set up the two titch client instances
 	scene.initEmotes()   // set up a mapping of emote strings to URLs
 
@@ -113,27 +118,34 @@ func (scene *testScene) initBTTVEmotes() {
 }
 
 func (scene *testScene) parseFlags() {
-	flag.StringVar(&scene.twitch.userName, "user", "", "username")
-	flag.StringVar(&scene.twitch.channel, "channel", "", "channel")
-	flag.StringVar(&scene.twitch.oauthKey, "oauth", "", "oath key")
-	flag.StringVar(&scene.twitch.clientid, "clientid", "", "client id token")
-	flag.StringVar(&scene.twitch.clientSecret, "clientsecret", "", "client secret")
-	flag.StringVar(&scene.twitch.userAccessToken, "useraccesstoken", "", "client id token")
+	f := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
-	flag.Parse()
-}
+	f.StringVar(&scene.twitch.userName, "user", "", "pick your username")
+	f.StringVar(&scene.twitch.channel, "channel", "", "set the channel to monitor (your username if you want to use this with OBS)")
+	f.StringVar(&scene.twitch.oauthKey, "oauth", "", "oath key (see https://twitchapps.com/tmi/)")
+	f.StringVar(&scene.twitch.clientid, "clientid", "", "client id token (see https://dev.twitch.tv/console)")
+	f.StringVar(&scene.twitch.clientSecret, "clientsecret", "", "client secret (see https://dev.twitch.tv/console)")
 
-func (scene *testScene) setupClients() {
+	if err := f.Parse(os.Args[1:]); err != nil {
+		f.Usage()
+		os.Exit(1)
+	}
+
 	if scene.twitch.oauthKey == "" ||
 		scene.twitch.userName == "" ||
 		scene.twitch.channel == "" ||
 		scene.twitch.clientid == "" ||
-		scene.twitch.clientSecret == "" ||
-		scene.twitch.userAccessToken == "" {
-		flag.Usage()
+		scene.twitch.clientSecret == "" {
+		f.Usage()
 		os.Exit(1)
 	}
 
+	if strings.HasPrefix(scene.twitch.oauthKey, "oauth:") {
+		scene.twitch.oauthKey = strings.ReplaceAll(scene.twitch.oauthKey, "oauth:", "")
+	}
+}
+
+func (scene *testScene) setupClients() {
 	client, _ := helix.NewClient(&helix.Options{
 		ClientID:        scene.twitch.clientid,
 		ClientSecret:    scene.twitch.clientSecret,
